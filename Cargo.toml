@@ -1,0 +1,8 @@
+[package]
+name = "qml"
+version = "0.1.0"
+authors = ["White-Oak <lpzhelud@gmail.com>"]
+build = "build.rs"
+
+[dependencies]
+libc = "0.2.0"
