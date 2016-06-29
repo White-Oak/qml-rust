@@ -1,9 +1,8 @@
 use libc;
 
-type QQmlApplicationEngine = *mut libc::c_void;
+type QQmlApplicationEngine = *const libc::c_void;
 
 
-#[link(name="DOtherSide")]
 extern "C" {
     fn dos_qapplication_create();
     fn dos_qapplication_exec();
@@ -36,6 +35,12 @@ impl QmlEngine {
     pub fn exec(&self) {
         unsafe {
             dos_qapplication_exec();
+        }
+    }
+
+    pub fn quit(&self) {
+        unsafe {
+            dos_qapplication_quit();
         }
     }
 }

@@ -12,4 +12,5 @@ fn main() {
 
     println!("cargo:rustc-flags=-L {}", path.display());
     println!("cargo:rerun-if-changed={}", path.display());
+    println!("cargo:rustc-link-lib=dylib=DOtherSide");
 }
