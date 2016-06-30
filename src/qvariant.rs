@@ -4,6 +4,7 @@ pub type DosQVariant = *const libc::c_void;
 pub type DosQObject = *const libc::c_void;
 
 use qmlengine::*;
+use utils::*;
 
 extern "C" {
     fn dos_qvariant_create() -> DosQVariant;
@@ -44,6 +45,11 @@ impl From<DosQObject> for QVariant {
     }
 }
 
+impl From<*mut libc::c_void> for QVariant {
+    fn from(vptr: *mut libc::c_void) -> Self {
+        QVariant(vptr as *const libc::c_void)
+    }
+}
 impl From<i32> for QVariant {
     fn from(i: i32) -> Self {
         unsafe { QVariant(dos_qvariant_create_int(i)) }

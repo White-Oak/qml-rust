@@ -6,7 +6,7 @@ pub type DosQAbstractListModel = *const libc::c_void;
 pub type DosQModelIndex = *const libc::c_void;
 pub type MutDosQVariant = *mut libc::c_void;
 type RustQALM = *const QAbstractListModel;
-type DosQHashIntQByteArray = *const libc::c_void;
+type DosQHashIntQByteArray = *mut libc::c_void;
 // type DObjectCallback = Fn (SELF???, slotname: DosQVariant, argc: i32, argv: *const DosQVariant);
 extern "C" {
 
@@ -76,7 +76,7 @@ type DObjectCallback = extern "C" fn(RustQALM, DosQVariant, i32, *const DosQVari
 extern "C" fn RustRowCountCallback(Qself: RustQALM, parent: DosQModelIndex, result: *mut i32) {
     println!("ROW COUNT GOT");
     unsafe {
-        *result = 0;
+        *result = 2;
     }
 }
 type RowCountCallback = extern "C" fn(RustQALM, DosQModelIndex, *mut i32);
@@ -88,22 +88,30 @@ type RowCountCallback = extern "C" fn(RustQALM, DosQModelIndex, *mut i32);
 /// It should not be deleted
 extern "C" fn RustColumnCountCallback(Qself: RustQALM, parent: DosQModelIndex, result: *mut i32) {
     println!("COLUMN COUNT GOT");
-    unsafe {
-        *result = 0;
-    }
+    // unsafe {
+    //     *result = 0;
+    // }
 }
 type ColumnCountCallback = extern "C" fn(RustQALM, DosQModelIndex, *mut i32);
 
+extern "C" {
+
+    fn dos_qvariant_setInt(vptr: DosQVariant, value: i32);
+}
+use qmodelindex::*;
 /// Called when the QAbstractListModel::data method must be executed
 /// @param self The pointer to the QAbstractListModel in the binded language
 /// @param index The DosQModelIndex to which we request the data. It should not be deleted
 /// @param result The DosQVariant result. This must be deferenced and filled from the binded language.
 /// It should not be deleted. See dos_qvariant_assign or other DosQVariant setters
 extern "C" fn RustDataCallback(Qself: RustQALM,
-                               parent: DosQModelIndex,
+                               index: DosQModelIndex,
                                role: i32,
                                result: MutDosQVariant) {
     println!("DATA CALLBACK IS HERE");
+    unsafe {
+        dos_qvariant_setInt(result as *const libc::c_void, 42);
+    }
 }
 type DataCallback = extern "C" fn(RustQALM, DosQModelIndex, i32, MutDosQVariant);
 
@@ -116,8 +124,12 @@ extern "C" fn RustSetDataCallback(Qself: RustQALM,
 }
 type SetDataCallback = extern "C" fn(RustQALM, DosQModelIndex, DosQVariant, i32, *mut bool);
 
+use qinthasharray::*;
 extern "C" fn RustRoleNamesCallback(Qself: RustQALM, result: DosQHashIntQByteArray) {
     println!("HOHO ROLENAMES");
+    let hash: QHashIntQByteArray = result.into();
+    hash.insert(0x0100, "name");
+    hash.insert(0x0101, "number");
 }
 type RoleNamesCallback = extern "C" fn(RustQALM, DosQHashIntQByteArray);
 

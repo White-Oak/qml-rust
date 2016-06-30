@@ -1,0 +1,44 @@
+use libc;
+
+use utils::*;
+
+type DosQHashIntQByteArray = *mut libc::c_void;
+extern "C" {
+
+    fn dos_qhash_int_qbytearray_create() -> DosQHashIntQByteArray;
+    fn dos_qhash_int_qbytearray_delete(vptr: DosQHashIntQByteArray);
+    fn dos_qhash_int_qbytearray_insert(vptr: DosQHashIntQByteArray,
+                                       key: i32,
+                                       value: *const libc::c_char);
+    fn dos_qhash_int_qbytearray_value(vptr: DosQHashIntQByteArray,
+                                      key: i32)
+                                      -> *const libc::c_char;
+}
+
+pub struct QHashIntQByteArray(DosQHashIntQByteArray);
+
+impl QHashIntQByteArray {
+    pub fn new() -> Self {
+        unsafe { QHashIntQByteArray(dos_qhash_int_qbytearray_create()) }
+    }
+
+    pub fn insert(&self, key: i32, value: &str) {
+        unsafe { dos_qhash_int_qbytearray_insert(self.0, key, stoptr(value)) }
+    }
+}
+
+// impl Drop for QHashIntQByteArray {
+//     fn drop(&mut self) {
+//         unsafe { dos_qhash_int_qbytearray_delete(self.0) }
+//     }
+// }
+
+pub fn get_dqhiqba_ptr(o: QHashIntQByteArray) -> *mut libc::c_void {
+    o.0
+}
+
+impl From<*mut libc::c_void> for QHashIntQByteArray {
+    fn from(i: *mut libc::c_void) -> Self {
+        QHashIntQByteArray(i)
+    }
+}
