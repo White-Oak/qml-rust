@@ -1,8 +1,15 @@
 [package]
 name = "qml"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["White-Oak <lpzhelud@gmail.com>"]
 build = "build.rs"
+
+description = "Safe QML bindings for Rust"
+repository = "https://github.com/White-Oak/qml-rust"
+readme = "README.md"
+keywords = ["QML", "FFI", "Qt", "bindings", "GUI"]
+license = "Apache-2.0"
+
 
 [dependencies]
 libc = "0.2.0"
