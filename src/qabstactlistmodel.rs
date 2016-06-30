@@ -1,12 +1,12 @@
 use libc;
+use std::ptr::null_mut;
 
 use qvariant::*;
-pub type DosQMetaObject = *const libc::c_void;
-pub type DosQAbstractListModel = *const libc::c_void;
-pub type DosQModelIndex = *const libc::c_void;
-pub type MutDosQVariant = *mut libc::c_void;
-type RustQALM = *const QAbstractListModel;
-type DosQHashIntQByteArray = *mut libc::c_void;
+use types::*;
+use qmodelindex::*;
+use qinthasharray::*;
+
+pub type RustQALM = *const QAbstractListModel;
 // type DObjectCallback = Fn (SELF???, slotname: DosQVariant, argc: i32, argv: *const DosQVariant);
 extern "C" {
 
@@ -24,7 +24,6 @@ extern "C" {
                                      -> DosQAbstractListModel;
 }
 
-use std::ptr::null_mut;
 pub fn RUN_QALM() -> QAbstractListModel {
     unsafe {
         let mut qalm = QAbstractListModel::new();
@@ -98,7 +97,6 @@ extern "C" {
 
     fn dos_qvariant_setInt(vptr: DosQVariant, value: i32);
 }
-use qmodelindex::*;
 /// Called when the QAbstractListModel::data method must be executed
 /// @param self The pointer to the QAbstractListModel in the binded language
 /// @param index The DosQModelIndex to which we request the data. It should not be deleted
@@ -124,14 +122,13 @@ extern "C" fn RustSetDataCallback(Qself: RustQALM,
 }
 type SetDataCallback = extern "C" fn(RustQALM, DosQModelIndex, DosQVariant, i32, *mut bool);
 
-use qinthasharray::*;
-extern "C" fn RustRoleNamesCallback(Qself: RustQALM, result: DosQHashIntQByteArray) {
+extern "C" fn RustRoleNamesCallback(Qself: RustQALM, result: MutDosQHashIntQByteArray) {
     println!("HOHO ROLENAMES");
     let hash: QHashIntQByteArray = result.into();
     hash.insert(0x0100, "name");
     hash.insert(0x0101, "number");
 }
-type RoleNamesCallback = extern "C" fn(RustQALM, DosQHashIntQByteArray);
+type RoleNamesCallback = extern "C" fn(RustQALM, MutDosQHashIntQByteArray);
 
 extern "C" fn RustFlagsCallback(Qself: RustQALM, index: DosQModelIndex, result: *mut i32) {
     println!("IVE GOT FLAGS CALLBACK");

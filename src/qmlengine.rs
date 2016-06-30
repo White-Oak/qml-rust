@@ -1,9 +1,8 @@
 use libc;
 
-type QQmlApplicationEngine = *const libc::c_void;
-type DosQQmlContext = *const libc::c_void;
-
 use qvariant::*;
+use types::*;
+
 extern "C" {
     fn dos_qapplication_create();
     fn dos_qapplication_exec();

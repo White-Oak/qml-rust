@@ -1,6 +1,7 @@
 use libc;
 
-type DosQModelIndex = *const libc::c_void;
+use types::*;
+
 extern "C" {
 
     // DOS_API DosQModelIndex *DOS_CALL dos_qmodelindex_create();
@@ -28,8 +29,8 @@ impl QModelIndex {
     }
 }
 
-impl From<*const libc::c_void> for QModelIndex {
-    fn from(i: *const libc::c_void) -> Self {
+impl From<DosQModelIndex> for QModelIndex {
+    fn from(i: DosQModelIndex) -> Self {
         QModelIndex(i)
     }
 }

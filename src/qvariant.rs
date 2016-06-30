@@ -1,10 +1,8 @@
 use libc;
 
-pub type DosQVariant = *const libc::c_void;
-pub type DosQObject = *const libc::c_void;
-
 use qmlengine::*;
 use utils::*;
+use types::*;
 
 extern "C" {
     fn dos_qvariant_create() -> DosQVariant;
@@ -33,11 +31,11 @@ pub struct QVariant(DosQVariant);
 pub fn get_private_variant(from: &QVariant) -> DosQVariant {
     from.0
 }
-impl Drop for QVariant {
-    fn drop(&mut self) {
-        unsafe { dos_qvariant_delete(self.0) }
-    }
-}
+// impl Drop for QVariant {
+//     fn drop(&mut self) {
+//         unsafe { dos_qvariant_delete(self.0) }
+//     }
+// }
 
 impl From<DosQObject> for QVariant {
     fn from(i: DosQObject) -> Self {

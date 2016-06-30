@@ -1,21 +1,21 @@
 use libc;
 
 use utils::*;
+use types::*;
 
-type DosQHashIntQByteArray = *mut libc::c_void;
 extern "C" {
 
-    fn dos_qhash_int_qbytearray_create() -> DosQHashIntQByteArray;
-    fn dos_qhash_int_qbytearray_delete(vptr: DosQHashIntQByteArray);
-    fn dos_qhash_int_qbytearray_insert(vptr: DosQHashIntQByteArray,
+    fn dos_qhash_int_qbytearray_create() -> MutDosQHashIntQByteArray;
+    fn dos_qhash_int_qbytearray_delete(vptr: MutDosQHashIntQByteArray);
+    fn dos_qhash_int_qbytearray_insert(vptr: MutDosQHashIntQByteArray,
                                        key: i32,
                                        value: *const libc::c_char);
-    fn dos_qhash_int_qbytearray_value(vptr: DosQHashIntQByteArray,
+    fn dos_qhash_int_qbytearray_value(vptr: MutDosQHashIntQByteArray,
                                       key: i32)
                                       -> *const libc::c_char;
 }
 
-pub struct QHashIntQByteArray(DosQHashIntQByteArray);
+pub struct QHashIntQByteArray(MutDosQHashIntQByteArray);
 
 impl QHashIntQByteArray {
     pub fn new() -> Self {
