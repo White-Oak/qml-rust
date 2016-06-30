@@ -1,3 +1,4 @@
+extern crate pkg_config;
 use std::env;
 use std::process::Command;
 use std::path::*;
@@ -10,12 +11,9 @@ fn main() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let path = Path::new(&manifest_dir).join("DOtherSide").join("build").join("lib");
 
-    // use std::io::prelude::*;
-    // use std::fs::File;
-    //
-    // let mut f = File::create("foo.txt").unwrap();
-    // f.write_all(format!("{}", path.display()).as_bytes()).unwrap();
     println!("cargo:rustc-flags=-L {}", path.display());
-    println!("cargo:rerun-if-changed={}", path.display());
-    println!("cargo:rustc-link-lib=dylib=DOtherSide");
+    // println!("cargo:rerun-if-changed={}", path.display());
+    println!("cargo:rustc-link-lib=static=DOtherSideStatic");
+    println!("cargo:rustc-link-lib=dylib=stdc++");
+    pkg_config::find_library("Qt5Core Qt5Gui Qt5Qml Qt5Quick Qt5Widgets").unwrap();
 }
