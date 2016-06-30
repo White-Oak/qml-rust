@@ -24,13 +24,31 @@ extern "C" {
                                      -> DosQAbstractListModel;
 }
 
+use std::ptr::null_mut;
 pub fn RUN_QALM() {
-    let qalm = QAbstractListModel;
-    let qalm_ptr = &qalm as RustQALM;
+    unsafe {
+        let qalm = QAbstractListModel::new();
+        let dqmo = dos_qabstractlistmodel_qmetaobject();
+        let dqalm = dos_qabstractlistmodel_create(&qalm as RustQALM,
+                                                  dqmo,
+                                                  RustObjectCallback,
+                                                  RustRowCountCallback,
+                                                  RustColumnCountCallback,
+                                                  RustDataCallback,
+                                                  RustSetDataCallback,
+                                                  RustRoleNamesCallback,
+                                                  RustFlagsCallback,
+                                                  RustHeaderDataCallback);
+    }
 }
 
-struct QAbstractListModel;
+struct QAbstractListModel(DosQAbstractListModel);
 
+impl QAbstractListModel {
+    fn new() -> Self {
+        QAbstractListModel(null_mut())
+    }
+}
 /// Called when a slot should be executed
 /// @param self The pointer to the QObject in the binded language
 /// @param slotName The slotName as DosQVariant. It should not be deleted
@@ -75,35 +93,38 @@ type ColumnCountCallback = extern "C" fn(RustQALM, DosQModelIndex, *mut i32);
 /// @param index The DosQModelIndex to which we request the data. It should not be deleted
 /// @param result The DosQVariant result. This must be deferenced and filled from the binded language.
 /// It should not be deleted. See dos_qvariant_assign or other DosQVariant setters
-fn RustDataCallback(Qself: RustQALM, parent: DosQModelIndex, role: i32, result: MutDosQVariant) {
+extern "C" fn RustDataCallback(Qself: RustQALM,
+                               parent: DosQModelIndex,
+                               role: i32,
+                               result: MutDosQVariant) {
     println!("DATA CALLBACK IS HERE");
 }
 type DataCallback = extern "C" fn(RustQALM, DosQModelIndex, i32, MutDosQVariant);
 
-fn RustSetDataCallback(Qself: RustQALM,
-                       index: DosQModelIndex,
-                       value: DosQVariant,
-                       role: i32,
-                       result: *mut bool) {
+extern "C" fn RustSetDataCallback(Qself: RustQALM,
+                                  index: DosQModelIndex,
+                                  value: DosQVariant,
+                                  role: i32,
+                                  result: *mut bool) {
     println!("SET DATA HELLO");
 }
 type SetDataCallback = extern "C" fn(RustQALM, DosQModelIndex, DosQVariant, i32, *mut bool);
 
-fn RustRoleNamesCallback(Qself: RustQALM, result: DosQHashIntQByteArray) {
+extern "C" fn RustRoleNamesCallback(Qself: RustQALM, result: DosQHashIntQByteArray) {
     println!("HOHO ROLENAMES");
 }
 type RoleNamesCallback = extern "C" fn(RustQALM, DosQHashIntQByteArray);
 
-fn RustFlagsCallback(Qself: RustQALM, index: DosQModelIndex, result: *mut i32) {
+extern "C" fn RustFlagsCallback(Qself: RustQALM, index: DosQModelIndex, result: *mut i32) {
     println!("IVE GOT FLAGS CALLBACK");
 }
 type FlagsCallback = extern "C" fn(RustQALM, DosQModelIndex, *mut i32);
 
-fn RustHeaderDataCallback(Qself: RustQALM,
-                          section: i32,
-                          orientation: i32,
-                          role: i32,
-                          result: MutDosQVariant) {
+extern "C" fn RustHeaderDataCallback(Qself: RustQALM,
+                                     section: i32,
+                                     orientation: i32,
+                                     role: i32,
+                                     result: MutDosQVariant) {
     println!("FINAL CALLBACK");
 }
 type HeaderDataCallback = extern "C" fn(RustQALM, i32, i32, i32, MutDosQVariant);
