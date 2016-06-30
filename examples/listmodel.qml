@@ -13,7 +13,7 @@ ApplicationWindow
     Component.onCompleted: visible = true
 
     ListView {
-      anchors.fill: true
+      // anchors.fill: true
 
         model: listModel
         delegate: Text {

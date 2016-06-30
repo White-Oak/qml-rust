@@ -1,9 +1,9 @@
 use libc;
 
+use qvariant::*;
 pub type DosQMetaObject = *const libc::c_void;
 pub type DosQAbstractListModel = *const libc::c_void;
 pub type DosQModelIndex = *const libc::c_void;
-pub type DosQVariant = *const libc::c_void;
 pub type MutDosQVariant = *mut libc::c_void;
 type RustQALM = *const QAbstractListModel;
 type DosQHashIntQByteArray = *const libc::c_void;
@@ -25,9 +25,9 @@ extern "C" {
 }
 
 use std::ptr::null_mut;
-pub fn RUN_QALM() {
+pub fn RUN_QALM() -> QAbstractListModel {
     unsafe {
-        let qalm = QAbstractListModel::new();
+        let mut qalm = QAbstractListModel::new();
         let dqmo = dos_qabstractlistmodel_qmetaobject();
         let dqalm = dos_qabstractlistmodel_create(&qalm as RustQALM,
                                                   dqmo,
@@ -39,14 +39,20 @@ pub fn RUN_QALM() {
                                                   RustRoleNamesCallback,
                                                   RustFlagsCallback,
                                                   RustHeaderDataCallback);
+        qalm.0 = dqalm;
+        qalm
     }
 }
 
-struct QAbstractListModel(DosQAbstractListModel);
+pub struct QAbstractListModel(pub DosQAbstractListModel);
 
 impl QAbstractListModel {
     fn new() -> Self {
         QAbstractListModel(null_mut())
+    }
+
+    pub fn get_qvar(&self) -> QVariant {
+        self.0.into()
     }
 }
 /// Called when a slot should be executed

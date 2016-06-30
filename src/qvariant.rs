@@ -1,6 +1,7 @@
 use libc;
 
 pub type DosQVariant = *const libc::c_void;
+pub type DosQObject = *const libc::c_void;
 
 use qmlengine::*;
 
@@ -9,7 +10,7 @@ extern "C" {
     fn dos_qvariant_create_int(value: i32) -> DosQVariant;
     fn dos_qvariant_create_bool(value: bool) -> DosQVariant;
     fn dos_qvariant_create_string(value: *const libc::c_char) -> DosQVariant;
-    // fn DosQVariant  dos_qvariant_create_qobject(DosQObject *value)->DosQVariant;
+    fn dos_qvariant_create_qobject(value: DosQObject) -> DosQVariant;
     // fn DosQVariant  dos_qvariant_create_qvariant(const DosQVariant *value)->DosQVariant;
     fn dos_qvariant_create_float(value: f32) -> DosQVariant;
     fn dos_qvariant_create_double(value: f64) -> DosQVariant;
@@ -34,6 +35,12 @@ pub fn get_private_variant(from: &QVariant) -> DosQVariant {
 impl Drop for QVariant {
     fn drop(&mut self) {
         unsafe { dos_qvariant_delete(self.0) }
+    }
+}
+
+impl From<DosQObject> for QVariant {
+    fn from(i: DosQObject) -> Self {
+        unsafe { QVariant(dos_qvariant_create_qobject(i)) }
     }
 }
 

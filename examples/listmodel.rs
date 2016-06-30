@@ -3,8 +3,10 @@ extern crate qml;
 use qml::*;
 fn main() {
     let qqae = QmlEngine::new();
-    RUN_QALM();
-    // qqae.load("../../../examples/listmodel.qml");
-    // qqae.exec();
-    // qqae.quit();
+    let qalm = RUN_QALM();
+    let qvar = qalm.get_qvar();
+    qqae.set_property("listModel", &qvar);
+    qqae.load("../../../examples/listmodel.qml");
+    qqae.exec();
+    qqae.quit();
 }
