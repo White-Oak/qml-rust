@@ -1,8 +1,9 @@
 use libc;
 
 type QQmlApplicationEngine = *const libc::c_void;
+type DosQQmlContext = *const libc::c_void;
 
-
+use qvariant::*;
 extern "C" {
     fn dos_qapplication_create();
     fn dos_qapplication_exec();
@@ -14,13 +15,20 @@ extern "C" {
     // fn dos_qqmlapplicationengine_load_url(vptr: *mut DosQQmlApplicationEngine, DosQUrl *url);
     // fn dos_qqmlapplicationengine_load_data(vptr: *mut DosQQmlApplicationEngine, const char *data);
     // fn dos_qqmlapplicationengine_add_import_path(vptr: *mut DosQQmlApplicationEngine, const char *path);
-    // DOS_API DosQQmlContext *DOS_CALL dos_qqmlapplicationengine_context(DosQQmlApplicationEngine *vptr);
+    fn dos_qqmlapplicationengine_context(vptr: QQmlApplicationEngine) -> DosQQmlContext;
     fn dos_qqmlapplicationengine_delete(vptr: QQmlApplicationEngine);
+
+    fn dos_qqmlcontext_setcontextproperty(vptr: DosQQmlContext,
+                                          name: *const libc::c_char,
+                                          value: DosQVariant);
+
 }
 
+/// Provides an entry point for building QML applications from Rust
 pub struct QmlEngine(QQmlApplicationEngine);
 
 impl QmlEngine {
+    /// Creates a QML context of a non-headless application
     pub fn new() -> Self {
         unsafe {
             dos_qapplication_create();
@@ -28,21 +36,47 @@ impl QmlEngine {
         }
     }
 
+    /// Loads a file as a qml file
     pub fn load(&self, path: &str) {
-        unsafe { dos_qqmlapplicationengine_load(self.0, path.as_ptr() as *const i8) }
+        unsafe { dos_qqmlapplicationengine_load(self.0, stoptr(path)) }
     }
 
+    /// Launches the application
     pub fn exec(&self) {
         unsafe {
             dos_qapplication_exec();
         }
     }
-
+    /// Closes the application
     pub fn quit(&self) {
         unsafe {
             dos_qapplication_quit();
         }
     }
+
+    /// Sets a property for this QML context
+    /// Leaks memory as for now
+    pub fn set_and_store_property<T: Into<QVariant>>(&self, name: &str, value: T) {
+        unsafe {
+            let context = dos_qqmlapplicationengine_context(self.0);
+            let qvar: QVariant = value.into();
+            dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(&qvar));
+        }
+    }
+
+    /// Sets a property for this QML context
+    pub fn set_property(&self, name: &str, value: &QVariant) {
+        unsafe {
+            let context = dos_qqmlapplicationengine_context(self.0);
+            dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(value));
+        }
+    }
+}
+
+use std::ffi::CString;
+pub fn stoptr(s: &str) -> *const libc::c_char {
+    let cstr = CString::new(s).unwrap();
+    cstr.into_raw() as *const i8
 }
 
 impl Default for QmlEngine {

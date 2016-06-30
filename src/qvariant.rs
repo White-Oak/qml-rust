@@ -1,6 +1,8 @@
 use libc;
 
-type DosQVariant = *const libc::c_void;
+pub type DosQVariant = *const libc::c_void;
+
+use qmlengine::*;
 
 extern "C" {
     fn dos_qvariant_create() -> DosQVariant;
@@ -17,71 +19,73 @@ extern "C" {
     fn dos_qvariant_toString(val: DosQVariant) -> *mut libc::c_char;
     fn dos_qvariant_toFloat(val: DosQVariant) -> f32;
     fn dos_qvariant_toDouble(val: DosQVariant) -> f64;
+
+    fn dos_qvariant_delete(val: DosQVariant);
 }
 
-use std::marker::PhantomData;
-pub struct QVariant<T>(DosQVariant, PhantomData<T>);
+/// Needs to hide `DosQVariant`
+/// This holds a value to be providen for a QML context.
+/// A value can be different: int, string, float, double, bool or even a custom object.
+pub struct QVariant(DosQVariant);
 
-impl From<i32> for QVariant<i32> {
+pub fn get_private_variant(from: &QVariant) -> DosQVariant {
+    from.0
+}
+impl Drop for QVariant {
+    fn drop(&mut self) {
+        unsafe { dos_qvariant_delete(self.0) }
+    }
+}
+
+impl From<i32> for QVariant {
     fn from(i: i32) -> Self {
-        unsafe { QVariant(dos_qvariant_create_int(i), PhantomData) }
+        unsafe { QVariant(dos_qvariant_create_int(i)) }
     }
 }
 
-impl From<f32> for QVariant<f32> {
+impl From<f32> for QVariant {
     fn from(i: f32) -> Self {
-        unsafe { QVariant(dos_qvariant_create_float(i), PhantomData) }
+        unsafe { QVariant(dos_qvariant_create_float(i)) }
     }
 }
 
-impl From<f64> for QVariant<f64> {
+impl From<f64> for QVariant {
     fn from(i: f64) -> Self {
-        unsafe { QVariant(dos_qvariant_create_double(i), PhantomData) }
+        unsafe { QVariant(dos_qvariant_create_double(i)) }
     }
 }
 
-impl From<bool> for QVariant<bool> {
+impl From<bool> for QVariant {
     fn from(i: bool) -> Self {
-        unsafe { QVariant(dos_qvariant_create_bool(i), PhantomData) }
+        unsafe { QVariant(dos_qvariant_create_bool(i)) }
     }
 }
 
-impl<'a> From<&'a str> for QVariant<&'a str> {
+impl<'a> From<&'a str> for QVariant {
     fn from(i: &'a str) -> Self {
-        unsafe {
-            QVariant(dos_qvariant_create_string(i.as_ptr() as *const i8),
-                     PhantomData)
-        }
-    }
-}
-
-impl Into<i32> for QVariant<i32> {
-    fn into(self) -> i32 {
-        unsafe { dos_qvariant_toInt(self.0) }
-    }
-}
-
-impl Into<bool> for QVariant<bool> {
-    fn into(self) -> bool {
-        unsafe { dos_qvariant_toBool(self.0) }
-    }
-}
-
-impl Into<f32> for QVariant<f32> {
-    fn into(self) -> f32 {
-        unsafe { dos_qvariant_toFloat(self.0) }
-    }
-}
-
-impl Into<f64> for QVariant<f64> {
-    fn into(self) -> f64 {
-        unsafe { dos_qvariant_toDouble(self.0) }
+        unsafe { QVariant(dos_qvariant_create_string(stoptr(i))) }
     }
 }
 
 use std::ffi::CString;
-impl<'a> Into<CString> for QVariant<&'a str> {
-    fn into(self) -> CString {
+impl QVariant {
+    pub fn to_int(&self) -> i32 {
+        unsafe { dos_qvariant_toInt(self.0) }
+    }
+
+    pub fn into_bool(self) -> bool {
+        unsafe { dos_qvariant_toBool(self.0) }
+    }
+
+    pub fn into_float(self) -> f32 {
+        unsafe { dos_qvariant_toFloat(self.0) }
+    }
+
+    pub fn into_double(self) -> f64 {
+        unsafe { dos_qvariant_toDouble(self.0) }
+    }
+
+    pub fn into_cstring(self) -> CString {
         unsafe { CString::from_raw(dos_qvariant_toString(self.0)) }
     }
 }
