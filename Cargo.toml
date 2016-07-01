@@ -1,6 +1,6 @@
 [package]
 name = "qml"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["White-Oak <lpzhelud@gmail.com>"]
 build = "build.rs"
 
