@@ -8,7 +8,7 @@ fn main() {
     qqae.set_and_store_property("qVar2", 8.6);
     qqae.set_property("qVar3", &qvar);
     qqae.set_property("qVar4", &qvar);
-    qqae.load("../../../examples/properties.qml");
+    qqae.load_file("examples/properties.qml");
     qqae.exec();
     qqae.quit();
 }

@@ -9,7 +9,7 @@ fn main() {
     qalm.insert_row(&smth);
     let qvar = qalm.get_qvar();
     qqae.set_property("listModel", &qvar);
-    qqae.load("../../../examples/listmodel.qml");
+    qqae.load_file("examples/listmodel.qml");
     qqae.exec();
     qqae.quit();
 }

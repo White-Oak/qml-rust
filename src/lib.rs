@@ -7,6 +7,7 @@ mod qinthasharray;
 mod utils;
 mod qmodelindex;
 mod types;
+mod qurl;
 
 pub use qmlengine::QmlEngine;
 pub use qvariant::QVariant;

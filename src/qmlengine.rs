@@ -2,6 +2,7 @@ use libc;
 
 use qvariant::*;
 use types::*;
+use qurl::*;
 
 extern "C" {
     fn dos_qapplication_create();
@@ -11,7 +12,7 @@ extern "C" {
 
     fn dos_qqmlapplicationengine_create() -> QQmlApplicationEngine;
     fn dos_qqmlapplicationengine_load(vptr: QQmlApplicationEngine, filename: *const libc::c_char);
-    // fn dos_qqmlapplicationengine_load_url(vptr: *mut DosQQmlApplicationEngine, DosQUrl *url);
+    fn dos_qqmlapplicationengine_load_url(vptr: QQmlApplicationEngine, url: DosQUrl);
     // fn dos_qqmlapplicationengine_load_data(vptr: *mut DosQQmlApplicationEngine, const char *data);
     // fn dos_qqmlapplicationengine_add_import_path(vptr: *mut DosQQmlApplicationEngine, const char *path);
     fn dos_qqmlapplicationengine_context(vptr: QQmlApplicationEngine) -> DosQQmlContext;
@@ -36,8 +37,14 @@ impl QmlEngine {
     }
 
     /// Loads a file as a qml file
-    pub fn load(&self, path: &str) {
-        unsafe { dos_qqmlapplicationengine_load(self.0, stoptr(path)) }
+    pub fn load_file(&self, path: &str) {
+        let path_raw = ::std::env::current_dir().unwrap().join(path);
+        let path = if cfg!(windows) {
+            format!("file:///{}", path_raw.display())
+        } else {
+            format!("file://{}", path_raw.display())
+        };
+        unsafe { dos_qqmlapplicationengine_load_url(self.0, construct_qurl(&path)) }
     }
 
     /// Launches the application
