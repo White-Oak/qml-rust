@@ -19,18 +19,59 @@ extern "C" {
     fn dos_qvariant_toString(val: DosQVariant) -> *mut libc::c_char;
     fn dos_qvariant_toFloat(val: DosQVariant) -> f32;
     fn dos_qvariant_toDouble(val: DosQVariant) -> f64;
+    // DOS_API DosQObject *DOS_CALL dos_qvariant_toQObject(const DosQVariant *vptr);
 
+    fn dos_qvariant_isnull(val: DosQVariant) -> bool;
+    fn dos_qvariant_assign(val: MutDosQVariant, other: DosQVariant);
     fn dos_qvariant_delete(val: DosQVariant);
+
+// DOS_API void   DOS_CALL dos_qvariant_setInt    (DosQVariant *vptr, int value);
+// DOS_API void   DOS_CALL dos_qvariant_setBool   (DosQVariant *vptr, bool value);
+// DOS_API void   DOS_CALL dos_qvariant_setFloat  (DosQVariant *vptr, float value);
+// DOS_API void   DOS_CALL dos_qvariant_setDouble (DosQVariant *vptr, double value);
+// DOS_API void   DOS_CALL dos_qvariant_setString (DosQVariant *vptr, const char *value);
+// DOS_API void   DOS_CALL dos_qvariant_setQObject(DosQVariant *vptr, DosQObject *value);
+
 }
 
-/// Needs to hide `DosQVariant`
 /// This holds a value to be providen for a QML context.
+///
 /// A value can be different: int, string, float, double, bool or even a custom object.
 pub struct QVariant(DosQVariant);
+
+use std::ffi::CString;
+impl QVariant {
+    pub fn to_int(&self) -> i32 {
+        unsafe { dos_qvariant_toInt(self.0) }
+    }
+
+    pub fn into_bool(self) -> bool {
+        unsafe { dos_qvariant_toBool(self.0) }
+    }
+
+    pub fn into_float(self) -> f32 {
+        unsafe { dos_qvariant_toFloat(self.0) }
+    }
+
+    pub fn into_double(self) -> f64 {
+        unsafe { dos_qvariant_toDouble(self.0) }
+    }
+
+    pub fn into_cstring(self) -> CString {
+        unsafe { CString::from_raw(dos_qvariant_toString(self.0)) }
+    }
+
+    pub fn set(&mut self, other: &QVariant) {
+        unsafe {
+            dos_qvariant_assign(self.0 as MutDosQVariant, other.0);
+        }
+    }
+}
 
 pub fn get_private_variant(from: &QVariant) -> DosQVariant {
     from.0
 }
+
 // impl Drop for QVariant {
 //     fn drop(&mut self) {
 //         unsafe { dos_qvariant_delete(self.0) }
@@ -43,8 +84,8 @@ impl From<DosQObject> for QVariant {
     }
 }
 
-impl From<*mut libc::c_void> for QVariant {
-    fn from(vptr: *mut libc::c_void) -> Self {
+impl From<MutDosQVariant> for QVariant {
+    fn from(vptr: MutDosQVariant) -> Self {
         QVariant(vptr as *const libc::c_void)
     }
 }
@@ -75,28 +116,5 @@ impl From<bool> for QVariant {
 impl<'a> From<&'a str> for QVariant {
     fn from(i: &'a str) -> Self {
         unsafe { QVariant(dos_qvariant_create_string(stoptr(i))) }
-    }
-}
-
-use std::ffi::CString;
-impl QVariant {
-    pub fn to_int(&self) -> i32 {
-        unsafe { dos_qvariant_toInt(self.0) }
-    }
-
-    pub fn into_bool(self) -> bool {
-        unsafe { dos_qvariant_toBool(self.0) }
-    }
-
-    pub fn into_float(self) -> f32 {
-        unsafe { dos_qvariant_toFloat(self.0) }
-    }
-
-    pub fn into_double(self) -> f64 {
-        unsafe { dos_qvariant_toDouble(self.0) }
-    }
-
-    pub fn into_cstring(self) -> CString {
-        unsafe { CString::from_raw(dos_qvariant_toString(self.0)) }
     }
 }
