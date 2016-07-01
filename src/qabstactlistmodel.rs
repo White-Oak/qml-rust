@@ -97,10 +97,10 @@ extern "C" fn RustHeaderDataCallback(Qself: *const libc::c_void,
 pub type HeaderDataCallback = extern "C" fn(*const libc::c_void, i32, i32, i32, MutDosQVariant);
 
 
-// #[derive(Debug)]
+/// Allows providing a custom model to QML
 pub struct QListModel<'a> {
     wrapped: DosQAbstractListModel,
-    model: Vec<&'a [QVariant]>,
+    model: Vec<Vec<QVariant>>,
     rolenames: Vec<&'a str>,
 }
 
@@ -111,8 +111,9 @@ extern "C" {
                                               last: i32);
     fn dos_qabstractlistmodel_endInsertRows(vptr: DosQAbstractListModel);
 }
+
 impl<'a> QListModel<'a> {
-    pub fn new(rolenames: &[&'a str]) -> Box<Self> {
+    pub fn new<'b>(rolenames: &'b [&'a str]) -> Box<Self> {
         unsafe {
             let mut qalm = null_mut();
             let mut rs = Vec::new();
@@ -143,22 +144,29 @@ impl<'a> QListModel<'a> {
         }
     }
 
+    /// Returns an amount of rows in this model
     pub fn row_count(&self) -> usize {
         self.model.len()
     }
 
+    /// Gets a `QVariant` associate
     pub fn get_qvar(&self) -> QVariant {
         self.wrapped.into()
     }
 
-    pub fn insert_row(&mut self, qvars: &'a [QVariant]) {
+    /// Inserts a row into model
+    ///
+    /// Note that it clones all incoming qvariants as modifying them is not allowed.
+    pub fn insert_row<T>(&mut self, qvars: T)
+        where T: Iterator<Item = QVariant>
+    {
         unsafe {
             let index = QModelIndex::new();
             dos_qabstractlistmodel_beginInsertRows(self.wrapped,
                                                    get_model_ptr(&index),
                                                    self.model.len() as i32,
                                                    (self.model.len() + 1) as i32);
-            self.model.push(qvars);
+            self.model.push(qvars.collect());
             println!("PUSHED at {} and {:?}", self.row_count(), self.wrapped);
             dos_qabstractlistmodel_endInsertRows(self.wrapped);
         }

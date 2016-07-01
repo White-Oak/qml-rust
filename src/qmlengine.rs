@@ -25,14 +25,14 @@ extern "C" {
 }
 
 /// Provides an entry point for building QML applications from Rust
-pub struct QmlEngine(QQmlApplicationEngine);
+pub struct QmlEngine(QQmlApplicationEngine, Vec<QVariant>);
 
 impl QmlEngine {
     /// Creates a QML context of a non-headless application
     pub fn new() -> Self {
         unsafe {
             dos_qapplication_create();
-            QmlEngine(dos_qqmlapplicationengine_create())
+            QmlEngine(dos_qqmlapplicationengine_create(), Vec::new())
         }
     }
 
@@ -61,13 +61,15 @@ impl QmlEngine {
     }
 
     /// Sets a property for this QML context
-    /// Leaks memory as for now
-    pub fn set_and_store_property<T: Into<QVariant>>(&self, name: &str, value: T) {
+    ///
+    /// This variant stores qvariant, so it is removed, only when this QmlEngine is removed.
+    pub fn set_and_store_property<T: Into<QVariant>>(&mut self, name: &str, value: T) {
+        let val = value.into();
         unsafe {
             let context = dos_qqmlapplicationengine_context(self.0);
-            let qvar: QVariant = value.into();
-            dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(&qvar));
+            dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(&val));
         }
+        self.1.push(val);
     }
 
     /// Sets a property for this QML context

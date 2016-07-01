@@ -10,7 +10,7 @@ extern "C" {
     fn dos_qvariant_create_bool(value: bool) -> DosQVariant;
     fn dos_qvariant_create_string(value: *const libc::c_char) -> DosQVariant;
     fn dos_qvariant_create_qobject(value: DosQObject) -> DosQVariant;
-    // fn DosQVariant  dos_qvariant_create_qvariant(const DosQVariant *value)->DosQVariant;
+    fn dos_qvariant_create_qvariant(value: DosQVariant) -> DosQVariant;
     fn dos_qvariant_create_float(value: f32) -> DosQVariant;
     fn dos_qvariant_create_double(value: f64) -> DosQVariant;
 
@@ -37,84 +37,133 @@ extern "C" {
 /// This holds a value to be providen for a QML context.
 ///
 /// A value can be different: int, string, float, double, bool or even a custom object.
-pub struct QVariant(DosQVariant);
+pub struct QVariant {
+    ptr: DosQVariant,
+    owned: bool,
+}
+
+impl Clone for QVariant {
+    fn clone(&self) -> Self {
+        unsafe {
+            QVariant {
+                ptr: dos_qvariant_create_qvariant(self.ptr),
+                owned: true,
+            }
+        }
+    }
+}
 
 use std::ffi::CString;
 impl QVariant {
     pub fn to_int(&self) -> i32 {
-        unsafe { dos_qvariant_toInt(self.0) }
+        unsafe { dos_qvariant_toInt(self.ptr) }
     }
 
     pub fn into_bool(self) -> bool {
-        unsafe { dos_qvariant_toBool(self.0) }
+        unsafe { dos_qvariant_toBool(self.ptr) }
     }
 
     pub fn into_float(self) -> f32 {
-        unsafe { dos_qvariant_toFloat(self.0) }
+        unsafe { dos_qvariant_toFloat(self.ptr) }
     }
 
     pub fn into_double(self) -> f64 {
-        unsafe { dos_qvariant_toDouble(self.0) }
+        unsafe { dos_qvariant_toDouble(self.ptr) }
     }
 
     pub fn into_cstring(self) -> CString {
-        unsafe { CString::from_raw(dos_qvariant_toString(self.0)) }
+        unsafe { CString::from_raw(dos_qvariant_toString(self.ptr)) }
     }
 
     pub fn set(&mut self, other: &QVariant) {
         unsafe {
-            dos_qvariant_assign(self.0 as MutDosQVariant, other.0);
+            dos_qvariant_assign(self.ptr as MutDosQVariant, other.ptr);
         }
     }
 }
 
 pub fn get_private_variant(from: &QVariant) -> DosQVariant {
-    from.0
+    from.ptr
 }
 
-// impl Drop for QVariant {
-//     fn drop(&mut self) {
-//         unsafe { dos_qvariant_delete(self.0) }
-//     }
-// }
+impl Drop for QVariant {
+    fn drop(&mut self) {
+        if self.owned {
+            unsafe { dos_qvariant_delete(self.ptr) }
+        }
+    }
+}
 
 impl From<DosQObject> for QVariant {
     fn from(i: DosQObject) -> Self {
-        unsafe { QVariant(dos_qvariant_create_qobject(i)) }
+        unsafe {
+            QVariant {
+                ptr: dos_qvariant_create_qobject(i),
+                owned: true,
+            }
+        }
     }
 }
 
 impl From<MutDosQVariant> for QVariant {
     fn from(vptr: MutDosQVariant) -> Self {
-        QVariant(vptr as *const libc::c_void)
+        QVariant {
+            ptr: vptr as *const libc::c_void,
+            owned: false,
+        }
     }
 }
 impl From<i32> for QVariant {
     fn from(i: i32) -> Self {
-        unsafe { QVariant(dos_qvariant_create_int(i)) }
+        unsafe {
+            QVariant {
+                ptr: dos_qvariant_create_int(i),
+                owned: true,
+            }
+        }
     }
 }
 
 impl From<f32> for QVariant {
     fn from(i: f32) -> Self {
-        unsafe { QVariant(dos_qvariant_create_float(i)) }
+        unsafe {
+            QVariant {
+                ptr: dos_qvariant_create_float(i),
+                owned: true,
+            }
+        }
     }
 }
 
 impl From<f64> for QVariant {
     fn from(i: f64) -> Self {
-        unsafe { QVariant(dos_qvariant_create_double(i)) }
+        unsafe {
+            QVariant {
+                ptr: dos_qvariant_create_double(i),
+                owned: true,
+            }
+        }
     }
 }
 
 impl From<bool> for QVariant {
     fn from(i: bool) -> Self {
-        unsafe { QVariant(dos_qvariant_create_bool(i)) }
+        unsafe {
+            QVariant {
+                ptr: dos_qvariant_create_bool(i),
+                owned: true,
+            }
+        }
     }
 }
 
 impl<'a> From<&'a str> for QVariant {
     fn from(i: &'a str) -> Self {
-        unsafe { QVariant(dos_qvariant_create_string(stoptr(i))) }
+        unsafe {
+            QVariant {
+                ptr: dos_qvariant_create_string(stoptr(i)),
+                owned: true,
+            }
+        }
     }
 }
