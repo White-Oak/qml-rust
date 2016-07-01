@@ -11,4 +11,4 @@ mod qurl;
 
 pub use qmlengine::QmlEngine;
 pub use qvariant::QVariant;
-pub use qabstactlistmodel::*;
+pub use qabstactlistmodel::QListModel;
