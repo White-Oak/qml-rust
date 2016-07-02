@@ -13,7 +13,8 @@ extern "C" {
     fn dos_qqmlapplicationengine_create() -> QQmlApplicationEngine;
     fn dos_qqmlapplicationengine_load(vptr: QQmlApplicationEngine, filename: *const libc::c_char);
     fn dos_qqmlapplicationengine_load_url(vptr: QQmlApplicationEngine, url: DosQUrl);
-    // fn dos_qqmlapplicationengine_load_data(vptr: *mut DosQQmlApplicationEngine, const char *data);
+    fn dos_qqmlapplicationengine_load_data(vptr: QQmlApplicationEngine,
+                                           data: *const libc::c_char);
     // fn dos_qqmlapplicationengine_add_import_path(vptr: *mut DosQQmlApplicationEngine, const char *path);
     fn dos_qqmlapplicationengine_context(vptr: QQmlApplicationEngine) -> DosQQmlContext;
     fn dos_qqmlapplicationengine_delete(vptr: QQmlApplicationEngine);
@@ -45,6 +46,11 @@ impl QmlEngine {
             format!("file://{}", path_raw.display())
         };
         unsafe { dos_qqmlapplicationengine_load_url(self.0, construct_qurl(&path)) }
+    }
+
+    /// Loads a string as a qml file
+    pub fn load_data(&self, data: &str) {
+        unsafe { dos_qqmlapplicationengine_load_data(self.0, stoptr(data)) }
     }
 
     /// Launches the application

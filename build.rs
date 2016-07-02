@@ -11,9 +11,10 @@ fn main() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let path = Path::new(&manifest_dir).join("DOtherSide").join("build").join("lib");
 
-    println!("cargo:rustc-flags=-L {}", path.display());
-    // println!("cargo:rerun-if-changed={}", path.display());
+    println!("cargo:rustc-link-search=native={}", path.display());
+    println!("cargo:rerun-if-changed={}", path.display());
     println!("cargo:rustc-link-lib=static=DOtherSideStatic");
     println!("cargo:rustc-link-lib=dylib=stdc++");
-    pkg_config::find_library("Qt5Core Qt5Gui Qt5Qml Qt5Quick Qt5Widgets").unwrap();
+
+    pkg_config::probe_library("Qt5Core Qt5Gui Qt5Qml Qt5Quick Qt5Widgets").unwrap();
 }

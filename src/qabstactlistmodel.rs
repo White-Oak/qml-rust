@@ -6,7 +6,6 @@ use types::*;
 use qmodelindex::*;
 use qinthasharray::*;
 
-// type DObjectCallback = Fn (SELF???, slotname: DosQVariant, argc: i32, argv: *const DosQVariant);
 extern "C" {
 
     fn dos_qabstractlistmodel_qmetaobject() -> DosQMetaObject;
@@ -113,6 +112,7 @@ extern "C" {
 }
 
 impl<'a> QListModel<'a> {
+    /// Rolenames are roles of provided data, that are mapped to corresponding roles in QML.
     pub fn new<'b>(rolenames: &'b [&'a str]) -> Box<Self> {
         unsafe {
             let mut qalm = null_mut();
