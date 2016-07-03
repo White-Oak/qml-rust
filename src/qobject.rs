@@ -45,3 +45,46 @@ macro_rules! Q_OBJECT{
 pub trait QObjectMacro {
     fn qmeta_slots(&mut self, name: &str, args: Vec<QVariant>);
 }
+
+use libc;
+#[repr(C)]
+struct SignalDefinition {
+    name: *const libc::c_char,
+    parametersCount: i32,
+    parametersMetaTypes: *const i32,
+}
+
+#[repr(C)]
+struct SignalDefinitions {
+    count: i32,
+    definitions: *const SignalDefinition,
+}
+
+#[repr(C)]
+struct SlotDefinition {
+    name: *const libc::c_char,
+    returnMetaType: i32,
+    parametersCount: i32,
+    parametersMetaTypes: *const i32,
+}
+
+#[repr(C)]
+struct SlotDefinitions {
+    count: i32,
+    definitions: *const SlotDefinition,
+}
+
+#[repr(C)]
+struct PropertyDefinition {
+    name: *const libc::c_char,
+    propertyMetaType: i32,
+    readSlot: *const libc::c_char,
+    writeSlot: *const libc::c_char,
+    notifySignal: *const libc::c_char,
+}
+
+#[repr(C)]
+struct PropertyDefinitions {
+    count: i32,
+    definitions: *const PropertyDefinition,
+}
