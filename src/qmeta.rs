@@ -8,9 +8,9 @@ use utils::*;
 macro_rules! Q_OBJECT{
 ($obj:ty :
     signals:
-    $(fn $signalname:ident ( $( $signalvar:ident : $signalqtype:ty ),* );)*
+    $(fn $signalname:ident ( $( $signalvar:ident : $signalqtype:ident ),* );)*
     slots:
-    $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ty ),* );)* ) =>{
+    $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ident ),* );)* ) =>{
         impl $obj{
             $(fn $signalname(&self, $( $signalvar: $signalqtype ),*){
                 let mut vec: Vec<QVariant> = Vec::new();
@@ -51,8 +51,7 @@ macro_rules! Q_OBJECT{
                     let mut mttypes = Vec::new();
                     $(
                         argc += 1;
-                        let a: $signalqtype = unsafe{ uninitialized() };
-                        mttypes.push(a.metatype());
+                        mttypes.push($signalqtype::metatype());
                     )*
                     signals.push((stringify!($signalname), argc, mttypes));
                 )*
@@ -63,8 +62,7 @@ macro_rules! Q_OBJECT{
                     let mut mttypes = Vec::new();
                     $(
                         argc += 1;
-                        let a: $slotqtype = unsafe{ uninitialized() };
-                        mttypes.push(a.metatype());
+                        mttypes.push($slotqtype::metatype());
                     )*
                     slots.push((stringify!($slotname), 43, argc, mttypes));
                 )*
@@ -75,11 +73,11 @@ macro_rules! Q_OBJECT{
 }
 
 pub trait QMetaType<T> {
-    fn metatype(self) -> i32;
+    fn metatype() -> i32;
 }
 
 impl QMetaType<i32> for i32 {
-    fn metatype(self) -> i32 {
+    fn metatype() -> i32 {
         2
     }
 }
