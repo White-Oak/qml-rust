@@ -6,7 +6,9 @@ use qml::*;
 struct Test;
 
 impl Test {
-    pub fn zapoostitGoosya(&self, i: i32, i2: i32) {}
+    pub fn zapoostitGoosya(&self, i: i32, i2: i32) {
+        println!("GOOSE PRIVET {} and {}", i, i2);
+    }
 }
 
 Q_OBJECT!(

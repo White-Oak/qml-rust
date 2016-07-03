@@ -171,7 +171,7 @@ impl<'a> From<&'a str> for QVariant {
 
 // reverse Froms
 impl From<QVariant> for i32 {
-    fn from(_: QVariant) -> Self {
-        unimplemented!()
+    fn from(i: QVariant) -> Self {
+        unsafe { dos_qvariant_toInt(i.ptr) }
     }
 }

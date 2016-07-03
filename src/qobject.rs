@@ -1,4 +1,5 @@
 use qvariant::*;
+use utils::*;
 
 #[macro_export]
 macro_rules! Q_OBJECT{
@@ -17,6 +18,8 @@ macro_rules! Q_OBJECT{
             })*
         }
 
+        use std::mem::uninitialized;
+        use qml::qobject::*;
         impl QObjectMacro for $obj{
             fn qmeta_slots(&mut self, name: &str, args: Vec<QVariant>) {
                 fn next_or_panic(qt: Option<QVariant>) -> QVariant{
@@ -27,7 +30,7 @@ macro_rules! Q_OBJECT{
                     }
                 }
                 match name {
-                    $("$slotname" => {
+                    $(stringify!($slotname) => {
                         let mut iter = args.into_iter();
                         $(
                             let next = next_or_panic (iter.next());
@@ -38,13 +41,103 @@ macro_rules! Q_OBJECT{
                     _ => ()
                 }
             }
+
+            fn qmeta_information() -> QMeta{
+                let mut signals = Vec::new();
+                $(
+                    let mut argc = 0;
+                    let mut mttypes = Vec::new();
+                    $(
+                        argc += 1;
+                        let a: $signalqtype = unsafe{ uninitialized() };
+                        mttypes.push(a.metatype());
+                    )*
+                    signals.push((stringify!($signalname), argc, mttypes));
+                )*
+                let mut slots = Vec::new();
+                $(
+                    let $slotname = ();
+                    let mut argc = 0;
+                    let mut mttypes = Vec::new();
+                    $(
+                        argc += 1;
+                        let a: $slotqtype = unsafe{ uninitialized() };
+                        mttypes.push(a.metatype());
+                    )*
+                    slots.push((stringify!($slotname), 43, argc, mttypes));
+                )*
+                QMeta::new(signals, slots)
+            }
         }
     };
 }
 
+use std::mem::forget;
+
+impl QMeta {
+    pub fn new(signals: Vec<(&str, i32, Vec<i32>)>,
+               slots: Vec<(&str, i32, i32, Vec<i32>)>)
+               -> Self {
+        let signals: Vec<SignalDefinition> = signals.into_iter()
+            .map(|(s, argc, types)| {
+                let def = SignalDefinition {
+                    name: stoptr(s),
+                    parametersCount: argc,
+                    parametersMetaTypes: types.as_ptr(),
+                };
+                forget(types);
+                def
+            })
+            .collect();
+        let sig_defs = SignalDefinitions {
+            count: signals.len() as i32,
+            definitions: signals.as_ptr(),
+        };
+        forget(signals);
+        let slots: Vec<SlotDefinition> = slots.into_iter()
+            .map(|(s, ret_type, argc, types)| {
+                let def = SlotDefinition {
+                    name: stoptr(s),
+                    returnMetaType: ret_type,
+                    parametersCount: argc,
+                    parametersMetaTypes: types.as_ptr(),
+                };
+                forget(types);
+                def
+            })
+            .collect();
+        let slot_defs = SlotDefinitions {
+            count: slots.len() as i32,
+            definitions: slots.as_ptr(),
+        };
+        forget(slots);
+        QMeta {
+            sig_defs: sig_defs,
+            slot_defs: slot_defs,
+        }
+    }
+}
+
+pub struct QMeta {
+    sig_defs: SignalDefinitions,
+    slot_defs: SlotDefinitions,
+}
+
 pub trait QObjectMacro {
     fn qmeta_slots(&mut self, name: &str, args: Vec<QVariant>);
+    fn qmeta_information() -> QMeta;
 }
+
+pub trait QMetaType<T> {
+    fn metatype(self) -> i32;
+}
+
+impl QMetaType<i32> for i32 {
+    fn metatype(self) -> i32 {
+        2
+    }
+}
+
 
 use libc;
 #[repr(C)]
