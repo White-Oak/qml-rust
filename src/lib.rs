@@ -8,9 +8,12 @@ mod utils;
 mod qmodelindex;
 mod types;
 mod qurl;
+mod qobject;
 #[macro_use]
-pub mod qobject;
+mod qmeta;
 
 pub use qmlengine::QmlEngine;
 pub use qvariant::QVariant;
 pub use qabstactlistmodel::QListModel;
+pub use qobject::QObject;
+pub use qmeta::*;

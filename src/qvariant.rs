@@ -114,6 +114,17 @@ impl From<MutDosQVariant> for QVariant {
     }
 }
 
+// impl<T: QObject> From<T> for QVariant {
+//     fn from(i: T) -> Self {
+//         unsafe {
+//             QVariant {
+//                 ptr: dos_qvariant_create_qobject(i),
+//                 owned: true,
+//             }
+//         }
+//     }
+// }
+
 impl From<i32> for QVariant {
     fn from(i: i32) -> Self {
         unsafe {
