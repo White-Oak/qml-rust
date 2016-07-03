@@ -113,6 +113,7 @@ impl From<MutDosQVariant> for QVariant {
         }
     }
 }
+
 impl From<i32> for QVariant {
     fn from(i: i32) -> Self {
         unsafe {
@@ -165,5 +166,12 @@ impl<'a> From<&'a str> for QVariant {
                 owned: true,
             }
         }
+    }
+}
+
+// reverse Froms
+impl From<QVariant> for i32 {
+    fn from(_: QVariant) -> Self {
+        unimplemented!()
     }
 }
