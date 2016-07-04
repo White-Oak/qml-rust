@@ -11,6 +11,7 @@ mod qurl;
 mod qobject;
 #[macro_use]
 mod qmeta;
+pub mod qtypes;
 
 pub use qmlengine::QmlEngine;
 pub use qvariant::QVariant;

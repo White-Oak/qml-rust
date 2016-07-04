@@ -1,4 +1,5 @@
 use libc;
+use std::ffi::{CString, CStr};
 
 use qmlengine::*;
 use utils::*;
@@ -54,7 +55,6 @@ impl Clone for QVariant {
     }
 }
 
-use std::ffi::CString;
 impl QVariant {
     pub fn to_int(&self) -> i32 {
         unsafe { dos_qvariant_toInt(self.ptr) }
@@ -80,6 +80,13 @@ impl QVariant {
         unsafe {
             dos_qvariant_assign(self.ptr as MutDosQVariant, other.ptr);
         }
+    }
+}
+
+pub fn new_qvariant(ptr: DosQVariant) -> QVariant {
+    QVariant {
+        ptr: ptr,
+        owned: false,
     }
 }
 
@@ -181,9 +188,27 @@ impl<'a> From<&'a str> for QVariant {
     }
 }
 
+impl From<String> for QVariant {
+    fn from(i: String) -> Self {
+        unsafe {
+            QVariant {
+                ptr: dos_qvariant_create_string(stoptr(&i)),
+                owned: true,
+            }
+        }
+    }
+}
+
 // reverse Froms
 impl From<QVariant> for i32 {
     fn from(i: QVariant) -> Self {
         unsafe { dos_qvariant_toInt(i.ptr) }
+    }
+}
+
+impl From<QVariant> for String {
+    fn from(i: QVariant) -> Self {
+        // Should i get ownership or not?
+        unsafe { CStr::from_ptr(dos_qvariant_toString(i.ptr)).to_string_lossy().into_owned() }
     }
 }

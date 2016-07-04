@@ -21,6 +21,10 @@ ApplicationWindow {
       text: "Notify Rust"
       Component.onCompleted: {
         clicked.connect(test.click)
+        test.updateText.connect(updateText)
+      }
+      function updateText(s) {
+        text = s
       }
     }
   }

@@ -6,8 +6,8 @@ use qml::*;
 struct Test;
 
 impl Test {
-    pub fn launchGoose(&self, i: i32, i2: i32) {
-        println!("GOOSE PRIVET {} and {}", i, i2);
+    pub fn launchGoose(&self, i: i32, i2: String) {
+        println!("GOOSE HI from {} and {}", i2, i);
     }
 }
 
@@ -17,12 +17,13 @@ Test:
          fn testname (a: i32, b: i32);
 
     slots:
-         fn launchGoose(i: i32, i2: i32);
+         fn launchGoose(i: i32, launchText: String);
 );
 
 fn main() {
     let mut test = Test;
     test.testname(54, 55);
-    test.qmeta_slots("launchGoose", vec![5.into(), 6.into()]);
+    test.qslot_call("launchGoose",
+                    vec![42.into(), "QML Rust".to_string().into()]);
     println!("{:?}", test.qmeta());
 }

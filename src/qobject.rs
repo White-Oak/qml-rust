@@ -1,5 +1,6 @@
 use libc;
 use std::mem::forget;
+use std::slice::from_raw_parts;
 
 use qvariant::*;
 use utils::*;
@@ -12,7 +13,7 @@ pub struct QObject {
 
 extern "C" {
 
-    fn dos_qobject_create(dObjectPointer: *const Box<&QObjectMacro>,
+    fn dos_qobject_create(dObjectPointer: *mut libc::c_void,
                           metaObject: DosQMetaObject,
                           dObjectCallback: DObjectCallback)
                           -> DosQObject;
@@ -50,29 +51,39 @@ pub enum QtConnectionType {
 /// @param slotName The slotName as DosQVariant. It should not be deleted
 /// @param argc The number of arguments
 /// @param argv An array of DosQVariant pointers. They should not be deleted
-type DObjectCallback = extern "C" fn(*const Box<&QObjectMacro>,
-                                     DosQVariant,
-                                     i32,
-                                     *const DosQVariant);
+type DObjectCallback = extern "C" fn(*mut libc::c_void, DosQVariant, i32, *const DosQVariant);
 
 impl QObject {
-    pub fn new(obj: &QObjectMacro) -> QObject {
+    pub fn new(obj: &mut QObjectMacro) -> QObject {
         unsafe {
-            extern "C" fn callback(obj: *const Box<&QObjectMacro>,
-                                   qvar: DosQVariant,
+            extern "C" fn callback(obj: *mut libc::c_void,
+                                   slotName: DosQVariant,
                                    argc: i32,
                                    argv: *const DosQVariant) {
-                println!("CALLBACK HERE");
+                unsafe {
+                    // println!("Let me show you now: {:?}", obj);
+                    println!("Start");
+                    let mut obj: Box<&mut QObjectMacro> =
+                        Box::from_raw(obj as *mut &mut QObjectMacro);
+                    println!("Dereferenced");
+                    let vec = from_raw_parts(argv, argc as usize);
+                    println!("Got slice");
+                    let vec: Vec<QVariant> = vec.into_iter().map(|&dq| dq.into()).collect();
+                    println!("Mapped");
+                    let slotName: String = new_qvariant(slotName).into();
+                    println!("Slot name referenced");
+                    obj.qslot_call(&slotName, vec);
+                }
             }
             let meta = QMeta::new_for_qobject(obj.qmeta());
 
-            let obj = Box::new(obj);
+            let mut obj = Box::new(obj);
+            // println!("Let me show you: {:?}", obj.into_raw());
             let res = QObject {
-                ptr: dos_qobject_create(&obj as *const Box<&QObjectMacro>,
+                ptr: dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
                                         get_dos_qmeta(&meta),
                                         callback),
             };
-            forget(obj);
             forget(meta);
             res
         }

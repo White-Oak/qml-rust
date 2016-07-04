@@ -23,7 +23,8 @@ macro_rules! Q_OBJECT{
         }
 
         impl QObjectMacro for $obj{
-            fn qmeta_slots(&mut self, name: &str, args: Vec<QVariant>) {
+            fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) {
+                println!("BUT WAIT");
                 fn next_or_panic(qt: Option<QVariant>) -> QVariant{
                     if let Some(o) = qt {
                         o
@@ -40,18 +41,19 @@ macro_rules! Q_OBJECT{
                         )*
                         self.$slotname ($($slotvar),*);
                     },)*
-                    _ => ()
+                    _ => panic!("Unrecognized slot call: {}", name)
                 }
             }
 
             fn qmeta(&self) -> QMetaDefinition{
+                use qml::qtypes::*;
                 let mut signals = Vec::new();
                 $(
                     let mut argc = 0;
                     let mut mttypes = Vec::new();
                     $(
                         argc += 1;
-                        mttypes.push($signalqtype::metatype());
+                        mttypes.push($signalqtype::metatype() as i32);
                     )*
                     signals.push((stringify!($signalname), argc, mttypes));
                 )*
@@ -62,7 +64,7 @@ macro_rules! Q_OBJECT{
                     let mut mttypes = Vec::new();
                     $(
                         argc += 1;
-                        mttypes.push($slotqtype::metatype());
+                        mttypes.push($slotqtype::metatype() as i32);
                     )*
                     slots.push((stringify!($slotname), 43, argc, mttypes));
                 )*
@@ -101,16 +103,6 @@ impl QMeta {
                                                   &def.prop_defs as *const PropertyDefinitions);
             QMeta { ptr: dos_meta }
         }
-    }
-}
-
-pub trait QMetaType<T> {
-    fn metatype() -> i32;
-}
-
-impl QMetaType<i32> for i32 {
-    fn metatype() -> i32 {
-        2
     }
 }
 
@@ -170,7 +162,7 @@ impl QMetaDefinition {
 }
 
 pub trait QObjectMacro {
-    fn qmeta_slots(&mut self, name: &str, args: Vec<QVariant>);
+    fn qslot_call(&mut self, name: &str, args: Vec<QVariant>);
     fn qmeta(&self) -> QMetaDefinition;
 }
 
