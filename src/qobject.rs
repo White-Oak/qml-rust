@@ -61,24 +61,18 @@ impl QObject {
                                    argc: i32,
                                    argv: *const DosQVariant) {
                 unsafe {
-                    // println!("Let me show you now: {:?}", obj);
-                    println!("Start");
                     let mut obj: Box<&mut QObjectMacro> =
                         Box::from_raw(obj as *mut &mut QObjectMacro);
-                    println!("Dereferenced");
                     let vec = from_raw_parts(argv, argc as usize);
-                    println!("Got slice");
                     let vec: Vec<QVariant> = vec.into_iter().map(|&dq| dq.into()).collect();
-                    println!("Mapped");
                     let slotName: String = new_qvariant(slotName).into();
-                    println!("Slot name referenced");
                     obj.qslot_call(&slotName, vec);
+                    forget(obj);
                 }
             }
             let meta = QMeta::new_for_qobject(obj.qmeta());
 
             let mut obj = Box::new(obj);
-            // println!("Let me show you: {:?}", obj.into_raw());
             let res = QObject {
                 ptr: dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
                                         get_dos_qmeta(&meta),
