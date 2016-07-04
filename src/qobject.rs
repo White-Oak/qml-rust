@@ -6,9 +6,11 @@ use qvariant::*;
 use utils::*;
 use types::*;
 use qmeta::*;
+use qmlengine::*;
 
 pub struct QObject {
     ptr: DosQObject,
+    pub obj: *const libc::c_void,
 }
 
 extern "C" {
@@ -54,7 +56,9 @@ pub enum QtConnectionType {
 type DObjectCallback = extern "C" fn(*mut libc::c_void, DosQVariant, i32, *const DosQVariant);
 
 impl QObject {
-    pub fn new(obj: &mut QObjectMacro) -> QObject {
+    pub fn new<'a, T>(obj: &Box<T>, qqae: &'a mut QmlEngine) -> &'a mut Box<QObject>
+        where T: QObjectMacro
+    {
         unsafe {
             extern "C" fn callback(obj: *mut libc::c_void,
                                    slotName: DosQVariant,
@@ -70,16 +74,22 @@ impl QObject {
                     forget(obj);
                 }
             }
-            let meta = QMeta::new_for_qobject(obj.qmeta());
+            let qmeta = obj.qmeta();
+            let name = qmeta.name.clone();
+            let meta = QMeta::new_for_qobject(qmeta);
 
+            let adress = obj.as_ref() as *const T as *const libc::c_void;
             let mut obj = Box::new(obj);
             let res = QObject {
                 ptr: dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
                                         get_dos_qmeta(&meta),
                                         callback),
+                obj: adress,
             };
             forget(meta);
-            res
+
+            let b = Box::new(res);
+            add_qobject(qqae, name, b)
         }
     }
 }

@@ -21,8 +21,10 @@ Test:
 );
 
 fn main() {
-    let mut test = Test;
-    test.testname(54, 55);
+    let mut qqae = QmlEngine::new();
+    let mut test = Box::new(Test);
+    let qobj = QObject::new(&test, &mut qqae);
+    test.testname(&qqae, 54, 55);
     test.qslot_call("launchGoose",
                     vec![42.into(), "QML Rust".to_string().into()]);
     println!("{:?}", test.qmeta());

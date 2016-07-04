@@ -4,6 +4,8 @@ use libc;
 use qvariant::*;
 use utils::*;
 use types::*;
+use qobject::*;
+use qmlengine::*;
 
 #[macro_export]
 macro_rules! Q_OBJECT{
@@ -13,18 +15,19 @@ macro_rules! Q_OBJECT{
     slots:
     $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ident ),* );)* ) =>{
         impl $obj{
-            $(fn $signalname(&self, $( $signalvar: $signalqtype ),*){
+            $(fn $signalname(&self, qqae: &QmlEngine, $( $signalvar: $signalqtype ),*){
                 let mut vec: Vec<QVariant> = Vec::new();
                 $(
                     let $signalvar: $signalqtype = $signalvar;
                     vec.push($signalvar.into());
                 )*
+                emit_signal(self, qqae, stringify!($signalname), &vec);
+                ::std::mem::forget(vec);
             })*
         }
 
         impl QObjectMacro for $obj{
             fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) {
-                println!("BUT WAIT");
                 fn next_or_panic(qt: Option<QVariant>) -> QVariant{
                     if let Some(o) = qt {
                         o
@@ -82,8 +85,26 @@ extern "C" {
                               propertyDefinitions: *const PropertyDefinitions)
                               -> DosQMetaObject;
     fn dos_qobject_qmetaobject() -> DosQMetaObject;
+    fn dos_qobject_signal_emit(vptr: DosQObject,
+                               name: *const libc::c_char,
+                               parametersCount: i32,
+                               parameters: *const DosQVariant);
 }
 
+pub fn emit_signal<T>(obj: &T, qqae: &QmlEngine, signalname: &str, args: &Vec<QVariant>)
+    where T: QObjectMacro
+{
+    let vec: Vec<DosQVariant> = args.into_iter()
+        .map(|qvar| get_private_variant(&qvar))
+        .collect();
+    let obj = find_qobject(qqae, obj.qmeta().name, obj);
+    unsafe {
+        dos_qobject_signal_emit(get_qobj_ptr(obj),
+                                stoptr(signalname),
+                                vec.len() as i32,
+                                vec.as_ptr())
+    }
+}
 pub struct QMeta {
     ptr: DosQMetaObject,
 }
@@ -111,7 +132,7 @@ pub struct QMetaDefinition {
     sig_defs: SignalDefinitions,
     slot_defs: SlotDefinitions,
     prop_defs: PropertyDefinitions,
-    name: &'static str,
+    pub name: &'static str,
 }
 
 impl QMetaDefinition {

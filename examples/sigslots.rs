@@ -26,5 +26,6 @@ fn main() {
     let qobj = QObject::new(&mut test);
     qqae.set_and_store_property("test", qobj);
     qqae.load_file("examples/sigslots.qml");
+    println!("{:?}", test.qmeta());
     qqae.exec();
 }

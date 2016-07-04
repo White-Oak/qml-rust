@@ -81,6 +81,10 @@ impl QVariant {
             dos_qvariant_assign(self.ptr as MutDosQVariant, other.ptr);
         }
     }
+
+    pub fn throw(&mut self, flag: bool) {
+        self.owned = flag;
+    }
 }
 
 pub fn new_qvariant(ptr: DosQVariant) -> QVariant {

@@ -1,8 +1,11 @@
 use libc;
+use std::collections::HashMap;
 
 use qvariant::*;
 use types::*;
 use qurl::*;
+use qobject::*;
+use qmeta::*;
 
 extern "C" {
     fn dos_qapplication_create();
@@ -26,14 +29,22 @@ extern "C" {
 }
 
 /// Provides an entry point for building QML applications from Rust
-pub struct QmlEngine(QQmlApplicationEngine, Vec<QVariant>);
+pub struct QmlEngine {
+    ptr: QQmlApplicationEngine,
+    stored: Vec<QVariant>,
+    objs: HashMap<String, Vec<Box<QObject>>>,
+}
 
 impl QmlEngine {
     /// Creates a QML context of a non-headless application
     pub fn new() -> Self {
         unsafe {
             dos_qapplication_create();
-            QmlEngine(dos_qqmlapplicationengine_create(), Vec::new())
+            QmlEngine {
+                ptr: dos_qqmlapplicationengine_create(),
+                stored: Vec::new(),
+                objs: HashMap::new(),
+            }
         }
     }
 
@@ -45,12 +56,12 @@ impl QmlEngine {
         } else {
             format!("file://{}", path_raw.display())
         };
-        unsafe { dos_qqmlapplicationengine_load_url(self.0, construct_qurl(&path)) }
+        unsafe { dos_qqmlapplicationengine_load_url(self.ptr, construct_qurl(&path)) }
     }
 
     /// Loads a string as a qml file
     pub fn load_data(&self, data: &str) {
-        unsafe { dos_qqmlapplicationengine_load_data(self.0, stoptr(data)) }
+        unsafe { dos_qqmlapplicationengine_load_data(self.ptr, stoptr(data)) }
     }
 
     /// Launches the application
@@ -72,21 +83,50 @@ impl QmlEngine {
     pub fn set_and_store_property<T: Into<QVariant>>(&mut self, name: &str, value: T) {
         let val = value.into();
         unsafe {
-            let context = dos_qqmlapplicationengine_context(self.0);
+            let context = dos_qqmlapplicationengine_context(self.ptr);
             dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(&val));
         }
-        self.1.push(val);
+        self.stored.push(val);
     }
 
     /// Sets a property for this QML context
     pub fn set_property(&self, name: &str, value: &QVariant) {
         unsafe {
-            let context = dos_qqmlapplicationengine_context(self.0);
+            let context = dos_qqmlapplicationengine_context(self.ptr);
             dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(value));
         }
     }
 }
 
+pub fn find_qobject<'a, T>(qqae: &'a QmlEngine, name: &str, obj: &T) -> &'a Box<QObject>
+    where T: QObjectMacro
+{
+    if let Some(v) = qqae.objs.get(name) {
+        let iter = v.iter();
+        for i in iter {
+            if i.obj == (obj as *const T as *const libc::c_void) {
+                return i;
+            }
+        }
+        unreachable!()
+    } else {
+        panic!("There is no '{}' stored in this QmlEngine!", name);
+    }
+}
+
+pub fn add_qobject<'a>(qqae: &'a mut QmlEngine,
+                       name: &str,
+                       qobj: Box<QObject>)
+                       -> &'a mut Box<QObject> {
+    if qqae.objs.contains_key(name) {
+        let mut v = qqae.objs.get_mut(name).unwrap();
+        v.push(qobj);
+        v.last_mut().unwrap()
+    } else {
+        qqae.objs.insert(name.clone().into(), vec![qobj]);
+        qqae.objs.get_mut(name).unwrap().last_mut().unwrap()
+    }
+}
 use utils::*;
 
 impl Default for QmlEngine {
@@ -99,7 +139,7 @@ impl Drop for QmlEngine {
     fn drop(&mut self) {
         unsafe {
             dos_qapplication_quit();
-            dos_qqmlapplicationengine_delete(self.0);
+            dos_qqmlapplicationengine_delete(self.ptr);
             dos_qapplication_delete();
         }
     }
