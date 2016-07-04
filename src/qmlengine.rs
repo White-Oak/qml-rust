@@ -32,7 +32,6 @@ extern "C" {
 pub struct QmlEngine {
     ptr: QQmlApplicationEngine,
     stored: Vec<QVariant>,
-    objs: HashMap<String, Vec<Box<QObject>>>,
 }
 
 impl QmlEngine {
@@ -43,7 +42,6 @@ impl QmlEngine {
             QmlEngine {
                 ptr: dos_qqmlapplicationengine_create(),
                 stored: Vec::new(),
-                objs: HashMap::new(),
             }
         }
     }
@@ -98,35 +96,6 @@ impl QmlEngine {
     }
 }
 
-pub fn find_qobject<'a, T>(qqae: &'a QmlEngine, name: &str, obj: &T) -> &'a Box<QObject>
-    where T: QObjectMacro
-{
-    if let Some(v) = qqae.objs.get(name) {
-        let iter = v.iter();
-        for i in iter {
-            if i.obj == (obj as *const T as *const libc::c_void) {
-                return i;
-            }
-        }
-        unreachable!()
-    } else {
-        panic!("There is no '{}' stored in this QmlEngine!", name);
-    }
-}
-
-pub fn add_qobject<'a>(qqae: &'a mut QmlEngine,
-                       name: &str,
-                       qobj: Box<QObject>)
-                       -> &'a mut Box<QObject> {
-    if qqae.objs.contains_key(name) {
-        let mut v = qqae.objs.get_mut(name).unwrap();
-        v.push(qobj);
-        v.last_mut().unwrap()
-    } else {
-        qqae.objs.insert(name.clone().into(), vec![qobj]);
-        qqae.objs.get_mut(name).unwrap().last_mut().unwrap()
-    }
-}
 use utils::*;
 
 impl Default for QmlEngine {

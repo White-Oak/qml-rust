@@ -21,10 +21,12 @@ Test:
 );
 
 fn main() {
-    let mut test = Test;
+    let mut test = Box::new(Test);
+    println!("{:?} start", test.as_ref() as *const Test);
     let mut qqae = QmlEngine::new();
-    let qobj = QObject::new(&mut test);
-    qqae.set_and_store_property("test", qobj);
+    let wrap = test.singleton();
+    let guard = wrap.inner.lock().unwrap();
+    qqae.set_and_store_property("test", &guard as &QObject);
     qqae.load_file("examples/sigslots.qml");
     println!("{:?}", test.qmeta());
     qqae.exec();

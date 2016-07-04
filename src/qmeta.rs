@@ -14,14 +14,40 @@ macro_rules! Q_OBJECT{
     $(fn $signalname:ident ( $( $signalvar:ident : $signalqtype:ident ),* );)*
     slots:
     $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ident ),* );)* ) =>{
+        use std::sync::{Arc, Mutex, Once, ONCE_INIT};
+        use std::{mem, thread};
+
+        #[derive(Clone)]
+        struct QObjectWrapper{
+            inner: Arc<Mutex<QObject>>
+        }
+
         impl $obj{
-            $(fn $signalname(&self, qqae: &QmlEngine, $( $signalvar: $signalqtype ),*){
+            fn singleton(&self) -> QObjectWrapper {
+                static mut SINGLETON: *const QObjectWrapper = 0 as *const QObjectWrapper;
+                static ONCE: Once = ONCE_INIT;
+
+                unsafe{
+                    ONCE.call_once(|| {
+                        let singleton = QObjectWrapper{
+                            inner: Arc::new(Mutex::new(QObject::new(self))),
+                        };
+                        SINGLETON = mem::transmute(Box::new(singleton));
+                    });
+
+                    (*SINGLETON).clone()
+                }
+            }
+
+            $(fn $signalname(&self, $( $signalvar: $signalqtype ),*){
                 let mut vec: Vec<QVariant> = Vec::new();
                 $(
                     let $signalvar: $signalqtype = $signalvar;
                     vec.push($signalvar.into());
                 )*
-                emit_signal(self, qqae, stringify!($signalname), &vec);
+                let wrap = self.singleton();
+                let guard = wrap.inner.lock().unwrap();
+                emit_signal(&guard, stringify!($signalname), &vec);
                 ::std::mem::forget(vec);
             })*
         }
@@ -91,14 +117,12 @@ extern "C" {
                                parameters: *const DosQVariant);
 }
 
-pub fn emit_signal<T>(obj: &T, qqae: &QmlEngine, signalname: &str, args: &Vec<QVariant>)
-    where T: QObjectMacro
-{
+pub fn emit_signal(obj: &QObject, signalname: &str, args: &Vec<QVariant>) {
     let vec: Vec<DosQVariant> = args.into_iter()
         .map(|qvar| get_private_variant(&qvar))
         .collect();
-    let obj = find_qobject(qqae, obj.qmeta().name, obj);
     unsafe {
+        println!("about to send signal");
         dos_qobject_signal_emit(get_qobj_ptr(obj),
                                 stoptr(signalname),
                                 vec.len() as i32,

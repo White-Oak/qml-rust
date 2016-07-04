@@ -10,7 +10,6 @@ use qmlengine::*;
 
 pub struct QObject {
     ptr: DosQObject,
-    pub obj: *const libc::c_void,
 }
 
 extern "C" {
@@ -56,7 +55,7 @@ pub enum QtConnectionType {
 type DObjectCallback = extern "C" fn(*mut libc::c_void, DosQVariant, i32, *const DosQVariant);
 
 impl QObject {
-    pub fn new<'a, T>(obj: &Box<T>, qqae: &'a mut QmlEngine) -> &'a mut Box<QObject>
+    pub fn new<'a, T>(obj: &T) -> QObject
         where T: QObjectMacro
     {
         unsafe {
@@ -65,8 +64,8 @@ impl QObject {
                                    argc: i32,
                                    argv: *const DosQVariant) {
                 unsafe {
-                    let mut obj: Box<&mut QObjectMacro> =
-                        Box::from_raw(obj as *mut &mut QObjectMacro);
+                    println!("CALLBACK?? {:?}", obj as *mut &mut QObjectMacro);
+                    let mut obj: &mut QObjectMacro = *(obj as *mut &mut QObjectMacro);
                     let vec = from_raw_parts(argv, argc as usize);
                     let vec: Vec<QVariant> = vec.into_iter().map(|&dq| dq.into()).collect();
                     let slotName: String = new_qvariant(slotName).into();
@@ -78,18 +77,14 @@ impl QObject {
             let name = qmeta.name.clone();
             let meta = QMeta::new_for_qobject(qmeta);
 
-            let adress = obj.as_ref() as *const T as *const libc::c_void;
-            let mut obj = Box::new(obj);
+            println!("SETTING CALLBACK?? {:?}", obj as *const T);
             let res = QObject {
-                ptr: dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
+                ptr: dos_qobject_create(obj as *const T as *mut libc::c_void,
                                         get_dos_qmeta(&meta),
                                         callback),
-                obj: adress,
             };
             forget(meta);
-
-            let b = Box::new(res);
-            add_qobject(qqae, name, b)
+            res
         }
     }
 }

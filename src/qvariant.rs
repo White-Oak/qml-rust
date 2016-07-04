@@ -137,6 +137,17 @@ impl From<QObject> for QVariant {
     }
 }
 
+impl<'a> From<&'a QObject> for QVariant {
+    fn from(i: &'a QObject) -> Self {
+        unsafe {
+            QVariant {
+                ptr: dos_qvariant_create_qobject(get_qobj_ptr(i)),
+                owned: true,
+            }
+        }
+    }
+}
+
 impl From<i32> for QVariant {
     fn from(i: i32) -> Self {
         unsafe {
