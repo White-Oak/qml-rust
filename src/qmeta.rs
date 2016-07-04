@@ -3,6 +3,7 @@ use libc;
 
 use qvariant::*;
 use utils::*;
+use types::*;
 
 #[macro_export]
 macro_rules! Q_OBJECT{
@@ -21,7 +22,6 @@ macro_rules! Q_OBJECT{
             })*
         }
 
-        use std::mem::uninitialized;
         impl QObjectMacro for $obj{
             fn qmeta_slots(&mut self, name: &str, args: Vec<QVariant>) {
                 fn next_or_panic(qt: Option<QVariant>) -> QVariant{
@@ -44,7 +44,7 @@ macro_rules! Q_OBJECT{
                 }
             }
 
-            fn qmeta_information() -> QMeta{
+            fn qmeta(&self) -> QMetaDefinition{
                 let mut signals = Vec::new();
                 $(
                     let mut argc = 0;
@@ -66,10 +66,42 @@ macro_rules! Q_OBJECT{
                     )*
                     slots.push((stringify!($slotname), 43, argc, mttypes));
                 )*
-                QMeta::new(signals, slots)
+                QMetaDefinition::new(signals, slots, stringify!($obj))
             }
         }
     };
+}
+
+extern "C" {
+    fn dos_qmetaobject_create(superClassMetaObject: DosQMetaObject,
+                              className: *const libc::c_char,
+                              signalDefinitions: *const SignalDefinitions,
+                              slotDefinitions: *const SlotDefinitions,
+                              propertyDefinitions: *const PropertyDefinitions)
+                              -> DosQMetaObject;
+    fn dos_qobject_qmetaobject() -> DosQMetaObject;
+}
+
+pub struct QMeta {
+    ptr: DosQMetaObject,
+}
+
+pub fn get_dos_qmeta(meta: &QMeta) -> DosQMetaObject {
+    meta.ptr
+}
+
+impl QMeta {
+    pub fn new_for_qobject(def: QMetaDefinition) -> QMeta {
+        unsafe {
+            let meta_obj = dos_qobject_qmetaobject();
+            let dos_meta = dos_qmetaobject_create(meta_obj,
+                                                  stoptr(def.name),
+                                                  &def.sig_defs as *const SignalDefinitions,
+                                                  &def.slot_defs as *const SlotDefinitions,
+                                                  &def.prop_defs as *const PropertyDefinitions);
+            QMeta { ptr: dos_meta }
+        }
+    }
 }
 
 pub trait QMetaType<T> {
@@ -82,10 +114,18 @@ impl QMetaType<i32> for i32 {
     }
 }
 
+#[derive(Debug)]
+pub struct QMetaDefinition {
+    sig_defs: SignalDefinitions,
+    slot_defs: SlotDefinitions,
+    prop_defs: PropertyDefinitions,
+    name: &'static str,
+}
 
-impl QMeta {
+impl QMetaDefinition {
     pub fn new(signals: Vec<(&str, i32, Vec<i32>)>,
-               slots: Vec<(&str, i32, i32, Vec<i32>)>)
+               slots: Vec<(&str, i32, i32, Vec<i32>)>,
+               name: &'static str)
                -> Self {
         let signals: Vec<SignalDefinition> = signals.into_iter()
             .map(|(s, argc, types)| {
@@ -120,23 +160,21 @@ impl QMeta {
             definitions: slots.as_ptr(),
         };
         forget(slots);
-        QMeta {
+        QMetaDefinition {
             sig_defs: sig_defs,
             slot_defs: slot_defs,
+            prop_defs: PropertyDefinitions::default(),
+            name: name,
         }
     }
 }
 
-pub struct QMeta {
-    sig_defs: SignalDefinitions,
-    slot_defs: SlotDefinitions,
-}
-
 pub trait QObjectMacro {
     fn qmeta_slots(&mut self, name: &str, args: Vec<QVariant>);
-    fn qmeta_information() -> QMeta;
+    fn qmeta(&self) -> QMetaDefinition;
 }
 
+#[derive(Debug)]
 #[repr(C)]
 struct SignalDefinition {
     name: *const libc::c_char,
@@ -144,12 +182,14 @@ struct SignalDefinition {
     parametersMetaTypes: *const i32,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 struct SignalDefinitions {
     count: i32,
     definitions: *const SignalDefinition,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 struct SlotDefinition {
     name: *const libc::c_char,
@@ -158,12 +198,14 @@ struct SlotDefinition {
     parametersMetaTypes: *const i32,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 struct SlotDefinitions {
     count: i32,
     definitions: *const SlotDefinition,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 struct PropertyDefinition {
     name: *const libc::c_char,
@@ -173,8 +215,21 @@ struct PropertyDefinition {
     notifySignal: *const libc::c_char,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 struct PropertyDefinitions {
     count: i32,
     definitions: *const PropertyDefinition,
+}
+
+impl Default for PropertyDefinitions {
+    fn default() -> Self {
+        let vec = Vec::new();
+        let res = PropertyDefinitions {
+            count: 0,
+            definitions: vec.as_ptr(),
+        };
+        forget(vec);
+        res
+    }
 }

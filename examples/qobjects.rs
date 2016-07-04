@@ -24,4 +24,5 @@ fn main() {
     let mut test = Test;
     test.testname(54, 55);
     test.qmeta_slots("launchGoose", vec![5.into(), 6.into()]);
+    println!("{:?}", test.qmeta());
 }
