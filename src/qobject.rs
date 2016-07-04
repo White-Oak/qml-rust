@@ -12,7 +12,7 @@ pub struct QObject {
 
 extern "C" {
 
-    fn dos_qobject_create(dObjectPointer: *const Box<QObjectMacro>,
+    fn dos_qobject_create(dObjectPointer: *const Box<&QObjectMacro>,
                           metaObject: DosQMetaObject,
                           dObjectCallback: DObjectCallback)
                           -> DosQObject;
@@ -50,15 +50,15 @@ pub enum QtConnectionType {
 /// @param slotName The slotName as DosQVariant. It should not be deleted
 /// @param argc The number of arguments
 /// @param argv An array of DosQVariant pointers. They should not be deleted
-type DObjectCallback = extern "C" fn(*const Box<QObjectMacro>,
+type DObjectCallback = extern "C" fn(*const Box<&QObjectMacro>,
                                      DosQVariant,
                                      i32,
                                      *const DosQVariant);
 
 impl QObject {
-    pub fn new(obj: Box<QObjectMacro>) -> QObject {
+    pub fn new(obj: &QObjectMacro) -> QObject {
         unsafe {
-            extern "C" fn callback(obj: *const Box<QObjectMacro>,
+            extern "C" fn callback(obj: *const Box<&QObjectMacro>,
                                    qvar: DosQVariant,
                                    argc: i32,
                                    argv: *const DosQVariant) {
@@ -66,8 +66,9 @@ impl QObject {
             }
             let meta = QMeta::new_for_qobject(obj.qmeta());
 
+            let obj = Box::new(obj);
             let res = QObject {
-                ptr: dos_qobject_create(&obj as *const Box<QObjectMacro>,
+                ptr: dos_qobject_create(&obj as *const Box<&QObjectMacro>,
                                         get_dos_qmeta(&meta),
                                         callback),
             };
@@ -76,4 +77,8 @@ impl QObject {
             res
         }
     }
+}
+
+pub fn get_qobj_ptr(o: &QObject) -> DosQObject {
+    o.ptr
 }
