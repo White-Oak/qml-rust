@@ -15,6 +15,7 @@ extern "C" {
     fn dos_qvariant_create_qvariant(value: DosQVariant) -> DosQVariant;
     fn dos_qvariant_create_float(value: f32) -> DosQVariant;
     fn dos_qvariant_create_double(value: f64) -> DosQVariant;
+    fn dos_qvariant_create_array(size: i32, array: *const DosQVariant) -> DosQVariant;
 
     fn dos_qvariant_toInt(val: DosQVariant) -> i32;
     fn dos_qvariant_toBool(val: DosQVariant) -> bool;
@@ -131,6 +132,35 @@ impl From<QObject> for QVariant {
         unsafe {
             QVariant {
                 ptr: dos_qvariant_create_qobject(get_qobj_ptr(&i)),
+                owned: true,
+            }
+        }
+    }
+}
+
+impl<'a> From<&'a [QVariant]> for QVariant {
+    fn from(i: &'a [QVariant]) -> Self {
+        unsafe {
+            let ptr = i.iter().map(|qvar| qvar.ptr).collect::<Vec<DosQVariant>>().as_ptr();
+            QVariant {
+                ptr: dos_qvariant_create_array(i.len() as i32, ptr),
+                owned: true,
+            }
+        }
+    }
+}
+
+use std::mem::forget;
+
+impl From<Vec<QVariant>> for QVariant {
+    fn from(i: Vec<QVariant>) -> Self {
+        unsafe {
+            let vec = i.iter().map(|qvar| qvar.ptr).collect::<Vec<DosQVariant>>();
+            let ptr = vec.as_ptr();
+            forget(vec);
+            println!("About to cast");
+            QVariant {
+                ptr: dos_qvariant_create_array(i.len() as i32, ptr),
                 owned: true,
             }
         }
