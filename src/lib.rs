@@ -18,3 +18,4 @@ pub use qvariant::QVariant;
 pub use qabstactlistmodel::QListModel;
 pub use qobject::QObject;
 pub use qmeta::*;
+pub use types::DosQObject;

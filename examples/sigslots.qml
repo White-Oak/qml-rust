@@ -12,6 +12,7 @@ ApplicationWindow {
   ColumnLayout {
     anchors.fill: parent
     Text {
+      id: text
       anchors.horizontalCenter: parent.horizontalCenter
       text: "Not set yet"
     }
@@ -24,7 +25,7 @@ ApplicationWindow {
         test.updateText.connect(updateText)
       }
       function updateText(s) {
-        text = s
+        text.text = s
       }
     }
   }

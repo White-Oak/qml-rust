@@ -14,7 +14,7 @@ pub struct QObject {
 
 extern "C" {
 
-    fn dos_qobject_create(dObjectPointer: *mut libc::c_void,
+    fn dos_qobject_create(dObjectPointer: *mut c_void,
                           metaObject: DosQMetaObject,
                           dObjectCallback: DObjectCallback)
                           -> DosQObject;
@@ -52,34 +52,22 @@ pub enum QtConnectionType {
 /// @param slotName The slotName as DosQVariant. It should not be deleted
 /// @param argc The number of arguments
 /// @param argv An array of DosQVariant pointers. They should not be deleted
-type DObjectCallback = extern "C" fn(*mut libc::c_void, DosQVariant, i32, *const DosQVariant);
+type DObjectCallback = extern "C" fn(*mut c_void, DosQVariant, i32, *const DosQVariant);
 
+use libc::c_void;
+use std::mem::transmute;
 impl QObject {
-    pub fn new<'a, T>(obj: &T) -> QObject
-        where T: QObjectMacro
-    {
+    pub fn new<'a>(obj: &mut QObjectMacro) -> QObject {
         unsafe {
-            extern "C" fn callback(obj: *mut libc::c_void,
-                                   slotName: DosQVariant,
-                                   argc: i32,
-                                   argv: *const DosQVariant) {
-                unsafe {
-                    println!("CALLBACK?? {:?}", obj as *mut &mut QObjectMacro);
-                    let mut obj: &mut QObjectMacro = *(obj as *mut &mut QObjectMacro);
-                    let vec = from_raw_parts(argv, argc as usize);
-                    let vec: Vec<QVariant> = vec.into_iter().map(|&dq| dq.into()).collect();
-                    let slotName: String = new_qvariant(slotName).into();
-                    obj.qslot_call(&slotName, vec);
-                    forget(obj);
-                }
-            }
             let qmeta = obj.qmeta();
             let name = qmeta.name.clone();
             let meta = QMeta::new_for_qobject(qmeta);
 
-            println!("SETTING CALLBACK?? {:?}", obj as *const T);
+            println!("Adress of wrapper {:p}", obj);
+            let mut obj = Box::new(obj);
+
             let res = QObject {
-                ptr: dos_qobject_create(obj as *const T as *mut libc::c_void,
+                ptr: dos_qobject_create(Box::into_raw(obj) as *mut c_void,
                                         get_dos_qmeta(&meta),
                                         callback),
             };
@@ -91,4 +79,22 @@ impl QObject {
 
 pub fn get_qobj_ptr(o: &QObject) -> DosQObject {
     o.ptr
+}
+
+extern "C" fn callback(obj: *mut c_void,
+                       slotName: DosQVariant,
+                       argc: i32,
+                       argv: *const DosQVariant) {
+    unsafe {
+        let mut obj: Box<&mut QObjectMacro> = Box::from_raw(obj as *mut &mut QObjectMacro);
+        println!("Calling adress of wrapper  {:p}", *obj.as_mut());
+        let vec = from_raw_parts(argv, argc as usize);
+        let vec: Vec<QVariant> = vec.into_iter().map(|&dq| dq.into()).collect();
+        let slotName: String = new_qvariant(slotName).into();
+        println!("Right before going in... name: {}, argc: {}",
+                 slotName,
+                 argc);
+        obj.qslot_call(&slotName, vec);
+        forget(obj);
+    }
 }

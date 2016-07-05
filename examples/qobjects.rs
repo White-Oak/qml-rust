@@ -1,9 +1,10 @@
+#![recursion_limit="20"]
 #[macro_use]
 extern crate qml;
 
 use qml::*;
 
-struct Test;
+pub struct Test;
 
 impl Test {
     pub fn launchGoose(&self, i: i32, i2: String) {
@@ -12,20 +13,19 @@ impl Test {
 }
 
 Q_OBJECT!(
-Test:
+pub Test as QTest{
     signals:
          fn testname (a: i32, b: i32);
 
     slots:
          fn launchGoose(i: i32, launchText: String);
-);
+});
 
 fn main() {
     let mut qqae = QmlEngine::new();
-    let mut test = Box::new(Test);
-    let qobj = test.singleton();
-    test.testname(54, 55);
-    test.qslot_call("launchGoose",
-                    vec![42.into(), "QML Rust".to_string().into()]);
-    println!("{:?}", test.qmeta());
+    let mut qtest = QTest::new(Test);
+    qtest.testname(54, 55);
+    qtest.qslot_call("launchGoose",
+                     vec![42.into(), "QML Rust".to_string().into()]);
+    println!("{:?}", qtest.qmeta());
 }

@@ -9,99 +9,116 @@ use qmlengine::*;
 
 #[macro_export]
 macro_rules! Q_OBJECT{
-($obj:ty :
-    signals:
-    $(fn $signalname:ident ( $( $signalvar:ident : $signalqtype:ident ),* );)*
-    slots:
-    $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ident ),* );)* ) =>{
-        use std::sync::{Arc, Mutex, Once, ONCE_INIT};
-        use std::{mem, thread};
+    (
+        pub $obj:ty as $wrapper:ident{
+            signals:
+            $(fn $signalname:ident ( $( $signalvar:ident : $signalqtype:ident ),* );)*
 
-        #[derive(Clone)]
-        struct QObjectWrapper{
-            inner: Arc<Mutex<QObject>>
-        }
+            slots:
+            $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ident ),* );)*
 
-        impl $obj{
-            fn singleton(&self) -> QObjectWrapper {
-                static mut SINGLETON: *const QObjectWrapper = 0 as *const QObjectWrapper;
-                static ONCE: Once = ONCE_INIT;
+            //properties
+        }) =>{
+            pub struct $wrapper{
+                origin: Box<$obj>,
+                ptr: QObject,
+            }
 
-                unsafe{
-                    ONCE.call_once(|| {
-                        let singleton = QObjectWrapper{
-                            inner: Arc::new(Mutex::new(QObject::new(self))),
-                        };
-                        SINGLETON = mem::transmute(Box::new(singleton));
-                    });
+            impl ::std::ops::Deref for $wrapper {
+                type Target = $obj;
 
-                    (*SINGLETON).clone()
+                fn deref(&self) -> &$obj {
+                    let ref b: Box<$obj> = self.origin;
+                    b.as_ref()
                 }
             }
 
-            $(fn $signalname(&self, $( $signalvar: $signalqtype ),*){
-                let mut vec: Vec<QVariant> = Vec::new();
-                $(
-                    let $signalvar: $signalqtype = $signalvar;
-                    vec.push($signalvar.into());
-                )*
-                let wrap = self.singleton();
-                let guard = wrap.inner.lock().unwrap();
-                emit_signal(&guard, stringify!($signalname), &vec);
-                ::std::mem::forget(vec);
-            })*
-        }
+            impl ::std::ops::DerefMut for $wrapper {
+                fn deref_mut<'a>(&'a mut self) -> &'a mut $obj {
+                    self.origin.as_mut()
+                }
+            }
 
-        impl QObjectMacro for $obj{
-            fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) {
-                fn next_or_panic(qt: Option<QVariant>) -> QVariant{
-                    if let Some(o) = qt {
-                        o
-                    }else {
-                        panic!("Not enough parameters to call a slot")
+            impl $wrapper{
+                $(pub fn $signalname(&self, $( $signalvar: $signalqtype ),*){
+                    let mut vec: Vec<QVariant> = Vec::new();
+                    $(
+                        let $signalvar: $signalqtype = $signalvar;
+                        vec.push($signalvar.into());
+                    )*
+                    emit_signal(&self.ptr, stringify!($signalname), &vec);
+                    ::std::mem::forget(vec);
+                })*
+
+                pub fn new(origin: $obj) -> Box<Self>{
+                    unsafe{
+                        let mut local = $wrapper{
+                            origin: Box::new(origin),
+                            ptr: ::std::mem::uninitialized()
+                        };
+                        let mut local = Box::new(local);
+                        let qobj = QObject::new(&mut *local);
+                        local.ptr = qobj;
+                        local
                     }
                 }
-                match name {
-                    $(stringify!($slotname) => {
-                        let mut iter = args.into_iter();
-                        $(
-                            let next = next_or_panic (iter.next());
-                            let $slotvar: $slotqtype = next.into();
-                        )*
-                        self.$slotname ($($slotvar),*);
-                    },)*
-                    _ => panic!("Unrecognized slot call: {}", name)
+
+                pub fn get_qobj(&self) -> &QObject{
+                    &self.ptr
                 }
             }
 
-            fn qmeta(&self) -> QMetaDefinition{
-                use qml::qtypes::*;
-                let mut signals = Vec::new();
-                $(
-                    let mut argc = 0;
-                    let mut mttypes = Vec::new();
+            impl QObjectMacro for $wrapper{
+                fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) {
+                    println!("SWEET CALLBACK");
+                    fn next_or_panic(qt: Option<QVariant>) -> QVariant{
+                        if let Some(o) = qt {
+                            o
+                        }else {
+                            panic!("Not enough parameters to call a slot")
+                        }
+                    }
+                    match name {
+                        $(stringify!($slotname) => {
+                            let mut iter = args.into_iter();
+                            $(
+                                let next = next_or_panic (iter.next());
+                                let $slotvar: $slotqtype = next.into();
+                            )*
+                            self.$slotname ($($slotvar),*);
+                        },)*
+                        _ => panic!("Unrecognized slot call: {}", name)
+                    }
+                }
+
+                fn qmeta(&self) -> QMetaDefinition{
+                    use qml::qtypes::*;
+                    let mut signals = Vec::new();
                     $(
-                        argc += 1;
-                        mttypes.push($signalqtype::metatype() as i32);
+                        let mut argc = 0;
+                        let mut mttypes = Vec::new();
+                        $(
+                            argc += 1;
+                            mttypes.push($signalqtype::metatype() as i32);
+                        )*
+                        signals.push((stringify!($signalname), argc, mttypes));
                     )*
-                    signals.push((stringify!($signalname), argc, mttypes));
-                )*
-                let mut slots = Vec::new();
-                $(
-                    let $slotname = ();
-                    let mut argc = 0;
-                    let mut mttypes = Vec::new();
+                    let mut slots = Vec::new();
                     $(
-                        argc += 1;
-                        mttypes.push($slotqtype::metatype() as i32);
+                        let $slotname = ();
+                        let mut argc = 0;
+                        let mut mttypes = Vec::new();
+                        $(
+                            argc += 1;
+                            mttypes.push($slotqtype::metatype() as i32);
+                        )*
+                        slots.push((stringify!($slotname), 43, argc, mttypes));
                     )*
-                    slots.push((stringify!($slotname), 43, argc, mttypes));
-                )*
-                QMetaDefinition::new(signals, slots, stringify!($obj))
+                    QMetaDefinition::new(signals, slots, stringify!($obj))
+                }
             }
-        }
-    };
-}
+        };
+    }
 
 extern "C" {
     fn dos_qmetaobject_create(superClassMetaObject: DosQMetaObject,

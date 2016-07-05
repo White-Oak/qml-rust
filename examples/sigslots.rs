@@ -3,31 +3,30 @@ extern crate qml;
 
 use qml::*;
 
-struct Test;
+pub struct Test;
 
-impl Test {
-    pub fn click(&self) {
-        println!("IT CLICKED");
-        self.updateText("Woah".into());
-    }
-}
 
 Q_OBJECT!(
-Test:
+pub Test as QTest{
     signals:
         fn updateText(s: String);
     slots:
          fn click();
-);
+});
+
+impl QTest {
+    pub fn click(&self) {
+        println!("IT CLICKED");
+        self.updateText("Woah, Rust has noticed you".into());
+    }
+}
 
 fn main() {
-    let mut test = Box::new(Test);
-    println!("{:?} start", test.as_ref() as *const Test);
     let mut qqae = QmlEngine::new();
-    let wrap = test.singleton();
-    let guard = wrap.inner.lock().unwrap();
-    qqae.set_and_store_property("test", &guard as &QObject);
+    let mut qtest = QTest::new(Test);
+    qqae.set_and_store_property("test", qtest.get_qobj());
     qqae.load_file("examples/sigslots.qml");
-    println!("{:?}", test.qmeta());
     qqae.exec();
+
+    qqae.quit();
 }
