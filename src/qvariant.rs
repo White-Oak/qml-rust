@@ -141,7 +141,9 @@ impl From<QObject> for QVariant {
 impl<'a> From<&'a [QVariant]> for QVariant {
     fn from(i: &'a [QVariant]) -> Self {
         unsafe {
-            let ptr = i.iter().map(|qvar| qvar.ptr).collect::<Vec<DosQVariant>>().as_ptr();
+            let vec = i.iter().map(|qvar| qvar.ptr).collect::<Vec<DosQVariant>>();
+            let ptr = vec.as_ptr();
+            forget(vec);
             QVariant {
                 ptr: dos_qvariant_create_array(i.len() as i32, ptr),
                 owned: true,
@@ -154,16 +156,7 @@ use std::mem::forget;
 
 impl From<Vec<QVariant>> for QVariant {
     fn from(i: Vec<QVariant>) -> Self {
-        unsafe {
-            let vec = i.iter().map(|qvar| qvar.ptr).collect::<Vec<DosQVariant>>();
-            let ptr = vec.as_ptr();
-            forget(vec);
-            println!("About to cast");
-            QVariant {
-                ptr: dos_qvariant_create_array(i.len() as i32, ptr),
-                owned: true,
-            }
-        }
+        QVariant::from(i.as_slice())
     }
 }
 

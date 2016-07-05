@@ -10,9 +10,7 @@ fn main() {
     qqae.set_property("qVar4", &qvar);
     let vec: Vec<QVariant> = vec![42.into(), 43.into()];
     qqae.set_and_store_property("values", vec);
-    println!("About to load");
     qqae.load_file("examples/properties.qml");
-    println!("About to exec");
     qqae.exec();
     qqae.quit();
 }
