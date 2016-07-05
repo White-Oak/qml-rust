@@ -5,6 +5,7 @@ Bindings are based on [DOtherSide](https://github.com/filcuc/DOtherSide) C bindi
 # Examples
 * `cargo run --example properties` for setting properties from Rust to QML.
 * `cargo run --example listmodel` for an example of providing QML with list model from Rust.
+* `cargo run --example sigslots` for an example of how to create your own QObject with signals and slots, and to communicate between QML and Rust. Also shows how to use Q_OBJECT! macro.
 
 Requires CMake, Make, Qt (Core, Gui, Widgets, Quick) and, of course, Rust.
 
@@ -17,11 +18,11 @@ using qml-rust to provide properties and lists to QML in [here](https://github.c
 
 # Status
 Done:
-* Basic initialization and execution
-* Providing properties for QML files
-* QAbstractListModels - to provide changable models for QML items (early draft, still lacks proper mutability)
+* Basic initialization and execution.
+* Providing properties to QML files.
+* QAbstractListModels - to provide changable models for QML items (early draft, still lacks proper mutability).
+* QObjects: slots, signals (no properties for a whiel). Emitting signals and receiving slots works.
 
 To be done:
-* QObjects: slots, signals, properties
 * QML singletons
 * etc
