@@ -6,7 +6,35 @@ use utils::*;
 use types::*;
 use qobject::*;
 use qmlengine::*;
-
+/// Marks the structure to be able to be used in Qt meta-object system.
+///
+/// # Examples
+///
+/// ```
+/// #[macro_use] extern crate qml;
+/// use qml::*;
+/// pub struct Example;
+///
+/// impl Example {
+///     pub fn simple_receiver(&mut self) {
+///         // This is a function that also will be a slot
+///     }
+/// }
+///
+/// Q_OBJECT!(
+/// pub Example as QExample{
+///     signals:
+///         fn simple_signal(s: String);
+///     slots:
+///         fn simple_receiver();
+/// });
+///
+/// fn main() {
+///    let mut qqae = QmlEngine::new();
+///    let mut qobject = QExample::new(Example);
+///    qobject.simple_signal("Hi from Rust!".into());
+/// }
+/// ```
 #[macro_export]
 macro_rules! Q_OBJECT{
     (

@@ -14,7 +14,7 @@ pub struct QObject {
 
 extern "C" {
 
-    fn dos_qobject_create(dObjectPointer: *mut c_void,
+    fn dos_qobject_create(dObjectPointer: *mut libc::c_void,
                           metaObject: DosQMetaObject,
                           dObjectCallback: DObjectCallback)
                           -> DosQObject;
@@ -52,10 +52,8 @@ pub enum QtConnectionType {
 /// @param slotName The slotName as DosQVariant. It should not be deleted
 /// @param argc The number of arguments
 /// @param argv An array of DosQVariant pointers. They should not be deleted
-type DObjectCallback = extern "C" fn(*mut c_void, DosQVariant, i32, *const DosQVariant);
+type DObjectCallback = extern "C" fn(*mut libc::c_void, DosQVariant, i32, *const DosQVariant);
 
-use libc::c_void;
-use std::mem::transmute;
 impl QObject {
     pub fn new<'a>(obj: &mut QObjectMacro) -> QObject {
         unsafe {
@@ -67,7 +65,7 @@ impl QObject {
             let mut obj = Box::new(obj);
 
             let res = QObject {
-                ptr: dos_qobject_create(Box::into_raw(obj) as *mut c_void,
+                ptr: dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
                                         get_dos_qmeta(&meta),
                                         callback),
             };
@@ -81,7 +79,7 @@ pub fn get_qobj_ptr(o: &QObject) -> DosQObject {
     o.ptr
 }
 
-extern "C" fn callback(obj: *mut c_void,
+extern "C" fn callback(obj: *mut libc::c_void,
                        slotName: DosQVariant,
                        argc: i32,
                        argv: *const DosQVariant) {

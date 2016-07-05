@@ -1,6 +1,11 @@
+//! Provides definition of [`QMetaType`](enum.QMetaType.html) enum, that contains mapping of named types
+//! and a trait [`QMetaTypable`](trait.QMetaTypable.html), that controls which types are able to be used in signals, slots or properties.
 
-
+/// Provides a variant of enum for a type.
+///
+/// Only types that implement this, may be used as types in signals, slots or properties.
 pub trait QMetaTypable {
+    /// Returns an associate variant of QMetaType
     fn metatype() -> QMetaType;
 }
 
@@ -16,6 +21,9 @@ impl QMetaTypable for String {
     }
 }
 
+/// Analogue of [`Qt::QMetaType::Type`](http://doc.qt.io/qt-5/qmetatype.html#Type-enum)
+///
+/// `QMetaType` in Qt manages named types in the meta-object system.
 pub enum QMetaType {
     Void = 43,
     Bool = 1,

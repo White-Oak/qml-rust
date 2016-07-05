@@ -5,7 +5,6 @@ use qml::*;
 
 pub struct Test;
 
-
 Q_OBJECT!(
 pub Test as QTest{
     signals:
