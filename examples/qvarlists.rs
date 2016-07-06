@@ -10,6 +10,6 @@ fn main() {
     let shortcut = qvarlist![["John", [2, 2]], ["Ivan", [10, 0]], ["Mary", [0, 1]]];
     qqae.set_and_store_property("values", shortcut);
 
-    qqae.load_file("examples/qbarsets.qml");
+    qqae.load_file("examples/qvarlists.qml");
     qqae.exec();
 }
