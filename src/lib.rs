@@ -18,4 +18,4 @@ pub use qmlengine::QmlEngine;
 pub use qvariant::QVariant;
 pub use qabstactlistmodel::QListModel;
 pub use qobject::QObject;
-pub use qmeta::{QMetaDefinition, QObjectMacro, emit_signal};
+pub use qmeta::{QObjectMacro, emit_signal};

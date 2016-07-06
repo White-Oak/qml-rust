@@ -1,6 +1,7 @@
 use libc;
 use std::mem::forget;
 use std::slice::from_raw_parts;
+use std::sync::atomic::{AtomicPtr, Ordering};
 
 use qvariant::*;
 use utils::*;
@@ -8,8 +9,10 @@ use types::*;
 use qmeta::*;
 use qmlengine::*;
 
+#[doc(hidden)]
+/// Contains a pointer to raw Qt object.
 pub struct QObject {
-    ptr: DosQObject,
+    ptr: AtomicPtr<WQObject>,
 }
 
 extern "C" {
@@ -57,17 +60,17 @@ type DObjectCallback = extern "C" fn(*mut libc::c_void, DosQVariant, i32, *const
 impl QObject {
     pub fn new<'a>(obj: &mut QObjectMacro) -> QObject {
         unsafe {
-            let qmeta = obj.qmeta();
-            let name = qmeta.name.clone();
+            let qmeta = QMetaDefinition::new(obj.qmeta());
+            let name = get_qmetadef_name(&qmeta).clone();
             let meta = QMeta::new_for_qobject(qmeta);
 
             println!("Adress of wrapper {:p}", obj);
             let mut obj = Box::new(obj);
 
             let res = QObject {
-                ptr: dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
-                                        get_dos_qmeta(&meta),
-                                        callback),
+                ptr: AtomicPtr::new(dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
+                                                       get_dos_qmeta(&meta),
+                                                       callback)),
             };
             forget(meta);
             res
@@ -76,7 +79,7 @@ impl QObject {
 }
 
 pub fn get_qobj_ptr(o: &QObject) -> DosQObject {
-    o.ptr
+    o.ptr.load(Ordering::Relaxed)
 }
 
 extern "C" fn callback(obj: *mut libc::c_void,

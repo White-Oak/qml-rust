@@ -70,7 +70,7 @@ macro_rules! Q_OBJECT{
             slots:
             $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ident ),* );)*
 
-            //properties
+// properties
         }) =>{
             pub struct $wrapper{
                 origin: Box<$obj>,
@@ -99,7 +99,7 @@ macro_rules! Q_OBJECT{
                         let $signalvar: $signalqtype = $signalvar;
                         vec.push($signalvar.into());
                     )*
-                    emit_signal(&self.ptr, stringify!($signalname), &vec);
+                    emit_signal(self, stringify!($signalname), vec);
                     ::std::mem::forget(vec);
                 })*
 
@@ -114,10 +114,6 @@ macro_rules! Q_OBJECT{
                         local.ptr = qobj;
                         local
                     }
-                }
-
-                pub fn get_qobj(&self) -> &QObject{
-                    &self.ptr
                 }
             }
 
@@ -144,7 +140,7 @@ macro_rules! Q_OBJECT{
                     }
                 }
 
-                fn qmeta(&self) -> QMetaDefinition{
+                fn qmeta(&self) -> (Vec<(&str, i32, Vec<i32>)>, Vec<(&str, i32, i32, Vec<i32>)>, &'static str){
                     use qml::qtypes::*;
                     let mut signals = Vec::new();
                     $(
@@ -167,7 +163,11 @@ macro_rules! Q_OBJECT{
                         )*
                         slots.push((stringify!($slotname), 43, argc, mttypes));
                     )*
-                    QMetaDefinition::new(signals, slots, stringify!($obj))
+                    (signals, slots, stringify!($obj))
+                }
+
+                fn get_qobj(&self) -> &QObject{
+                    &self.ptr
                 }
             }
         };

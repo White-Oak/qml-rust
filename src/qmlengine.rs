@@ -1,4 +1,4 @@
-use libc;
+use std::sync::atomic::{AtomicPtr, Ordering};
 
 use qvariant::*;
 use types::*;
@@ -10,24 +10,21 @@ extern "C" {
     fn dos_qapplication_quit();
     fn dos_qapplication_delete();
 
-    fn dos_qqmlapplicationengine_create() -> QQmlApplicationEngine;
-    fn dos_qqmlapplicationengine_load(vptr: QQmlApplicationEngine, filename: *const libc::c_char);
-    fn dos_qqmlapplicationengine_load_url(vptr: QQmlApplicationEngine, url: DosQUrl);
-    fn dos_qqmlapplicationengine_load_data(vptr: QQmlApplicationEngine,
-                                           data: *const libc::c_char);
+    fn dos_qqmlapplicationengine_create() -> DosQmlApplicationEngine;
+    fn dos_qqmlapplicationengine_load(vptr: DosQmlApplicationEngine, filename: c_str);
+    fn dos_qqmlapplicationengine_load_url(vptr: DosQmlApplicationEngine, url: DosQUrl);
+    fn dos_qqmlapplicationengine_load_data(vptr: DosQmlApplicationEngine, data: c_str);
     // fn dos_qqmlapplicationengine_add_import_path(vptr: *mut DosQQmlApplicationEngine, const char *path);
-    fn dos_qqmlapplicationengine_context(vptr: QQmlApplicationEngine) -> DosQQmlContext;
-    fn dos_qqmlapplicationengine_delete(vptr: QQmlApplicationEngine);
+    fn dos_qqmlapplicationengine_context(vptr: DosQmlApplicationEngine) -> DosQQmlContext;
+    fn dos_qqmlapplicationengine_delete(vptr: DosQmlApplicationEngine);
 
-    fn dos_qqmlcontext_setcontextproperty(vptr: DosQQmlContext,
-                                          name: *const libc::c_char,
-                                          value: DosQVariant);
+    fn dos_qqmlcontext_setcontextproperty(vptr: DosQQmlContext, name: c_str, value: DosQVariant);
 
 }
 
 /// Provides an entry point for building QML applications from Rust
 pub struct QmlEngine {
-    ptr: QQmlApplicationEngine,
+    ptr: AtomicPtr<WQmlApplicationEngine>,
     stored: Vec<QVariant>,
 }
 
@@ -37,7 +34,7 @@ impl QmlEngine {
         unsafe {
             dos_qapplication_create();
             QmlEngine {
-                ptr: dos_qqmlapplicationengine_create(),
+                ptr: AtomicPtr::new(dos_qqmlapplicationengine_create()),
                 stored: Vec::new(),
             }
         }
@@ -51,12 +48,17 @@ impl QmlEngine {
         } else {
             format!("file://{}", path_raw.display())
         };
-        unsafe { dos_qqmlapplicationengine_load_url(self.ptr, construct_qurl(&path)) }
+        unsafe {
+            dos_qqmlapplicationengine_load_url(self.ptr.load(Ordering::Relaxed),
+                                               construct_qurl(&path))
+        }
     }
 
     /// Loads a string as a qml file
     pub fn load_data(&self, data: &str) {
-        unsafe { dos_qqmlapplicationengine_load_data(self.ptr, stoptr(data)) }
+        unsafe {
+            dos_qqmlapplicationengine_load_data(self.ptr.load(Ordering::Relaxed), stoptr(data))
+        }
     }
 
     /// Launches the application
@@ -78,7 +80,7 @@ impl QmlEngine {
     pub fn set_and_store_property<T: Into<QVariant>>(&mut self, name: &str, value: T) {
         let val = value.into();
         unsafe {
-            let context = dos_qqmlapplicationengine_context(self.ptr);
+            let context = dos_qqmlapplicationengine_context(self.ptr.load(Ordering::Relaxed));
             dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(&val));
         }
         self.stored.push(val);
@@ -87,7 +89,7 @@ impl QmlEngine {
     /// Sets a property for this QML context
     pub fn set_property(&self, name: &str, value: &QVariant) {
         unsafe {
-            let context = dos_qqmlapplicationengine_context(self.ptr);
+            let context = dos_qqmlapplicationengine_context(self.ptr.load(Ordering::Relaxed));
             dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(value));
         }
     }
@@ -105,7 +107,7 @@ impl Drop for QmlEngine {
     fn drop(&mut self) {
         unsafe {
             dos_qapplication_quit();
-            dos_qqmlapplicationengine_delete(self.ptr);
+            dos_qqmlapplicationengine_delete(self.ptr.load(Ordering::Relaxed));
             dos_qapplication_delete();
         }
     }

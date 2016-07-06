@@ -33,12 +33,12 @@ impl QHashIntQByteArray {
 //     }
 // }
 
-pub fn get_dqhiqba_ptr(o: QHashIntQByteArray) -> *mut libc::c_void {
+pub fn get_dqhiqba_ptr(o: QHashIntQByteArray) -> MutDosQHashIntQByteArray {
     o.0
 }
 
-impl From<*mut libc::c_void> for QHashIntQByteArray {
-    fn from(i: *mut libc::c_void) -> Self {
+impl From<MutDosQHashIntQByteArray> for QHashIntQByteArray {
+    fn from(i: MutDosQHashIntQByteArray) -> Self {
         QHashIntQByteArray(i)
     }
 }

@@ -21,18 +21,22 @@ extern "C" {
                                parameters: *const DosQVariant);
 }
 
-pub fn emit_signal(obj: &QObject, signalname: &str, args: &Vec<QVariant>) {
-    let vec: Vec<DosQVariant> = args.into_iter()
+#[doc(hidden)]
+/// Used by [`Q_OBJECT`](macro.Q_OBJECT!.html) macro to send signals to Qt.
+pub fn emit_signal(obj: &QObjectMacro, signalname: &str, args: Vec<QVariant>) {
+    let vec: Vec<DosQVariant> = args.iter()
         .map(|qvar| get_private_variant(&qvar))
         .collect();
+    forget(args);
     unsafe {
         println!("about to send signal");
-        dos_qobject_signal_emit(get_qobj_ptr(obj),
+        dos_qobject_signal_emit(get_qobj_ptr(obj.get_qobj()),
                                 stoptr(signalname),
                                 vec.len() as i32,
                                 vec.as_ptr())
     }
 }
+
 pub struct QMeta {
     ptr: DosQMetaObject,
 }
@@ -60,14 +64,17 @@ pub struct QMetaDefinition {
     sig_defs: SignalDefinitions,
     slot_defs: SlotDefinitions,
     prop_defs: PropertyDefinitions,
-    pub name: &'static str,
+    name: &'static str,
+}
+
+pub fn get_qmetadef_name(o: &QMetaDefinition) -> &'static str {
+    o.name
 }
 
 impl QMetaDefinition {
-    pub fn new(signals: Vec<(&str, i32, Vec<i32>)>,
-               slots: Vec<(&str, i32, i32, Vec<i32>)>,
-               name: &'static str)
+    pub fn new(input: (Vec<(&str, i32, Vec<i32>)>, Vec<(&str, i32, i32, Vec<i32>)>, &'static str))
                -> Self {
+        let (signals, slots, name) = input;
         let signals: Vec<SignalDefinition> = signals.into_iter()
             .map(|(s, argc, types)| {
                 let def = SignalDefinition {
@@ -110,9 +117,12 @@ impl QMetaDefinition {
     }
 }
 
+#[doc(hidden)]
+// Provides `qml-rust` with the neccessary information and an ability to callback slots.
 pub trait QObjectMacro {
     fn qslot_call(&mut self, name: &str, args: Vec<QVariant>);
-    fn qmeta(&self) -> QMetaDefinition;
+    fn qmeta(&self) -> (Vec<(&str, i32, Vec<i32>)>, Vec<(&str, i32, i32, Vec<i32>)>, &'static str);
+    fn get_qobj(&self) -> &QObject;
 }
 
 #[derive(Debug)]

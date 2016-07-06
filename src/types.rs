@@ -1,12 +1,24 @@
 use libc;
 
-pub type DosQVariant = *const libc::c_void;
-pub type DosQObject = *const libc::c_void;
-pub type QQmlApplicationEngine = *const libc::c_void;
-pub type DosQQmlContext = *const libc::c_void;
-pub type DosQModelIndex = *const libc::c_void;
-pub type MutDosQHashIntQByteArray = *mut libc::c_void;
-pub type DosQMetaObject = *const libc::c_void;
-pub type DosQAbstractListModel = *const libc::c_void;
-pub type MutDosQVariant = *mut libc::c_void;
-pub type DosQUrl = *mut libc::c_void;
+pub type DosQVariant = *const WQVariant;
+pub type MutDosQVariant = *mut WQVariant;
+pub type DosQObject = *mut WQObject;
+pub type DosQmlApplicationEngine = *mut WQmlApplicationEngine;
+pub type DosQQmlContext = *const WQQmlContext;
+pub type DosQModelIndex = *const WQModelIndex;
+pub type MutDosQHashIntQByteArray = *mut WQHashIntQByteArray;
+pub type DosQMetaObject = *const WQMetaObject;
+pub type DosQAbstractListModel = *mut WQAbstractListModel;
+pub type DosQUrl = *mut WQUrl;
+
+pub type c_str = *const libc::c_char;
+
+pub enum WQVariant {}
+pub enum WQObject {}
+pub enum WQmlApplicationEngine {}
+pub enum WQQmlContext {}
+pub enum WQModelIndex {}
+pub enum WQHashIntQByteArray {}
+pub enum WQMetaObject {}
+pub enum WQAbstractListModel {}
+pub enum WQUrl {}

@@ -1,5 +1,6 @@
 use libc;
 use std::ffi::{CString, CStr};
+use std::sync::atomic::{AtomicPtr, Ordering};
 
 use qmlengine::*;
 use utils::*;
@@ -10,7 +11,7 @@ extern "C" {
     fn dos_qvariant_create() -> DosQVariant;
     fn dos_qvariant_create_int(value: i32) -> DosQVariant;
     fn dos_qvariant_create_bool(value: bool) -> DosQVariant;
-    fn dos_qvariant_create_string(value: *const libc::c_char) -> DosQVariant;
+    fn dos_qvariant_create_string(value: c_str) -> DosQVariant;
     fn dos_qvariant_create_qobject(value: DosQObject) -> DosQVariant;
     fn dos_qvariant_create_qvariant(value: DosQVariant) -> DosQVariant;
     fn dos_qvariant_create_float(value: f32) -> DosQVariant;
@@ -41,45 +42,44 @@ extern "C" {
 ///
 /// A value can be different: int, string, float, double, bool or even a custom object.
 pub struct QVariant {
-    ptr: DosQVariant,
+    ptr: AtomicPtr<WQVariant>,
     owned: bool,
 }
 
 impl Clone for QVariant {
     fn clone(&self) -> Self {
         unsafe {
-            QVariant {
-                ptr: dos_qvariant_create_qvariant(self.ptr),
-                owned: true,
-            }
+            new_qvar(dos_qvariant_create_qvariant(self.ptr.load(Ordering::Relaxed)),
+                     true)
         }
     }
 }
 
 impl QVariant {
     pub fn to_int(&self) -> i32 {
-        unsafe { dos_qvariant_toInt(self.ptr) }
+        unsafe { dos_qvariant_toInt(self.ptr.load(Ordering::Relaxed)) }
     }
 
     pub fn into_bool(self) -> bool {
-        unsafe { dos_qvariant_toBool(self.ptr) }
+        unsafe { dos_qvariant_toBool(self.ptr.load(Ordering::Relaxed)) }
     }
 
     pub fn into_float(self) -> f32 {
-        unsafe { dos_qvariant_toFloat(self.ptr) }
+        unsafe { dos_qvariant_toFloat(self.ptr.load(Ordering::Relaxed)) }
     }
 
     pub fn into_double(self) -> f64 {
-        unsafe { dos_qvariant_toDouble(self.ptr) }
+        unsafe { dos_qvariant_toDouble(self.ptr.load(Ordering::Relaxed)) }
     }
 
     pub fn into_cstring(self) -> CString {
-        unsafe { CString::from_raw(dos_qvariant_toString(self.ptr)) }
+        unsafe { CString::from_raw(dos_qvariant_toString(self.ptr.load(Ordering::Relaxed))) }
     }
 
     pub fn set(&mut self, other: &QVariant) {
         unsafe {
-            dos_qvariant_assign(self.ptr as MutDosQVariant, other.ptr);
+            dos_qvariant_assign(self.ptr.load(Ordering::Relaxed),
+                                other.ptr.load(Ordering::Relaxed));
         }
     }
 
@@ -88,66 +88,68 @@ impl QVariant {
     }
 }
 
-pub fn new_qvariant(ptr: DosQVariant) -> QVariant {
+fn new_qvar(ptr: DosQVariant, owned: bool) -> QVariant {
     QVariant {
-        ptr: ptr,
-        owned: false,
+        ptr: AtomicPtr::new(ptr as MutDosQVariant),
+        owned: owned,
     }
 }
 
+pub fn new_qvariant(ptr: DosQVariant) -> QVariant {
+    new_qvar(ptr, false)
+}
+
 pub fn get_private_variant(from: &QVariant) -> DosQVariant {
-    from.ptr
+    from.ptr.load(Ordering::Relaxed)
 }
 
 impl Drop for QVariant {
     fn drop(&mut self) {
         if self.owned {
-            unsafe { dos_qvariant_delete(self.ptr) }
+            unsafe { dos_qvariant_delete(self.ptr.load(Ordering::Relaxed)) }
         }
     }
 }
 
 impl From<DosQObject> for QVariant {
     fn from(i: DosQObject) -> Self {
-        unsafe {
-            QVariant {
-                ptr: dos_qvariant_create_qobject(i),
-                owned: true,
-            }
-        }
+        unsafe { new_qvar(dos_qvariant_create_qobject(i), true) }
+    }
+}
+
+impl From<DosQAbstractListModel> for QVariant {
+    fn from(i: DosQAbstractListModel) -> Self {
+        unsafe { new_qvar(dos_qvariant_create_qobject(i as DosQObject), true) }
+    }
+}
+
+impl From<DosQVariant> for QVariant {
+    fn from(vptr: DosQVariant) -> Self {
+        new_qvar(vptr, false)
     }
 }
 
 impl From<MutDosQVariant> for QVariant {
     fn from(vptr: MutDosQVariant) -> Self {
-        QVariant {
-            ptr: vptr as *const libc::c_void,
-            owned: false,
-        }
+        new_qvar(vptr, false)
     }
 }
 
 impl From<QObject> for QVariant {
     fn from(i: QObject) -> Self {
-        unsafe {
-            QVariant {
-                ptr: dos_qvariant_create_qobject(get_qobj_ptr(&i)),
-                owned: true,
-            }
-        }
+        unsafe { new_qvar(dos_qvariant_create_qobject(get_qobj_ptr(&i)), true) }
     }
 }
 
 impl<'a> From<&'a [QVariant]> for QVariant {
     fn from(i: &'a [QVariant]) -> Self {
         unsafe {
-            let vec = i.iter().map(|qvar| qvar.ptr).collect::<Vec<DosQVariant>>();
+            let vec = i.iter()
+                .map(|qvar| qvar.ptr.load(Ordering::Relaxed) as DosQVariant)
+                .collect::<Vec<DosQVariant>>();
             let ptr = vec.as_ptr();
             forget(vec);
-            QVariant {
-                ptr: dos_qvariant_create_array(i.len() as i32, ptr),
-                owned: true,
-            }
+            new_qvar(dos_qvariant_create_array(i.len() as i32, ptr), true)
         }
     }
 }
@@ -158,104 +160,72 @@ impl From<Vec<QVariant>> for QVariant {
     fn from(i: Vec<QVariant>) -> Self {
         unsafe {
             let len = i.len();
-            let vec = i.iter().map(|qvar| qvar.ptr).collect::<Vec<DosQVariant>>();
+            let vec = i.iter()
+                .map(|qvar| qvar.ptr.load(Ordering::Relaxed) as DosQVariant)
+                .collect::<Vec<DosQVariant>>();
             let ptr = vec.as_ptr();
             forget(vec);
-            QVariant {
-                ptr: dos_qvariant_create_array(len as i32, ptr),
-                owned: true,
-            }
+            new_qvar(dos_qvariant_create_array(len as i32, ptr), true)
         }
     }
 }
 
 impl<'a> From<&'a QObject> for QVariant {
     fn from(i: &'a QObject) -> Self {
-        unsafe {
-            QVariant {
-                ptr: dos_qvariant_create_qobject(get_qobj_ptr(i)),
-                owned: true,
-            }
-        }
+        unsafe { new_qvar(dos_qvariant_create_qobject(get_qobj_ptr(i)), true) }
     }
 }
 
 impl From<i32> for QVariant {
     fn from(i: i32) -> Self {
-        unsafe {
-            QVariant {
-                ptr: dos_qvariant_create_int(i),
-                owned: true,
-            }
-        }
+        unsafe { new_qvar(dos_qvariant_create_int(i), true) }
     }
 }
 
 impl From<f32> for QVariant {
     fn from(i: f32) -> Self {
-        unsafe {
-            QVariant {
-                ptr: dos_qvariant_create_float(i),
-                owned: true,
-            }
-        }
+        unsafe { new_qvar(dos_qvariant_create_float(i), true) }
     }
 }
 
 impl From<f64> for QVariant {
     fn from(i: f64) -> Self {
-        unsafe {
-            QVariant {
-                ptr: dos_qvariant_create_double(i),
-                owned: true,
-            }
-        }
+        unsafe { new_qvar(dos_qvariant_create_double(i), true) }
     }
 }
 
 impl From<bool> for QVariant {
     fn from(i: bool) -> Self {
-        unsafe {
-            QVariant {
-                ptr: dos_qvariant_create_bool(i),
-                owned: true,
-            }
-        }
+        unsafe { new_qvar(dos_qvariant_create_bool(i), true) }
     }
 }
 
 impl<'a> From<&'a str> for QVariant {
     fn from(i: &'a str) -> Self {
-        unsafe {
-            QVariant {
-                ptr: dos_qvariant_create_string(stoptr(i)),
-                owned: true,
-            }
-        }
+        unsafe { new_qvar(dos_qvariant_create_string(stoptr(i)), true) }
     }
 }
 
 impl From<String> for QVariant {
     fn from(i: String) -> Self {
-        unsafe {
-            QVariant {
-                ptr: dos_qvariant_create_string(stoptr(&i)),
-                owned: true,
-            }
-        }
+        unsafe { new_qvar(dos_qvariant_create_string(stoptr(&i)), true) }
     }
 }
 
 // reverse Froms
 impl From<QVariant> for i32 {
     fn from(i: QVariant) -> Self {
-        unsafe { dos_qvariant_toInt(i.ptr) }
+        unsafe { dos_qvariant_toInt(i.ptr.load(Ordering::Relaxed)) }
     }
 }
 
 impl From<QVariant> for String {
     fn from(i: QVariant) -> Self {
         // Should i get ownership or not?
-        unsafe { CStr::from_ptr(dos_qvariant_toString(i.ptr)).to_string_lossy().into_owned() }
+        unsafe {
+            CStr::from_ptr(dos_qvariant_toString(i.ptr.load(Ordering::Relaxed)))
+                .to_string_lossy()
+                .into_owned()
+        }
     }
 }

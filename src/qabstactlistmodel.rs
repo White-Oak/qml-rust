@@ -95,10 +95,10 @@ extern "C" fn RustHeaderDataCallback(Qself: *const libc::c_void,
 }
 pub type HeaderDataCallback = extern "C" fn(*const libc::c_void, i32, i32, i32, MutDosQVariant);
 
-
+use std::sync::atomic::{AtomicPtr, Ordering};
 /// Allows providing a custom model to QML
 pub struct QListModel<'a> {
-    wrapped: DosQAbstractListModel,
+    wrapped: AtomicPtr<WQAbstractListModel>,
     model: Vec<Vec<QVariant>>,
     rolenames: Vec<&'a str>,
 }
@@ -109,17 +109,19 @@ extern "C" {
                                               first: i32,
                                               last: i32);
     fn dos_qabstractlistmodel_endInsertRows(vptr: DosQAbstractListModel);
+
+    fn dos_qabstractlistmodel_beginResetModel(vptr: DosQAbstractListModel);
+    fn dos_qabstractlistmodel_endResetModel(vptr: DosQAbstractListModel);
 }
 
 impl<'a> QListModel<'a> {
     /// Rolenames are roles of provided data, that are mapped to corresponding roles in QML.
     pub fn new<'b>(rolenames: &'b [&'a str]) -> Box<Self> {
         unsafe {
-            let mut qalm = null_mut();
             let mut rs = Vec::new();
             rs.extend_from_slice(rolenames);
             let mut result = QListModel {
-                wrapped: qalm,
+                wrapped: AtomicPtr::new(null_mut()),
                 model: Vec::new(),
                 rolenames: rs,
             };
@@ -138,7 +140,7 @@ impl<'a> QListModel<'a> {
                                               RustRoleNamesCallback,
                                               RustFlagsCallback, // no need
                                               RustHeaderDataCallback);// no need
-            boxer.wrapped = dqalm;
+            boxer.wrapped = AtomicPtr::new(dqalm);
 
             boxer
         }
@@ -151,7 +153,7 @@ impl<'a> QListModel<'a> {
 
     /// Gets a `QVariant` associate
     pub fn get_qvar(&self) -> QVariant {
-        self.wrapped.into()
+        self.wrapped.load(Ordering::Relaxed).into()
     }
 
     /// Inserts a row into model
@@ -162,13 +164,21 @@ impl<'a> QListModel<'a> {
     {
         unsafe {
             let index = QModelIndex::new();
-            dos_qabstractlistmodel_beginInsertRows(self.wrapped,
+            dos_qabstractlistmodel_beginInsertRows(self.wrapped.load(Ordering::Relaxed),
                                                    get_model_ptr(&index),
                                                    self.model.len() as i32,
                                                    (self.model.len() + 1) as i32);
             self.model.push(qvars.collect());
             println!("PUSHED at {} and {:?}", self.row_count(), self.wrapped);
-            dos_qabstractlistmodel_endInsertRows(self.wrapped);
+            dos_qabstractlistmodel_endInsertRows(self.wrapped.load(Ordering::Relaxed));
+        }
+    }
+
+    pub fn set_data(&mut self, qvars: Vec<Vec<QVariant>>) {
+        unsafe {
+            dos_qabstractlistmodel_beginResetModel(self.wrapped.load(Ordering::Relaxed));
+            self.model = qvars;
+            dos_qabstractlistmodel_endResetModel(self.wrapped.load(Ordering::Relaxed));
         }
     }
 }
