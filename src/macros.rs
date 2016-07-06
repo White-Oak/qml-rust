@@ -100,7 +100,6 @@ macro_rules! Q_OBJECT{
                         vec.push($signalvar.into());
                     )*
                     emit_signal(self, stringify!($signalname), vec);
-                    ::std::mem::forget(vec);
                 })*
 
                 pub fn new(origin: $obj) -> Box<Self>{
