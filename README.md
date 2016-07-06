@@ -2,6 +2,7 @@
 Library is still in a rough shape.  
 Bindings are based on [DOtherSide](https://github.com/filcuc/DOtherSide) C bindings for QML
 
+## [Early documentation](https://white-oak.github.io/qml-rust/qml/)
 # Examples
 All examples are located in a folder [`examples/`](examples), under `example_name.rs` and `example_name.qml` names.
 
