@@ -36,22 +36,22 @@ macro_rules! QT_connect {
 /// In particular, it determines whether a particular signal is delivered to a slot immediately or queued for delivery at a later time.
 pub enum QtConnectionType {
     /// **(Default)** If the receiver lives in the thread that emits the signal, Qt::DirectConnection is used. Otherwise, Qt::QueuedConnection is used. The connection type is determined when the signal is emitted.
-    AutoConnection = 0,
+    Auto = 0,
     /// The slot is invoked immediately when the signal is emitted. The slot is executed in the signalling thread.
-    DirectConnection = 1,
+    Direct = 1,
     /// The slot is invoked when control returns to the event loop of the receiver's thread. The slot is executed in the receiver's thread.
-    QueuedConnection = 2,
+    Queued = 2,
     /// Same as Qt::QueuedConnection, except that the signalling thread blocks until the slot returns. This connection must not be used if the receiver lives in the signalling thread, or else the application will deadlock.
-    BlockingQueuedConnection = 3,
+    BlockingQueued = 3,
     /// This is a flag that can be combined with any one of the above connection types, using a bitwise OR. When Qt::UniqueConnection is set, QObject::connect() will fail if the connection already exists (i.e. if the same signal is already connected to the same slot for the same pair of objects). This flag was introduced in Qt 4.6.
-    UniqueConnection = 0x80,
+    Unique = 0x80,
 }
 
 /// Called when a slot should be executed
-/// @param self The pointer to the QObject in the binded language
-/// @param slotName The slotName as DosQVariant. It should not be deleted
+/// @param self The pointer to the `QObject` in the binded language
+/// @param slotName The slotName as `DosQVariant`. It should not be deleted
 /// @param argc The number of arguments
-/// @param argv An array of DosQVariant pointers. They should not be deleted
+/// @param argv An array of `DosQVariant` pointers. They should not be deleted
 type DObjectCallback = extern "C" fn(*mut libc::c_void, DosQVariant, i32, *const DosQVariant);
 
 impl QObject {

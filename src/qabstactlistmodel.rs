@@ -23,10 +23,10 @@ extern "C" {
 }
 
 /// Called when a slot should be executed
-/// @param self The pointer to the QObject in the binded language
-/// @param slotName The slotName as DosQVariant. It should not be deleted
+/// @param self The pointer to the `QObject` in the binded language
+/// @param slotName The slotName as `DosQVariant`. It should not be deleted
 /// @param argc The number of arguments
-/// @param argv An array of DosQVariant pointers. They should not be deleted
+/// @param argv An array of `DosQVariant` pointers. They should not be deleted
 extern "C" fn RustObjectCallback(Qself: *const libc::c_void,
                                  slotname: DosQVariant,
                                  argc: i32,
@@ -35,16 +35,16 @@ extern "C" fn RustObjectCallback(Qself: *const libc::c_void,
 }
 pub type DObjectCallback = extern "C" fn(*const libc::c_void, DosQVariant, i32, *const DosQVariant);
 
-/// Called when the QAbstractListModel::rowCount method must be executed
-/// @param self The pointer to the QAbstractListModel in the binded language
-/// @param index The parent DosQModelIndex. It should not be deleted
+/// Called when the `QAbstractListModel::rowCount` method must be executed
+/// @param self The pointer to the `QAbstractListModel` in the binded language
+/// @param index The parent `DosQModelIndex`. It should not be deleted
 /// @param result The rowCount result. This must be deferenced and filled from the binded language.
 /// It should not be deleted
 pub type RowCountCallback = extern "C" fn(*const libc::c_void, DosQModelIndex, *mut i32);
 
-/// Called when the QAbstractListModel::columnCount method must be executed
-/// @param self The pointer to the QAbstractListModel in the binded language
-/// @param index The parent DosQModelIndex. It should not be deleted
+/// Called when the `QAbstractListModel::columnCount` method must be executed
+/// @param self The pointer to the `QAbstractListModel` in the binded language
+/// @param index The parent `DosQModelIndex`. It should not be deleted
 /// @param result The rowCount result. This must be deferenced and filled from the binded language.
 /// It should not be deleted
 extern "C" fn RustColumnCountCallback(Qself: *const libc::c_void,
@@ -57,11 +57,11 @@ extern "C" fn RustColumnCountCallback(Qself: *const libc::c_void,
 }
 pub type ColumnCountCallback = extern "C" fn(*const libc::c_void, DosQModelIndex, *mut i32);
 
-/// Called when the QAbstractListModel::data method must be executed
-/// @param self The pointer to the QAbstractListModel in the binded language
-/// @param index The DosQModelIndex to which we request the data. It should not be deleted
-/// @param result The DosQVariant result. This must be deferenced and filled from the binded language.
-/// It should not be deleted. See dos_qvariant_assign or other DosQVariant setters
+/// Called when the `QAbstractListModel::data` method must be executed
+/// @param self The pointer to the `QAbstractListModel` in the binded language
+/// @param index The `DosQModelIndex` to which we request the data. It should not be deleted
+/// @param result The `DosQVariant` result. This must be deferenced and filled from the binded language.
+/// It should not be deleted. See `dos_qvariant_assign` or other `DosQVariant` setters
 pub type DataCallback = extern "C" fn(*const libc::c_void, DosQModelIndex, i32, MutDosQVariant);
 
 extern "C" fn RustSetDataCallback(Qself: *const libc::c_void,
