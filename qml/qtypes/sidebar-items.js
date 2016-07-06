@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["QMetaType","Analogue of `Qt::QMetaType::Type`"]],"trait":[["QMetaTypable","Provides a variant of enum for a type."]]});

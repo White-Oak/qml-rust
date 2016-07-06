@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `QVariant` struct in crate `qml`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, QVariant">
+
+    <title>qml::QVariant - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>qml</a></p><script>window.sidebarCurrent = {name: 'QVariant', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>qml</a>::<wbr><a class='struct' href=''>QVariant</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-116' class='srclink' href='../src/qml/src/qvariant.rs.html#44-47' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct QVariant {
+    // some fields omitted
+}</pre><div class='docblock'><p>This holds a value to be providen for a QML context.</p>
+
+<p>A value can be different: int, string, float, double, bool or even a custom object.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-122' class='srclink' href='../src/qml/src/qvariant.rs.html#58-89' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.to_int' class='method'><code>fn <a href='#method.to_int' class='fnname'>to_int</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></h4>
+<h4 id='method.into_bool' class='method'><code>fn <a href='#method.into_bool' class='fnname'>into_bool</a>(self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.into_float' class='method'><code>fn <a href='#method.into_float' class='fnname'>into_float</a>(self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></h4>
+<h4 id='method.into_double' class='method'><code>fn <a href='#method.into_double' class='fnname'>into_double</a>(self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a></code></h4>
+<h4 id='method.into_cstring' class='method'><code>fn <a href='#method.into_cstring' class='fnname'>into_cstring</a>(self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CString.html' title='std::ffi::c_str::CString'>CString</a></code></h4>
+<h4 id='method.set' class='method'><code>fn <a href='#method.set' class='fnname'>set</a>(&amp;mut self, other: &amp;<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>)</code></h4>
+<h4 id='method.throw' class='method'><code>fn <a href='#method.throw' class='fnname'>throw</a>(&amp;mut self, flag: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-119' class='srclink' href='../src/qml/src/qvariant.rs.html#49-56' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; Self</code></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-146' class='srclink' href='../src/qml/src/qvariant.rs.html#106-112' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;DosQObject&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-149' class='srclink' href='../src/qml/src/qvariant.rs.html#114-118' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: DosQObject) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;DosQAbstractListModel&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-152' class='srclink' href='../src/qml/src/qvariant.rs.html#120-124' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-1' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: DosQAbstractListModel) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;DosQVariant&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-155' class='srclink' href='../src/qml/src/qvariant.rs.html#126-130' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-2' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(vptr: DosQVariant) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;MutDosQVariant&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-158' class='srclink' href='../src/qml/src/qvariant.rs.html#132-136' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-3' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(vptr: MutDosQVariant) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;QObject&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-161' class='srclink' href='../src/qml/src/qvariant.rs.html#138-142' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-4' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: QObject) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'a [</a><a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-164' class='srclink' href='../src/qml/src/qvariant.rs.html#144-155' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-5' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'a [</a><a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>&gt;&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-173' class='srclink' href='../src/qml/src/qvariant.rs.html#159-171' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-6' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>&gt;) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;&amp;'a QObject&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-181' class='srclink' href='../src/qml/src/qvariant.rs.html#173-177' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-7' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: &amp;'a QObject) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-185' class='srclink' href='../src/qml/src/qvariant.rs.html#179-183' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-8' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-188' class='srclink' href='../src/qml/src/qvariant.rs.html#185-189' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-9' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-191' class='srclink' href='../src/qml/src/qvariant.rs.html#191-195' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-10' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-194' class='srclink' href='../src/qml/src/qvariant.rs.html#197-201' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-11' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;&amp;'a <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-197' class='srclink' href='../src/qml/src/qvariant.rs.html#203-207' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-12' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: &amp;'a <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; for <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-201' class='srclink' href='../src/qml/src/qvariant.rs.html#209-213' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-13' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; Self</code></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "qml";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>
