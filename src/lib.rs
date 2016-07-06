@@ -9,9 +9,10 @@ mod qmodelindex;
 mod types;
 mod qurl;
 mod qobject;
-#[macro_use]
 mod qmeta;
 pub mod qtypes;
+#[macro_use]
+mod macros;
 
 pub use qmlengine::QmlEngine;
 pub use qvariant::QVariant;

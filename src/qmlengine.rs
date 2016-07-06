@@ -1,11 +1,8 @@
 use libc;
-use std::collections::HashMap;
 
 use qvariant::*;
 use types::*;
 use qurl::*;
-use qobject::*;
-use qmeta::*;
 
 extern "C" {
     fn dos_qapplication_create();

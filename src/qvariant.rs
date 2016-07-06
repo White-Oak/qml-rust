@@ -156,7 +156,16 @@ use std::mem::forget;
 
 impl From<Vec<QVariant>> for QVariant {
     fn from(i: Vec<QVariant>) -> Self {
-        QVariant::from(i.as_slice())
+        unsafe {
+            let len = i.len();
+            let vec = i.iter().map(|qvar| qvar.ptr).collect::<Vec<DosQVariant>>();
+            let ptr = vec.as_ptr();
+            forget(vec);
+            QVariant {
+                ptr: dos_qvariant_create_array(len as i32, ptr),
+                owned: true,
+            }
+        }
     }
 }
 
