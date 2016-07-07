@@ -58,7 +58,7 @@ pub enum QtConnectionType {
 type DObjectCallback = extern "C" fn(*mut libc::c_void, DosQVariant, i32, *const DosQVariant);
 
 impl QObject {
-    pub fn new<'a>(obj: &mut QObjectMacro) -> QObject {
+    pub fn new(obj: &mut QObjectMacro) -> QObject {
         unsafe {
             let qmeta = QMetaDefinition::new(obj.qmeta());
             let name = get_qmetadef_name(&qmeta).clone();

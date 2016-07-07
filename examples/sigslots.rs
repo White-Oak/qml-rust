@@ -1,5 +1,8 @@
 #[macro_use]
 extern crate qml;
+use std::thread;
+use std::sync::*;
+use std::time::Duration;
 
 use qml::*;
 
@@ -10,7 +13,9 @@ pub Test as QTest{
     signals:
         fn updateText(s: String);
     slots:
-         fn click();
+        fn click();
+    properties:
+        name: String; get_name, set_name; exists;
 });
 
 impl QTest {
@@ -22,7 +27,9 @@ impl QTest {
 
 fn main() {
     let mut qqae = QmlEngine::new();
-    let mut qtest = QTest::new(Test);
+    let mut qtest = QTest::new(Test, "OAK".into());
+    qtest.set_name("Swapped".into());
+    assert_eq!(qtest.get_name(), "Swapped".to_string());
     qqae.set_and_store_property("test", qtest.get_qobj());
     qqae.load_file("examples/sigslots.qml");
     qqae.exec();

@@ -71,10 +71,13 @@ pub fn get_qmetadef_name(o: &QMetaDefinition) -> &'static str {
     o.name
 }
 
+pub type QMetaDef = (Vec<(&'static str, i32, Vec<i32>)>,
+                     Vec<(&'static str, i32, i32, Vec<i32>)>,
+                     Vec<(&'static str, i32, &'static str, &'static str, &'static str)>,
+                     &'static str);
 impl QMetaDefinition {
-    pub fn new(input: (Vec<(&str, i32, Vec<i32>)>, Vec<(&str, i32, i32, Vec<i32>)>, &'static str))
-               -> Self {
-        let (signals, slots, name) = input;
+    pub fn new(input: QMetaDef) -> Self {
+        let (signals, slots, props, name) = input;
         let signals: Vec<SignalDefinition> = signals.into_iter()
             .map(|(s, argc, types)| {
                 let def = SignalDefinition {
@@ -91,6 +94,7 @@ impl QMetaDefinition {
             definitions: signals.as_ptr(),
         };
         forget(signals);
+
         let slots: Vec<SlotDefinition> = slots.into_iter()
             .map(|(s, ret_type, argc, types)| {
                 let def = SlotDefinition {
@@ -108,10 +112,27 @@ impl QMetaDefinition {
             definitions: slots.as_ptr(),
         };
         forget(slots);
+
+        let props: Vec<PropertyDefinition> = props.into_iter()
+            .map(|(name, propertyMetaType, readSlot, writeSlot, notifySignal)| {
+                PropertyDefinition {
+                    name: stoptr(name),
+                    propertyMetaType: propertyMetaType,
+                    readSlot: stoptr(readSlot),
+                    writeSlot: stoptr(writeSlot),
+                    notifySignal: stoptr(notifySignal),
+                }
+            })
+            .collect();
+        let prop_defs = PropertyDefinitions {
+            count: props.len() as i32,
+            definitions: props.as_ptr(),
+        };
+        forget(props);
         QMetaDefinition {
             sig_defs: sig_defs,
             slot_defs: slot_defs,
-            prop_defs: PropertyDefinitions::default(),
+            prop_defs: prop_defs,
             name: name,
         }
     }
@@ -121,7 +142,7 @@ impl QMetaDefinition {
 // Provides `qml-rust` with the neccessary information and an ability to callback slots.
 pub trait QObjectMacro {
     fn qslot_call(&mut self, name: &str, args: Vec<QVariant>);
-    fn qmeta(&self) -> (Vec<(&str, i32, Vec<i32>)>, Vec<(&str, i32, i32, Vec<i32>)>, &'static str);
+    fn qmeta(&self) -> QMetaDef;
     fn get_qobj(&self) -> &QObject;
 }
 
@@ -171,16 +192,4 @@ struct PropertyDefinition {
 struct PropertyDefinitions {
     count: i32,
     definitions: *const PropertyDefinition,
-}
-
-impl Default for PropertyDefinitions {
-    fn default() -> Self {
-        let vec = Vec::new();
-        let res = PropertyDefinitions {
-            count: 0,
-            definitions: vec.as_ptr(),
-        };
-        forget(vec);
-        res
-    }
 }

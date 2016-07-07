@@ -2,7 +2,6 @@ use libc;
 use std::ffi::{CString, CStr};
 use std::sync::atomic::{AtomicPtr, Ordering};
 
-use qmlengine::*;
 use utils::*;
 use types::*;
 use qobject::*;

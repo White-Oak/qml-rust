@@ -70,11 +70,13 @@ macro_rules! Q_OBJECT{
             slots:
             $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ident ),* );)*
 
-// properties
+            properties:
+            $($propname:ident : $proptype:ident; $read_slot:ident, $write_slot:ident; $($restprop:ident),*;)*
         }) =>{
             pub struct $wrapper{
                 origin: Box<$obj>,
                 ptr: QObject,
+                $($propname: $proptype,)*
             }
 
             impl ::std::ops::Deref for $wrapper {
@@ -102,11 +104,12 @@ macro_rules! Q_OBJECT{
                     emit_signal(self, stringify!($signalname), vec);
                 })*
 
-                pub fn new(origin: $obj) -> Box<Self>{
+                pub fn new(origin: $obj, $($propname: $proptype),*) -> Box<Self>{
                     unsafe{
                         let mut local = $wrapper{
                             origin: Box::new(origin),
-                            ptr: ::std::mem::uninitialized()
+                            ptr: ::std::mem::uninitialized(),
+                            $($propname: $propname,)*
                         };
                         let mut local = Box::new(local);
                         let qobj = QObject::new(&mut *local);
@@ -114,6 +117,14 @@ macro_rules! Q_OBJECT{
                         local
                     }
                 }
+
+                $(pub fn $read_slot(&self) -> $proptype {
+                    self.$propname.clone()
+                }
+
+                pub fn $write_slot(&mut self, input: $proptype) {
+                    self.$propname = input
+                })*
             }
 
             impl QObjectMacro for $wrapper{
@@ -135,11 +146,23 @@ macro_rules! Q_OBJECT{
                             )*
                             self.$slotname ($($slotvar),*);
                         },)*
+                        $(stringify!($read_slot) => {
+                            let sending = self.$read_slot ();
+                        },
+                        stringify!($write_slot) => {
+                            let mut iter = args.into_iter();
+                            let next = next_or_panic (iter.next());
+                            let property: $proptype = next.into();
+                            self.$write_slot (property);
+                        },)*
                         _ => panic!("Unrecognized slot call: {}", name)
                     }
                 }
 
-                fn qmeta(&self) -> (Vec<(&str, i32, Vec<i32>)>, Vec<(&str, i32, i32, Vec<i32>)>, &'static str){
+                fn qmeta(&self) -> (Vec<(&'static str, i32, Vec<i32>)>,
+                                    Vec<(&'static str, i32, i32, Vec<i32>)>,
+                                    Vec<(&'static str, i32, &'static str, &'static str, &'static str)>,
+                                    &'static str){
                     use qml::qtypes::*;
                     let mut signals = Vec::new();
                     $(
@@ -162,7 +185,8 @@ macro_rules! Q_OBJECT{
                         )*
                         slots.push((stringify!($slotname), 43, argc, mttypes));
                     )*
-                    (signals, slots, stringify!($obj))
+                    let mut props: Vec<(&'static str, i32, &'static str, &'static str, &'static str)> = Vec::new();
+                    (signals, slots, props, stringify!($obj))
                 }
 
                 fn get_qobj(&self) -> &QObject{
