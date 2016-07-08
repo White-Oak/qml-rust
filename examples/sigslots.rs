@@ -15,7 +15,7 @@ pub Test as QTest{
     slots:
         fn click();
     properties:
-        name: String; get_name, set_name; exists;
+        name: String; read: get_name, write: set_name, notify: name_changed;
 });
 
 impl QTest {

@@ -70,6 +70,8 @@ macro_rules! __gen_signals{
 ///         fn simple_signal(s: String);
 ///     slots:
 ///         fn simple_receiver();
+///     properties:
+///         name: String; read: get_name, write: set_name, notify: name_changed;
 /// });
 ///
 /// fn main() {
@@ -89,7 +91,8 @@ macro_rules! Q_OBJECT{
         $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ident ),* );)*
 
         properties:
-        $($propname:ident : $proptype:ident; $read_slot:ident, $write_slot:ident; $($restprop:ident),*;)*
+        $($propname:ident : $proptype:ident; read: $read_slot:ident, write: $write_slot:ident,
+             notify: $notify_sig:ident;)*
     }) =>{
         pub struct $wrapper{
             origin: Box<$obj>,
@@ -113,7 +116,8 @@ macro_rules! Q_OBJECT{
         }
 
         impl $wrapper{
-            __gen_signals!($(fn $signalname ( $( $signalvar : $signalqtype ),* );)*);
+            __gen_signals!($(fn $signalname ( $( $signalvar : $signalqtype ),* );)*
+            $(fn $notify_sig ();)*);
 
             pub fn new(origin: $obj, $($propname: $proptype),*) -> Box<Self>{
                 unsafe{
@@ -186,7 +190,6 @@ macro_rules! Q_OBJECT{
                 )*
                 let mut slots = Vec::new();
                 $(
-                    let $slotname = ();
                     let mut argc = 0;
                     let mut mttypes = Vec::new();
                     $(
@@ -196,6 +199,10 @@ macro_rules! Q_OBJECT{
                     slots.push((stringify!($slotname), 43, argc, mttypes));
                 )*
                 let mut props: Vec<(&'static str, i32, &'static str, &'static str, &'static str)> = Vec::new();
+                $(
+                    props.push((stringify!($propname), $proptype::metatype() as i32, stringify!($read_slot),
+                               stringify!($write_slot), stringify!($notify_sig)));
+                )*
                 (signals, slots, props, stringify!($obj))
             }
 
