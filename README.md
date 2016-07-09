@@ -8,6 +8,7 @@ All examples are located in a folder [`examples/`](examples), under `example_nam
 
 * `cargo run --example properties` for setting properties from Rust to QML.
 * `cargo run --example listmodel` for an example of providing QML with list model from Rust.
+* `cargo run --example listmodel_macro` for the same example, but using `Q_LISTMODEL!` macro.
 * `cargo run --example sigslots` for an example of how to create your own `QObject` with signals and slots, and to communicate between QML and Rust. Also shows how to use `Q_OBJECT!` macro.
 * `cargo run --example qvarlists` for an example of how to use `qvarlist!` macro to easily form `QVariant` (used to pass data to QML) of a complex array.
 * `cargo run --example threaded` for an example of multithreading.
@@ -25,7 +26,7 @@ using qml-rust to provide properties and lists to QML in [here](https://github.c
 Done:
 * Basic initialization and execution.
 * Providing properties to QML files.
-* QAbstractListModels - to provide changable models for QML items (early draft, still lacks proper mutability).
+* QAbstractListModels - provides changable models for QML items (early draft, still lacks proper mutability).
 * QObjects: slots, signals (limited properties support). Emitting signals and receiving slots works.
 
 To be done:
