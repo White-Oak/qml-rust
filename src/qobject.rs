@@ -90,7 +90,7 @@ extern "C" fn callback(obj: *mut libc::c_void,
         let mut obj: Box<&mut QObjectMacro> = Box::from_raw(obj as *mut &mut QObjectMacro);
         println!("Calling adress of wrapper  {:p}", *obj.as_mut());
         let vec = from_raw_parts(argv, argc as usize);
-        let vec: Vec<QVariant> = vec.into_iter().map(|&dq| dq.into()).collect();
+        let vec: Vec<QVariant> = vec.into_iter().skip(1).map(|&dq| dq.into()).collect();
         let slotName: String = new_qvariant(slotName).into();
         println!("Right before going in... name: {}, argc: {}",
                  slotName,

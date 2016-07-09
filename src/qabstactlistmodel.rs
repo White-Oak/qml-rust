@@ -50,10 +50,6 @@ pub type RowCountCallback = extern "C" fn(*const libc::c_void, DosQModelIndex, *
 extern "C" fn RustColumnCountCallback(Qself: *const libc::c_void,
                                       parent: DosQModelIndex,
                                       result: *mut i32) {
-    println!("COLUMN COUNT GOT");
-    // unsafe {
-    //     *result = 0;
-    // }
 }
 pub type ColumnCountCallback = extern "C" fn(*const libc::c_void, DosQModelIndex, *mut i32);
 
@@ -169,7 +165,6 @@ impl<'a> QListModel<'a> {
                                                    self.model.len() as i32,
                                                    (self.model.len() + 1) as i32);
             self.model.push(qvars.collect());
-            println!("PUSHED at {} and {:?}", self.row_count(), self.wrapped);
             dos_qabstractlistmodel_endInsertRows(self.wrapped.load(Ordering::Relaxed));
         }
     }
@@ -188,9 +183,6 @@ extern "C" fn RustRowCountCallback(Qself: *const libc::c_void,
                                    result: *mut i32) {
     unsafe {
         let ref qlist = *(Qself as *const QListModel);
-        println!("ROW COUNT GOT at {} and {:?}",
-                 qlist.row_count(),
-                 qlist.wrapped);
         *result = qlist.row_count() as i32;
     }
 }
@@ -199,7 +191,6 @@ extern "C" fn RustDataCallback(Qself: *const libc::c_void,
                                index: DosQModelIndex,
                                role: i32,
                                result: MutDosQVariant) {
-    println!("DATA CALLBACK IS HERE");
     let qindex: QModelIndex = index.into();
     unsafe {
         let ref qlist = *(Qself as *const QListModel);
@@ -211,7 +202,6 @@ extern "C" fn RustDataCallback(Qself: *const libc::c_void,
 
 const START_ROLE: i32 = 0x0100;
 extern "C" fn RustRoleNamesCallback(Qself: *const libc::c_void, result: MutDosQHashIntQByteArray) {
-    println!("HOHO ROLENAMES");
     unsafe {
         let ref qlist = *(Qself as *const QListModel);
         let hash: QHashIntQByteArray = result.into();
