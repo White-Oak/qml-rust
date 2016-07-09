@@ -207,13 +207,19 @@ impl From<bool> for QVariant {
 
 impl<'a> From<&'a str> for QVariant {
     fn from(i: &'a str) -> Self {
-        unsafe { new_qvar(dos_qvariant_create_string(stoptr(i)), true) }
+        unsafe {
+            let ptr = stoptr(i);
+            let qvar = new_qvar(dos_qvariant_create_string(ptr), true);
+            // Dropping CString
+            ptrtos(ptr);
+            qvar
+        }
     }
 }
 
 impl From<String> for QVariant {
     fn from(i: String) -> Self {
-        unsafe { new_qvar(dos_qvariant_create_string(stoptr(&i)), true) }
+        QVariant::from(i.as_str())
     }
 }
 
