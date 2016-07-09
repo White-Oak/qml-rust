@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-715' class='srclink' href='../src/qml/src/macros.rs.html#12-32' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-711' class='srclink' href='../src/qml/src/macros.rs.html#13-33' title='goto source code'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>qvarlist</span> {
     (<span class='ident'>__</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>v</span>:<span class='ident'>ident</span>, [$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inside</span>:<span class='ident'>tt</span>)<span class='op'>*</span>], $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rest</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> { ... };
@@ -56,11 +56,13 @@
     (<span class='ident'>__</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>v</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>varname</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> { ... };
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rest</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> { ... };
 }</pre>
-<div class='docblock'><p>Eases forming of QVariantLists (<a href="struct.QVariant.html"><code>QVariant</code></a> of array).</p>
+<div class='docblock'><p>Eases forming of <code>QVariantLists</code> (<a href="struct.QVariant.html"><code>QVariant</code></a> of array).</p>
+
+<p>To be more precise, macro generates Vec<QVariant> which implements Into<QVariant>.</p>
 
 <h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1>
 <pre class='rust rust-example-rendered'>
-<span class='kw'>let</span> <span class='ident'>shortcut</span>: <span class='ident'>QVariant</span> <span class='op'>=</span> <span class='macro'>qvarlist</span><span class='macro'>!</span>[[<span class='string'>&quot;John&quot;</span>, [<span class='number'>2</span>, <span class='number'>2</span>]], [<span class='string'>&quot;Ivan&quot;</span>, [<span class='number'>10</span>, <span class='number'>0</span>]], [<span class='string'>&quot;Mary&quot;</span>, [<span class='number'>0</span>, <span class='number'>1</span>]]];</pre>
+<span class='kw'>let</span> <span class='ident'>shortcut</span>: <span class='ident'>QVariant</span> <span class='op'>=</span> <span class='macro'>qvarlist</span><span class='macro'>!</span>[[<span class='string'>&quot;John&quot;</span>, [<span class='number'>2</span>, <span class='number'>2</span>]], [<span class='string'>&quot;Ivan&quot;</span>, [<span class='number'>10</span>, <span class='number'>0</span>]], [<span class='string'>&quot;Mary&quot;</span>, [<span class='number'>0</span>, <span class='number'>1</span>]]].<span class='ident'>into</span>();</pre>
 </div></section>
     <section id='search' class="content hidden"></section>
 

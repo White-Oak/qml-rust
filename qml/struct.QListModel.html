@@ -47,11 +47,11 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-297' class='srclink' href='../src/qml/src/qabstactlistmodel.rs.html#100-104' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-296' class='srclink' href='../src/qml/src/qabstactlistmodel.rs.html#96-100' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct QListModel&lt;'a&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>Allows providing a custom model to QML</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../qml/struct.QListModel.html' title='qml::QListModel'>QListModel</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-314' class='srclink' href='../src/qml/src/qabstactlistmodel.rs.html#117-184' title='goto source code'>[src]</a></span></h3>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../qml/struct.QListModel.html' title='qml::QListModel'>QListModel</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-313' class='srclink' href='../src/qml/src/qabstactlistmodel.rs.html#113-180' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>&lt;'b&gt;(rolenames: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'b [</a>&amp;'a <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;Self&gt;</code></h4>
 <div class='docblock'><p>Rolenames are roles of provided data, that are mapped to corresponding roles in QML.</p>
 </div><h4 id='method.row_count' class='method'><code>fn <a href='#method.row_count' class='fnname'>row_count</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
@@ -63,7 +63,8 @@
 
 <p>Note that it clones all incoming qvariants as modifying them is not allowed.</p>
 </div><h4 id='method.set_data' class='method'><code>fn <a href='#method.set_data' class='fnname'>set_data</a>(&amp;mut self, qvars: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>&gt;&gt;)</code></h4>
-</div></section>
+<div class='docblock'><p>Sets a data for this QAbstractListModel</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

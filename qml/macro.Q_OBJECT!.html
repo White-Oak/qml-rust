@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-717' class='srclink' href='../src/qml/src/macros.rs.html#84-214' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-713' class='srclink' href='../src/qml/src/macros.rs.html#87-226' title='goto source code'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>Q_OBJECT</span> {
     (
@@ -67,8 +67,6 @@
 
 <h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1>
 <pre class='rust rust-example-rendered'>
-<span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>qml</span>;
-<span class='kw'>use</span> <span class='ident'>qml</span>::<span class='op'>*</span>;
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Example</span>;
 
 <span class='kw'>impl</span> <span class='ident'>Example</span> {
@@ -87,11 +85,11 @@
         <span class='ident'>name</span>: <span class='ident'>String</span>; <span class='ident'>read</span>: <span class='ident'>get_name</span>, <span class='ident'>write</span>: <span class='ident'>set_name</span>, <span class='ident'>notify</span>: <span class='ident'>name_changed</span>;
 });
 
-<span class='kw'>fn</span> <span class='ident'>main</span>() {
-   <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>qqae</span> <span class='op'>=</span> <span class='ident'>QmlEngine</span>::<span class='ident'>new</span>();
-   <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>qobject</span> <span class='op'>=</span> <span class='ident'>QExample</span>::<span class='ident'>new</span>(<span class='ident'>Example</span>);
-   <span class='ident'>qobject</span>.<span class='ident'>simple_signal</span>(<span class='string'>&quot;Hi from Rust!&quot;</span>.<span class='ident'>into</span>());
-}</pre>
+...
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>qqae</span> <span class='op'>=</span> <span class='ident'>QmlEngine</span>::<span class='ident'>new</span>();
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>qobject</span> <span class='op'>=</span> <span class='ident'>QExample</span>::<span class='ident'>new</span>(<span class='ident'>Example</span>);
+<span class='ident'>qobject</span>.<span class='ident'>simple_signal</span>(<span class='string'>&quot;Hi from Rust!&quot;</span>.<span class='ident'>into</span>());</pre>
 </div></section>
     <section id='search' class="content hidden"></section>
 
