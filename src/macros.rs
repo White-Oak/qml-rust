@@ -221,3 +221,6 @@ macro_rules! Q_OBJECT{
         }
     };
 }
+
+
+// Generates a wrapper for QListModel for easier management

@@ -75,18 +75,18 @@ impl QVariant {
         unsafe { CString::from_raw(dos_qvariant_toString(self.ptr.load(Ordering::Relaxed))) }
     }
 
+    /// Sets the value for this `QVariant`
     pub fn set(&mut self, other: &QVariant) {
         unsafe {
             dos_qvariant_assign(self.ptr.load(Ordering::Relaxed),
                                 other.ptr.load(Ordering::Relaxed));
         }
     }
-
-    pub fn throw(&mut self, flag: bool) {
-        self.owned = flag;
-    }
 }
 
+pub fn throw(qvar: &mut QVariant, flag: bool) {
+    qvar.owned = flag;
+}
 fn new_qvar(ptr: DosQVariant, owned: bool) -> QVariant {
     QVariant {
         ptr: AtomicPtr::new(ptr as MutDosQVariant),
@@ -110,30 +110,35 @@ impl Drop for QVariant {
     }
 }
 
+#[doc(hidden)]
 impl From<DosQObject> for QVariant {
     fn from(i: DosQObject) -> Self {
         unsafe { new_qvar(dos_qvariant_create_qobject(i), true) }
     }
 }
 
+#[doc(hidden)]
 impl From<DosQAbstractListModel> for QVariant {
     fn from(i: DosQAbstractListModel) -> Self {
         unsafe { new_qvar(dos_qvariant_create_qobject(i as DosQObject), true) }
     }
 }
 
+#[doc(hidden)]
 impl From<DosQVariant> for QVariant {
     fn from(vptr: DosQVariant) -> Self {
         new_qvar(vptr, false)
     }
 }
 
+#[doc(hidden)]
 impl From<MutDosQVariant> for QVariant {
     fn from(vptr: MutDosQVariant) -> Self {
         new_qvar(vptr, false)
     }
 }
 
+#[doc(hidden)]
 impl From<QObject> for QVariant {
     fn from(i: QObject) -> Self {
         unsafe { new_qvar(dos_qvariant_create_qobject(get_qobj_ptr(&i)), true) }
@@ -169,6 +174,7 @@ impl From<Vec<QVariant>> for QVariant {
     }
 }
 
+#[doc(hidden)]
 impl<'a> From<&'a QObject> for QVariant {
     fn from(i: &'a QObject) -> Self {
         unsafe { new_qvar(dos_qvariant_create_qobject(get_qobj_ptr(i)), true) }

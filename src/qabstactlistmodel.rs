@@ -169,6 +169,7 @@ impl<'a> QListModel<'a> {
         }
     }
 
+    /// Sets a data for this QAbstractListModel
     pub fn set_data(&mut self, qvars: Vec<Vec<QVariant>>) {
         unsafe {
             dos_qabstractlistmodel_beginResetModel(self.wrapped.load(Ordering::Relaxed));
