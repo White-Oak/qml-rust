@@ -94,6 +94,15 @@ macro_rules! Q_OBJECT{
         $($propname:ident : $proptype:ident; read: $read_slot:ident, write: $write_slot:ident,
              notify: $notify_sig:ident;)*
     }) =>{
+
+        fn get_atomic_ptr<T>(o: &mut T) -> ::std::sync::atomic::AtomicPtr<T> {
+            ::std::sync::atomic::AtomicPtr::new(o as *mut T)
+        }
+
+        fn load_borrow<T>(ptr: ::std::sync::atomic::AtomicPtr<T>) -> &'static mut T {
+            unsafe { &mut *ptr.load(::std::sync::atomic::Ordering::Relaxed) }
+        }
+
         pub struct $wrapper{
             origin: Box<$obj>,
             ptr: QObject,
