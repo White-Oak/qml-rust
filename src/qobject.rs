@@ -12,7 +12,8 @@ use qmlengine::*;
 #[doc(hidden)]
 /// Contains a pointer to raw Qt object.
 pub struct QObject {
-    ptr: AtomicPtr<WQObject>,
+    ptr: DosQObject,
+    qmeta: DosQMetaObject,
 }
 
 extern "C" {
@@ -27,6 +28,17 @@ extern "C" {
                                   method: *const libc::c_char,
                                   qtype: i32)
                                   -> bool;
+    fn dos_qobject_delete(deleted: DosQObject);
+    fn dos_qmetaobject_delete(vptr: DosQMetaObject);
+}
+
+impl Drop for QObject {
+    fn drop(&mut self) {
+        unsafe {
+            dos_qobject_delete(self.ptr);
+            dos_qmetaobject_delete(self.qmeta);
+        }
+    }
 }
 
 macro_rules! QT_connect {
@@ -68,9 +80,10 @@ impl QObject {
             let mut obj = Box::new(obj);
 
             let res = QObject {
-                ptr: AtomicPtr::new(dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
-                                                       get_dos_qmeta(&meta),
-                                                       callback)),
+                ptr: dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
+                                        get_dos_qmeta(&meta),
+                                        callback),
+                qmeta: get_dos_qmeta(&meta),
             };
             forget(meta);
             res
@@ -79,7 +92,7 @@ impl QObject {
 }
 
 pub fn get_qobj_ptr(o: &QObject) -> DosQObject {
-    o.ptr.load(Ordering::Relaxed)
+    o.ptr
 }
 
 extern "C" fn callback(obj: *mut libc::c_void,
