@@ -1,13 +1,10 @@
 use libc;
 use std::mem::forget;
 use std::slice::from_raw_parts;
-use std::sync::atomic::{AtomicPtr, Ordering};
 
 use qvariant::*;
-use utils::*;
 use types::*;
 use qmeta::*;
-use qmlengine::*;
 
 #[doc(hidden)]
 /// Contains a pointer to raw Qt object.
@@ -73,11 +70,10 @@ impl QObject {
     pub fn new(obj: &mut QObjectMacro) -> QObject {
         unsafe {
             let qmeta = QMetaDefinition::new(obj.qmeta());
-            let name = get_qmetadef_name(&qmeta).clone();
             let meta = QMeta::new_for_qobject(qmeta);
 
-            println!("Adress of wrapper {:p}", obj);
-            let mut obj = Box::new(obj);
+            // println!("Adress of wrapper {:p}", obj);
+            let obj = Box::new(obj);
 
             let res = QObject {
                 ptr: dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
@@ -101,13 +97,13 @@ extern "C" fn callback(obj: *mut libc::c_void,
                        argv: *const DosQVariant) {
     unsafe {
         let mut obj: Box<&mut QObjectMacro> = Box::from_raw(obj as *mut &mut QObjectMacro);
-        println!("Calling adress of wrapper  {:p}", *obj.as_mut());
+        // println!("Calling adress of wrapper  {:p}", *obj.as_mut());
         let vec = from_raw_parts(argv, argc as usize);
         let vec: Vec<QVariant> = vec.into_iter().skip(1).map(|&dq| dq.into()).collect();
         let slotName: String = new_qvariant(slotName).into();
-        println!("Right before going in... name: {}, argc: {}",
-                 slotName,
-                 argc);
+        // println!("Right before going in... name: {}, argc: {}",
+        //  slotName,
+        //  argc);
         obj.qslot_call(&slotName, vec);
         forget(obj);
     }

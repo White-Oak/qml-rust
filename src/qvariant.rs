@@ -10,7 +10,7 @@ extern "C" {
     fn dos_qvariant_create() -> DosQVariant;
     fn dos_qvariant_create_int(value: i32) -> DosQVariant;
     fn dos_qvariant_create_bool(value: bool) -> DosQVariant;
-    fn dos_qvariant_create_string(value: c_str) -> DosQVariant;
+    fn dos_qvariant_create_string(value: DosCStr) -> DosQVariant;
     fn dos_qvariant_create_qobject(value: DosQObject) -> DosQVariant;
     fn dos_qvariant_create_qvariant(value: DosQVariant) -> DosQVariant;
     fn dos_qvariant_create_float(value: f32) -> DosQVariant;

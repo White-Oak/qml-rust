@@ -11,7 +11,7 @@ pub type DosQMetaObject = *const WQMetaObject;
 pub type DosQAbstractListModel = *mut WQAbstractListModel;
 pub type DosQUrl = *mut WQUrl;
 
-pub type c_str = *const libc::c_char;
+pub type DosCStr = *const libc::c_char;
 
 pub enum WQVariant {}
 pub enum WQObject {}

@@ -1,4 +1,3 @@
-use libc;
 
 use types::*;
 

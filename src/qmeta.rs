@@ -5,7 +5,6 @@ use qvariant::*;
 use utils::*;
 use types::*;
 use qobject::*;
-use qmlengine::*;
 
 extern "C" {
     fn dos_qmetaobject_create(superClassMetaObject: DosQMetaObject,
@@ -25,7 +24,7 @@ extern "C" {
 /// Used by [`Q_OBJECT`](macro.Q_OBJECT!.html) macro to send signals to Qt.
 pub fn emit_signal(obj: &QObjectMacro, signalname: &str, args: Vec<QVariant>) {
     let vec: Vec<DosQVariant> = args.iter()
-        .map(|qvar| get_private_variant(&qvar))
+        .map(|qvar| get_private_variant(qvar))
         .collect();
     forget(args);
     unsafe {

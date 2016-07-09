@@ -116,7 +116,7 @@ impl<'a> QListModel<'a> {
         unsafe {
             let mut rs = Vec::new();
             rs.extend_from_slice(rolenames);
-            let mut result = QListModel {
+            let result = QListModel {
                 wrapped: AtomicPtr::new(null_mut()),
                 model: Vec::new(),
                 rolenames: rs,
@@ -189,7 +189,7 @@ extern "C" fn RustRowCountCallback(Qself: *const libc::c_void,
                                    index: DosQModelIndex,
                                    result: *mut i32) {
     unsafe {
-        let ref qlist = *(Qself as *const QListModel);
+        let qlist = &*(Qself as *const QListModel);
         *result = qlist.row_count() as i32;
     }
 }
@@ -200,8 +200,8 @@ extern "C" fn RustDataCallback(Qself: *const libc::c_void,
                                result: MutDosQVariant) {
     let qindex: QModelIndex = index.into();
     unsafe {
-        let ref qlist = *(Qself as *const QListModel);
-        let ref data = qlist.model[qindex.row() as usize][(role - START_ROLE) as usize];
+        let qlist = &*(Qself as *const QListModel);
+        let data = &qlist.model[qindex.row() as usize][(role - START_ROLE) as usize];
         let mut qvar: QVariant = result.into();
         qvar.set(data);
     }
@@ -210,7 +210,7 @@ extern "C" fn RustDataCallback(Qself: *const libc::c_void,
 const START_ROLE: i32 = 0x0100;
 extern "C" fn RustRoleNamesCallback(Qself: *const libc::c_void, result: MutDosQHashIntQByteArray) {
     unsafe {
-        let ref qlist = *(Qself as *const QListModel);
+        let qlist = &*(Qself as *const QListModel);
         let hash: QHashIntQByteArray = result.into();
         for (i, name) in qlist.rolenames.iter().enumerate() {
             hash.insert(START_ROLE + i as i32, name);
