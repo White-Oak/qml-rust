@@ -1,3 +1,5 @@
+//! Contains definitions required to communicate with Qt with the use of `named types`.
+//!
 //! Provides definition of [`QMetaType`](enum.QMetaType.html) enum, that contains mapping of named types
 //! and a trait [`QMetaTypable`](trait.QMetaTypable.html), that controls which types are able to be used in signals, slots or properties.
 

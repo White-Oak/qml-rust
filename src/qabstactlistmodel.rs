@@ -179,6 +179,12 @@ impl<'a> QListModel<'a> {
     }
 }
 
+impl<'a, 'b> From<&'a QListModel<'b>> for QVariant {
+    fn from(i: &QListModel) -> QVariant {
+        i.get_qvar()
+    }
+}
+
 extern "C" fn RustRowCountCallback(Qself: *const libc::c_void,
                                    index: DosQModelIndex,
                                    result: *mut i32) {

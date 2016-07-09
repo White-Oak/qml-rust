@@ -1,11 +1,12 @@
-/// Eases forming of QVariantLists ([`QVariant`](struct.QVariant.html) of array).
+/// Eases forming of `QVariantLists` ([`QVariant`](struct.QVariant.html) of array).
 ///
+/// To be more precise, macro generates Vec<QVariant> which implements Into<QVariant>.
 /// # Examples
 /// ```
 /// # #[macro_use] extern crate qml;
 /// # use qml::*;
 /// # fn main() {
-/// let shortcut: QVariant = qvarlist![["John", [2, 2]], ["Ivan", [10, 0]], ["Mary", [0, 1]]];
+/// let shortcut: QVariant = qvarlist![["John", [2, 2]], ["Ivan", [10, 0]], ["Mary", [0, 1]]].into();
 /// # }
 /// ```
 #[macro_export]
@@ -54,8 +55,8 @@ macro_rules! __gen_signals{
 /// # Examples
 ///
 /// ```
-/// #[macro_use] extern crate qml;
-/// use qml::*;
+/// # #[macro_use] extern crate qml;
+/// # use qml::*;
 /// pub struct Example;
 ///
 /// impl Example {
@@ -74,11 +75,13 @@ macro_rules! __gen_signals{
 ///         name: String; read: get_name, write: set_name, notify: name_changed;
 /// });
 ///
-/// fn main() {
-///    let mut qqae = QmlEngine::new();
-///    let mut qobject = QExample::new(Example);
-///    qobject.simple_signal("Hi from Rust!".into());
-/// }
+/// ...
+///
+/// # fn main() {
+/// let mut qqae = QmlEngine::new();
+/// let mut qobject = QExample::new(Example);
+/// qobject.simple_signal("Hi from Rust!".into());
+/// # }
 /// ```
 #[macro_export]
 macro_rules! Q_OBJECT{
@@ -223,4 +226,76 @@ macro_rules! Q_OBJECT{
 }
 
 
-// Generates a wrapper for QListModel for easier management
+/// Generates a wrapper for [`QListModel`](struct.QListModel.html) for static typing and easier management.
+///
+/// # Examples
+/// ```
+/// # #[macro_use] extern crate qml;
+/// # use qml::*;
+/// Q_LISTMODEL!{
+///     pub QTestModel {
+///         name: &str,
+///         number: i32,
+///     }
+/// }
+///
+/// ...
+///
+/// # fn main() {
+/// let mut qqae = QmlEngine::new();
+/// let mut qalm = QTestModel::new();
+/// qalm.insert_row("John", 42);
+/// qalm.insert_row("Oak", 505);
+/// // `&QTestModel` implements `Into<QVariant>`
+/// qqae.set_and_store_property("listModel", &qalm);
+///
+/// qqae.load_file("examples/listmodel.qml");
+/// qalm.set_data(vec![("OMG", 13317), ("HACKED", 228)]);
+/// qqae.exec();
+/// # }
+/// ```
+#[macro_export]
+macro_rules! Q_LISTMODEL{
+    (pub $wrapper:ident{
+        $($rolename:ident : $roletype:ty,)*
+    }) => {
+        pub struct $wrapper {
+            qalm: Box<QListModel<'static>>,
+        }
+
+        impl $wrapper {
+            pub fn new() -> Self{
+                $wrapper{ qalm: QListModel::new(&[$(stringify!($rolename)),*])}
+            }
+
+            pub fn insert_row(&mut self, $($rolename : $roletype),*) {
+                let mut vec = Vec::new();
+                $(
+                    vec.push($rolename.into());
+                )*
+                self.qalm.insert_row(vec.into_iter());
+            }
+
+            pub fn get_qvar(&self) -> QVariant{
+                self.qalm.get_qvar()
+            }
+
+            pub fn set_data(&mut self, vec: Vec<($($roletype),*)>) {
+                self.qalm.set_data(vec.into_iter()
+                .map(|($($rolename),*)| {
+                    let mut vec = Vec::new();
+                    $(
+                        vec.push($rolename.into());
+                    )*
+                    vec
+                }).collect::<Vec<Vec<QVariant>>>())
+            }
+        }
+
+        impl<'a, 'b> From<&'a $wrapper> for QVariant {
+            fn from(i: &$wrapper) -> QVariant {
+                i.get_qvar()
+            }
+        }
+    }
+}
