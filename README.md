@@ -18,7 +18,7 @@ Requires CMake, Make, Qt (Core, Gui, Widgets, Quick) and, of course, Rust.
 
 * [Architect](https://github.com/White-Oak/architect) - an app showing some git stats,
 using qml-rust to provide properties and lists to QML in [here](https://github.com/White-Oak/architect/blob/master/src/view/qt.rs).
-* [Kefia](https://github.com/White-Oak/kefia) - A simple package manager, that provides a QListModel to QML,
+* [Kefia](https://github.com/White-Oak/kefia) - A simple package manager, that provides a QListModel to QML, registers a QObject with slots and communicates between QML and Rust,
 [here](https://github.com/White-Oak/kefia/blob/master/src/view.rs).
 
 # Status
@@ -26,7 +26,7 @@ Done:
 * Basic initialization and execution.
 * Providing properties to QML files.
 * QAbstractListModels - to provide changable models for QML items (early draft, still lacks proper mutability).
-* QObjects: slots, signals (no properties for a whiel). Emitting signals and receiving slots works.
+* QObjects: slots, signals (limited properties support). Emitting signals and receiving slots works.
 
 To be done:
 * QML singletons
