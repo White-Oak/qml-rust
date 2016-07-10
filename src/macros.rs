@@ -98,14 +98,6 @@ macro_rules! Q_OBJECT{
              notify: $notify_sig:ident;)*
     }) =>{
 
-        fn get_atomic_ptr<T>(o: &mut T) -> ::std::sync::atomic::AtomicPtr<T> {
-            ::std::sync::atomic::AtomicPtr::new(o as *mut T)
-        }
-
-        fn load_borrow<T>(ptr: ::std::sync::atomic::AtomicPtr<T>) -> &'static mut T {
-            unsafe { &mut *ptr.load(::std::sync::atomic::Ordering::Relaxed) }
-        }
-
         pub struct $wrapper{
             origin: Box<$obj>,
             ptr: QObject,
@@ -152,6 +144,13 @@ macro_rules! Q_OBJECT{
             pub fn $write_slot(&mut self, input: $proptype) {
                 self.$propname = input
             })*
+
+            fn threaded<F: FnOnce(&mut $wrapper) + Send + 'static>(&mut self, f: F){
+                let ptr = ::std::sync::atomic::AtomicPtr::new(self);
+                thread::spawn(move || {
+                    f(unsafe { &mut *ptr.load(::std::sync::atomic::Ordering::Relaxed) });
+                });
+            }
         }
 
         impl QObjectMacro for $wrapper{

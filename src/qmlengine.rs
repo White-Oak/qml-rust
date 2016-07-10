@@ -1,4 +1,3 @@
-use std::sync::atomic::{AtomicPtr, Ordering};
 
 use qvariant::*;
 use types::*;
@@ -26,7 +25,7 @@ extern "C" {
 
 /// Provides an entry point for building QML applications from Rust
 pub struct QmlEngine {
-    ptr: AtomicPtr<WQmlApplicationEngine>,
+    ptr: DosQmlApplicationEngine,
     stored: Vec<QVariant>,
 }
 
@@ -36,7 +35,7 @@ impl QmlEngine {
         unsafe {
             dos_qapplication_create();
             QmlEngine {
-                ptr: AtomicPtr::new(dos_qqmlapplicationengine_create()),
+                ptr: dos_qqmlapplicationengine_create(),
                 stored: Vec::new(),
             }
         }
@@ -50,17 +49,12 @@ impl QmlEngine {
         } else {
             format!("file://{}", path_raw.display())
         };
-        unsafe {
-            dos_qqmlapplicationengine_load_url(self.ptr.load(Ordering::Relaxed),
-                                               construct_qurl(&path))
-        }
+        unsafe { dos_qqmlapplicationengine_load_url(self.ptr, construct_qurl(&path)) }
     }
 
     /// Loads a string as a qml file
     pub fn load_data(&self, data: &str) {
-        unsafe {
-            dos_qqmlapplicationengine_load_data(self.ptr.load(Ordering::Relaxed), stoptr(data))
-        }
+        unsafe { dos_qqmlapplicationengine_load_data(self.ptr, stoptr(data)) }
     }
 
     /// Launches the application
@@ -82,7 +76,7 @@ impl QmlEngine {
     pub fn set_and_store_property<T: Into<QVariant>>(&mut self, name: &str, value: T) {
         let val = value.into();
         unsafe {
-            let context = dos_qqmlapplicationengine_context(self.ptr.load(Ordering::Relaxed));
+            let context = dos_qqmlapplicationengine_context(self.ptr);
             dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(&val));
         }
         self.stored.push(val);
@@ -91,7 +85,7 @@ impl QmlEngine {
     /// Sets a property for this QML context
     pub fn set_property(&self, name: &str, value: &QVariant) {
         unsafe {
-            let context = dos_qqmlapplicationengine_context(self.ptr.load(Ordering::Relaxed));
+            let context = dos_qqmlapplicationengine_context(self.ptr);
             dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(value));
         }
     }
@@ -109,7 +103,7 @@ impl Drop for QmlEngine {
     fn drop(&mut self) {
         unsafe {
             dos_qapplication_quit();
-            dos_qqmlapplicationengine_delete(self.ptr.load(Ordering::Relaxed));
+            dos_qqmlapplicationengine_delete(self.ptr);
             dos_qapplication_delete();
         }
     }

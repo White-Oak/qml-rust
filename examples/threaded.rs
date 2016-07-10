@@ -9,11 +9,10 @@ pub struct Logic;
 
 impl QLogic {
     pub fn downloadPage(&mut self, url: String) {
-        let ptr = get_atomic_ptr(self);
-        thread::spawn(|| {
-            thread::sleep(Duration::from_secs(2));
-            load_borrow(ptr).pageDownloaded(url);
-        });
+        self.threaded(|s| {
+            thread::sleep(Duration::from_secs(2));;
+            s.pageDownloaded(url);
+        })
     }
 }
 
