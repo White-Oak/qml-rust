@@ -108,7 +108,7 @@ macro_rules! Q_OBJECT{
 
         pub struct $wrapper{
             origin: Box<$obj>,
-            ptr: Option<QObject>,
+            ptr: QObject,
             $($propname: $proptype,)*
         }
 
@@ -135,12 +135,12 @@ macro_rules! Q_OBJECT{
                 unsafe{
                     let mut local = $wrapper{
                         origin: Box::new(origin),
-                        ptr: None,
+                        ptr: ::std::mem::uninitialized(),
                         $($propname: $propname,)*
                     };
                     let mut local = Box::new(local);
                     let qobj = QObject::new(&mut *local);
-                    local.ptr = Some(qobj);
+                    ::std::ptr::write(&mut local.ptr, qobj);
                     local
                 }
             }
@@ -219,7 +219,7 @@ macro_rules! Q_OBJECT{
             }
 
             fn get_qobj(&self) -> &QObject{
-                self.ptr.as_ref().unwrap()
+                &self.ptr
             }
         }
     };
