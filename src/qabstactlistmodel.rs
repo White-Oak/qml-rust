@@ -177,6 +177,11 @@ impl<'a> QListModel<'a> {
             dos_qabstractlistmodel_endResetModel(self.wrapped.load(Ordering::Relaxed));
         }
     }
+
+    /// Gets an immutable view of the data
+    pub fn view_data(&self) -> &[Vec<QVariant>] {
+        &self.model
+    }
 }
 
 impl<'a, 'b> From<&'a QListModel<'b>> for QVariant {

@@ -108,7 +108,7 @@ macro_rules! Q_OBJECT{
 
         pub struct $wrapper{
             origin: Box<$obj>,
-            ptr: QObject,
+            ptr: Option<QObject>,
             $($propname: $proptype,)*
         }
 
@@ -135,12 +135,12 @@ macro_rules! Q_OBJECT{
                 unsafe{
                     let mut local = $wrapper{
                         origin: Box::new(origin),
-                        ptr: ::std::mem::uninitialized(),
+                        ptr: None,
                         $($propname: $propname,)*
                     };
                     let mut local = Box::new(local);
                     let qobj = QObject::new(&mut *local);
-                    local.ptr = qobj;
+                    local.ptr = Some(qobj);
                     local
                 }
             }
@@ -219,12 +219,19 @@ macro_rules! Q_OBJECT{
             }
 
             fn get_qobj(&self) -> &QObject{
-                &self.ptr
+                self.ptr.as_ref().unwrap()
             }
         }
     };
 }
 
+
+// #[macro_export]
+// macro_rules! __listmodel_helper{
+//     (()$roletype:ident),*) => {
+//         ($(v.next().unwrap().into()),*)
+//     }
+// }
 
 /// Generates a wrapper for [`QListModel`](struct.QListModel.html) for static typing and easier management.
 ///
@@ -268,6 +275,7 @@ macro_rules! Q_LISTMODEL{
                 $wrapper{ qalm: QListModel::new(&[$(stringify!($rolename)),*])}
             }
 
+            /// Inserts a row into this model
             pub fn insert_row(&mut self, $($rolename : $roletype),*) {
                 let mut vec = Vec::new();
                 $(
@@ -276,10 +284,12 @@ macro_rules! Q_LISTMODEL{
                 self.qalm.insert_row(vec.into_iter());
             }
 
+            /// Gets an accoiated qvariant
             pub fn get_qvar(&self) -> QVariant{
                 self.qalm.get_qvar()
             }
 
+            /// Sets a specified data for this model
             pub fn set_data(&mut self, vec: Vec<($($roletype),*)>) {
                 self.qalm.set_data(vec.into_iter()
                 .map(|($($rolename),*)| {
@@ -289,6 +299,23 @@ macro_rules! Q_LISTMODEL{
                     )*
                     vec
                 }).collect::<Vec<Vec<QVariant>>>())
+            }
+
+            /// View contents of this model as a slice of rows of QVariants
+            pub fn view_raw_data(&self) -> &[Vec<QVariant>]{
+                self.qalm.view_data()
+            }
+
+            /// View contents of this model as a row
+            pub fn view_data(&self) -> Vec<($($roletype),*)>{
+                let view = self.qalm.view_data();
+                view.into_iter().map(|v| {
+                    let mut v = v.iter();
+                    $(
+                        let $rolename = v.next().unwrap().into();
+                    )*
+                    ($($rolename),*)
+                }).collect()
             }
         }
 

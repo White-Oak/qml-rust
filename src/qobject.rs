@@ -8,6 +8,7 @@ use qmeta::*;
 
 #[doc(hidden)]
 /// Contains a pointer to raw Qt object.
+#[derive(Debug)]
 pub struct QObject {
     ptr: DosQObject,
     qmeta: DosQMetaObject,
@@ -75,14 +76,12 @@ impl QObject {
             // println!("Adress of wrapper {:p}", obj);
             let obj = Box::new(obj);
 
-            let res = QObject {
+            QObject {
                 ptr: dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
                                         get_dos_qmeta(&meta),
                                         callback),
                 qmeta: get_dos_qmeta(&meta),
-            };
-            forget(meta);
-            res
+            }
         }
     }
 }

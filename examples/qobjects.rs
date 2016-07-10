@@ -1,4 +1,3 @@
-#![recursion_limit="20"]
 #[macro_use]
 extern crate qml;
 
@@ -15,10 +14,10 @@ impl Test {
 Q_OBJECT!(
 pub Test as QTest{
     signals:
-         fn testname (a: i32, b: i32);
-
+ fn testname (a: i32, b: i32);
     slots:
-         fn launchGoose(i: i32, launchText: String);
+ fn launchGoose(i: i32, launchText: String);
+    properties:
 });
 
 fn main() {

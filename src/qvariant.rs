@@ -27,7 +27,7 @@ extern "C" {
     fn dos_qvariant_isnull(val: DosQVariant) -> bool;
     fn dos_qvariant_assign(val: MutDosQVariant, other: DosQVariant);
     fn dos_qvariant_delete(val: DosQVariant);
-
+    fn dos_chararray_delete(ptr: DosCStr);
 // DOS_API void   DOS_CALL dos_qvariant_setInt    (DosQVariant *vptr, int value);
 // DOS_API void   DOS_CALL dos_qvariant_setBool   (DosQVariant *vptr, bool value);
 // DOS_API void   DOS_CALL dos_qvariant_setFloat  (DosQVariant *vptr, float value);
@@ -230,13 +230,38 @@ impl From<QVariant> for i32 {
     }
 }
 
+impl<'a> From<&'a QVariant> for i32 {
+    fn from(i: &'a QVariant) -> Self {
+        i.to_int()
+    }
+}
+
 impl From<QVariant> for String {
     fn from(i: QVariant) -> Self {
-        // Should i get ownership or not?
         unsafe {
-            CStr::from_ptr(dos_qvariant_toString(i.ptr.load(Ordering::Relaxed)))
+            let ch_ar = dos_qvariant_toString(load_self(&i));
+            let res = CStr::from_ptr(ch_ar)
                 .to_string_lossy()
-                .into_owned()
+                .into_owned();
+            dos_chararray_delete(ch_ar);
+            res
         }
     }
+}
+
+impl<'a> From<&'a QVariant> for String {
+    fn from(i: &'a QVariant) -> Self {
+        unsafe {
+            let ch_ar = dos_qvariant_toString(load_self(i));
+            let res = CStr::from_ptr(ch_ar)
+                .to_string_lossy()
+                .into_owned();
+            dos_chararray_delete(ch_ar);
+            res
+        }
+    }
+}
+
+fn load_self(s: &QVariant) -> DosQVariant {
+    s.ptr.load(Ordering::Relaxed)
 }
