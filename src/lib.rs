@@ -16,6 +16,7 @@ mod qmeta;
 pub mod qtypes;
 #[macro_use]
 mod macros;
+mod qmlregister;
 
 pub use qmlengine::QmlEngine;
 pub use qvariant::QVariant;
