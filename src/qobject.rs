@@ -97,14 +97,15 @@ extern "C" fn callback(obj: *mut libc::c_void,
     unsafe {
         let mut obj: Box<&mut QObjectMacro> = Box::from_raw(obj as *mut &mut QObjectMacro);
         // println!("Calling adress of wrapper  {:p}", *obj.as_mut());
-        let mut slice = from_raw_parts_mut(argv, argc as usize);
+        let slice = from_raw_parts_mut(argv, argc as usize);
         let vec: Vec<QVariant> = slice.iter().skip(1).map(|&dq| dq.into()).collect();
         let slotName: String = new_qvariant(slotName).into();
         // println!("Right before going in... name: {}, argc: {}",
         //  slotName,
         //  argc);
         if let Some(qvar) = obj.qslot_call(&slotName, vec) {
-            slice[0] = get_private_variant(qvar);
+            let mut qv: QVariant = slice[0].into();
+            qv.set(qvar);
         }
         forget(obj);
     }

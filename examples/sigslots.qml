@@ -23,6 +23,9 @@ ApplicationWindow {
       Component.onCompleted: {
         clicked.connect(test.click)
         test.updateText.connect(updateText)
+        console.log(test.name)
+        test.name = "OAK"
+        console.log(test.name)
       }
       function updateText(s) {
         text.text = s

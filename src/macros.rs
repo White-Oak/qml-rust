@@ -138,6 +138,7 @@ macro_rules! Q_OBJECT{
             }
 
             $(pub fn $read_slot(&self) -> &QVariant {
+                println!("Trying to read");
                 &self.properties.get(stringify!($propname)).unwrap().0
             }
 
@@ -208,6 +209,10 @@ macro_rules! Q_OBJECT{
                         mttypes.push($slotqtype::metatype() as i32);
                     )*
                     slots.push((stringify!($slotname), 43, argc, mttypes));
+                )*
+                $(
+                    slots.push((stringify!($read_slot), $proptype::metatype() as i32, 0, Vec::new()));
+                    slots.push((stringify!($write_slot), QMetaType::Void as i32, 1, vec![$proptype::metatype() as i32]));
                 )*
                 let mut props: Vec<(&'static str, i32, &'static str, &'static str, &'static str)> = Vec::new();
                 $(

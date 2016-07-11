@@ -1,5 +1,5 @@
 use libc;
-use std::ffi::{CString, CStr};
+use std::ffi::CStr;
 use std::sync::atomic::{AtomicPtr, Ordering};
 
 use utils::*;
@@ -76,10 +76,6 @@ impl QVariant {
 
     pub fn into_double(self) -> f64 {
         unsafe { dos_qvariant_toDouble(self.ptr.load(Ordering::Relaxed)) }
-    }
-
-    pub fn into_cstring(self) -> CString {
-        unsafe { CString::from_raw(dos_qvariant_toString(self.ptr.load(Ordering::Relaxed))) }
     }
 
     /// Sets the value for this `QVariant`
