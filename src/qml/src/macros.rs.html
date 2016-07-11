@@ -343,6 +343,37 @@
 <span id="299">299</span>
 <span id="300">300</span>
 <span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
 </pre><pre class='rust '>
 <span class='doccomment'>/// Eases forming of `QVariantLists` ([`QVariant`](struct.QVariant.html) of array).</span>
 <span class='doccomment'>///</span>
@@ -443,19 +474,10 @@
         $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>:<span class='ident'>ident</span>; <span class='ident'>read</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span>:<span class='ident'>ident</span>, <span class='ident'>write</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>write_slot</span>:<span class='ident'>ident</span>,
              <span class='ident'>notify</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>notify_sig</span>:<span class='ident'>ident</span>;)<span class='op'>*</span>
     }) <span class='op'>=&gt;</span>{
-
-        <span class='kw'>fn</span> <span class='ident'>get_atomic_ptr</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>o</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>T</span>) <span class='op'>-&gt;</span> ::<span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>AtomicPtr</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-            ::<span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>AtomicPtr</span>::<span class='ident'>new</span>(<span class='ident'>o</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span>)
-        }
-
-        <span class='kw'>fn</span> <span class='ident'>load_borrow</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>ptr</span>: ::<span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>AtomicPtr</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='kw-2'>mut</span> <span class='ident'>T</span> {
-            <span class='kw'>unsafe</span> { <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>ptr</span>.<span class='ident'>load</span>(::<span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>) }
-        }
-
         <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>{
             <span class='ident'>origin</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>obj</span><span class='op'>&gt;</span>,
             <span class='ident'>ptr</span>: <span class='ident'>QObject</span>,
-            $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>,)<span class='op'>*</span>
+            <span class='ident'>properties</span>: ::<span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, (<span class='ident'>QVariant</span>, <span class='ident'>QMetaType</span>)<span class='op'>&gt;</span>,
         }
 
         <span class='kw'>impl</span> ::<span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Deref</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span> {
@@ -482,26 +504,35 @@
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>local</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>{
                         <span class='ident'>origin</span>: <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>origin</span>),
                         <span class='ident'>ptr</span>: ::<span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>uninitialized</span>(),
-                        $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>,)<span class='op'>*</span>
+                        <span class='ident'>properties</span>: ::<span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>::<span class='ident'>new</span>(),
                     };
+                    $(<span class='ident'>local</span>.<span class='ident'>properties</span>.<span class='ident'>insert</span>(<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>), (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>.<span class='ident'>into</span>(), <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>::<span class='ident'>metatype</span>()));)<span class='op'>*</span>
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>local</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>local</span>);
                     <span class='kw'>let</span> <span class='ident'>qobj</span> <span class='op'>=</span> <span class='ident'>QObject</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>local</span>);
-                    <span class='ident'>local</span>.<span class='ident'>ptr</span> <span class='op'>=</span> <span class='ident'>qobj</span>;
+                    ::<span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>write</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>local</span>.<span class='ident'>ptr</span>, <span class='ident'>qobj</span>);
                     <span class='ident'>local</span>
                 }
             }
 
-            $(<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span> {
-                <span class='self'>self</span>.<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>.<span class='ident'>clone</span>()
+            $(<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>QVariant</span> {
+                <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Trying to read&quot;</span>);
+                <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>properties</span>.<span class='ident'>get</span>(<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>)).<span class='ident'>unwrap</span>().<span class='number'>0</span>
             }
 
             <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>write_slot</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>input</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>) {
-                <span class='self'>self</span>.<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span> <span class='op'>=</span> <span class='ident'>input</span>
+                <span class='self'>self</span>.<span class='ident'>properties</span>.<span class='ident'>insert</span>(<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>), (<span class='ident'>input</span>.<span class='ident'>into</span>(), <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>::<span class='ident'>metatype</span>()));
             })<span class='op'>*</span>
+
+            <span class='kw'>fn</span> <span class='ident'>threaded</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnOnce</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='ident'>F</span>){
+                <span class='kw'>let</span> <span class='ident'>ptr</span> <span class='op'>=</span> ::<span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>AtomicPtr</span>::<span class='ident'>new</span>(<span class='self'>self</span>);
+                <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
+                    <span class='ident'>f</span>(<span class='kw'>unsafe</span> { <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>ptr</span>.<span class='ident'>load</span>(::<span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>) });
+                });
+            }
         }
 
         <span class='kw'>impl</span> <span class='ident'>QObjectMacro</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>{
-            <span class='kw'>fn</span> <span class='ident'>qslot_call</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>args</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>) {
+            <span class='kw'>fn</span> <span class='ident'>qslot_call</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>args</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>{
                 <span class='kw'>fn</span> <span class='ident'>next_or_panic</span>(<span class='ident'>qt</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>QVariant</span>{
                     <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>o</span>) <span class='op'>=</span> <span class='ident'>qt</span> {
                         <span class='ident'>o</span>
@@ -516,16 +547,17 @@
                             <span class='kw'>let</span> <span class='ident'>next</span> <span class='op'>=</span> <span class='ident'>next_or_panic</span> (<span class='ident'>iter</span>.<span class='ident'>next</span>());
                             <span class='kw'>let</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotvar</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotqtype</span> <span class='op'>=</span> <span class='ident'>next</span>.<span class='ident'>into</span>();
                         )<span class='op'>*</span>
-                        <span class='self'>self</span>.<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotname</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotvar</span>),<span class='op'>*</span>);
+                        <span class='self'>self</span>.<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotname</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotvar</span>),<span class='op'>*</span>)
                     },)<span class='op'>*</span>
                     $(<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span>) <span class='op'>=&gt;</span> {
-                        <span class='kw'>let</span> <span class='ident'>sending</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span> ();
+                        <span class='prelude-val'>Some</span>(<span class='self'>self</span>.<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span> ())
                     },
                     <span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>write_slot</span>) <span class='op'>=&gt;</span> {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>iter</span> <span class='op'>=</span> <span class='ident'>args</span>.<span class='ident'>into_iter</span>();
                         <span class='kw'>let</span> <span class='ident'>next</span> <span class='op'>=</span> <span class='ident'>next_or_panic</span> (<span class='ident'>iter</span>.<span class='ident'>next</span>());
                         <span class='kw'>let</span> <span class='ident'>property</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span> <span class='op'>=</span> <span class='ident'>next</span>.<span class='ident'>into</span>();
                         <span class='self'>self</span>.<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>write_slot</span> (<span class='ident'>property</span>);
+                        <span class='prelude-val'>None</span>
                     },)<span class='op'>*</span>
                     _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Unrecognized slot call: {}&quot;</span>, <span class='ident'>name</span>)
                 }
@@ -535,7 +567,6 @@
                                 <span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='ident'>i32</span>, <span class='ident'>i32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span>)<span class='op'>&gt;</span>,
                                 <span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='ident'>i32</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>)<span class='op'>&gt;</span>,
                                 <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>){
-                <span class='kw'>use</span> <span class='ident'>qml</span>::<span class='ident'>qtypes</span>::<span class='op'>*</span>;
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>signals</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
                 $(
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>argc</span> <span class='op'>=</span> <span class='number'>0</span>;
@@ -556,6 +587,10 @@
                     )<span class='op'>*</span>
                     <span class='ident'>slots</span>.<span class='ident'>push</span>((<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotname</span>), <span class='number'>43</span>, <span class='ident'>argc</span>, <span class='ident'>mttypes</span>));
                 )<span class='op'>*</span>
+                $(
+                    <span class='ident'>slots</span>.<span class='ident'>push</span>((<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span>), <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>::<span class='ident'>metatype</span>() <span class='kw'>as</span> <span class='ident'>i32</span>, <span class='number'>0</span>, <span class='ident'>Vec</span>::<span class='ident'>new</span>()));
+                    <span class='ident'>slots</span>.<span class='ident'>push</span>((<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>write_slot</span>), <span class='ident'>QMetaType</span>::<span class='ident'>Void</span> <span class='kw'>as</span> <span class='ident'>i32</span>, <span class='number'>1</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>::<span class='ident'>metatype</span>() <span class='kw'>as</span> <span class='ident'>i32</span>]));
+                )<span class='op'>*</span>
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>props</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='ident'>i32</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>)<span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
                 $(
                     <span class='ident'>props</span>.<span class='ident'>push</span>((<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>), <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>::<span class='ident'>metatype</span>() <span class='kw'>as</span> <span class='ident'>i32</span>, <span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span>),
@@ -571,6 +606,13 @@
     };
 }
 
+
+<span class='comment'>// #[macro_export]</span>
+<span class='comment'>// macro_rules! __listmodel_helper{</span>
+<span class='comment'>//     (()$roletype:ident),*) =&gt; {</span>
+<span class='comment'>//         ($(v.next().unwrap().into()),*)</span>
+<span class='comment'>//     }</span>
+<span class='comment'>// }</span>
 
 <span class='doccomment'>/// Generates a wrapper for [`QListModel`](struct.QListModel.html) for static typing and easier management.</span>
 <span class='doccomment'>///</span>
@@ -614,6 +656,7 @@
                 <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>{ <span class='ident'>qalm</span>: <span class='ident'>QListModel</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span>[$(<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rolename</span>)),<span class='op'>*</span>])}
             }
 
+            <span class='doccomment'>/// Inserts a row into this model</span>
             <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>insert_row</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rolename</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>roletype</span>),<span class='op'>*</span>) {
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vec</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
                 $(
@@ -622,10 +665,12 @@
                 <span class='self'>self</span>.<span class='ident'>qalm</span>.<span class='ident'>insert_row</span>(<span class='ident'>vec</span>.<span class='ident'>into_iter</span>());
             }
 
+            <span class='doccomment'>/// Gets an accoiated qvariant</span>
             <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_qvar</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>QVariant</span>{
                 <span class='self'>self</span>.<span class='ident'>qalm</span>.<span class='ident'>get_qvar</span>()
             }
 
+            <span class='doccomment'>/// Sets a specified data for this model</span>
             <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>vec</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>roletype</span>),<span class='op'>*</span>)<span class='op'>&gt;</span>) {
                 <span class='self'>self</span>.<span class='ident'>qalm</span>.<span class='ident'>set_data</span>(<span class='ident'>vec</span>.<span class='ident'>into_iter</span>()
                 .<span class='ident'>map</span>(<span class='op'>|</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rolename</span>),<span class='op'>*</span>)<span class='op'>|</span> {
@@ -635,6 +680,23 @@
                     )<span class='op'>*</span>
                     <span class='ident'>vec</span>
                 }).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>())
+            }
+
+            <span class='doccomment'>/// View contents of this model as a slice of rows of QVariants</span>
+            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>view_raw_data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span>[<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>]{
+                <span class='self'>self</span>.<span class='ident'>qalm</span>.<span class='ident'>view_data</span>()
+            }
+
+            <span class='doccomment'>/// View contents of this model as a row</span>
+            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>view_data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>roletype</span>),<span class='op'>*</span>)<span class='op'>&gt;</span>{
+                <span class='kw'>let</span> <span class='ident'>view</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>qalm</span>.<span class='ident'>view_data</span>();
+                <span class='ident'>view</span>.<span class='ident'>into_iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span> {
+                    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>iter</span>();
+                    $(
+                        <span class='kw'>let</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rolename</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>().<span class='ident'>into</span>();
+                    )<span class='op'>*</span>
+                    ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rolename</span>),<span class='op'>*</span>)
+                }).<span class='ident'>collect</span>()
             }
         }
 

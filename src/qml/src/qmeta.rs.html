@@ -236,7 +236,6 @@
 <span id="192">192</span>
 <span id="193">193</span>
 <span id="194">194</span>
-<span id="195">195</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>forget</span>;
 <span class='kw'>use</span> <span class='ident'>libc</span>;
@@ -245,7 +244,6 @@
 <span class='kw'>use</span> <span class='ident'>utils</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>types</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>qobject</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>qmlengine</span>::<span class='op'>*</span>;
 
 <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> {
     <span class='kw'>fn</span> <span class='ident'>dos_qmetaobject_create</span>(<span class='ident'>superClassMetaObject</span>: <span class='ident'>DosQMetaObject</span>,
@@ -265,7 +263,7 @@
 <span class='doccomment'>/// Used by [`Q_OBJECT`](macro.Q_OBJECT!.html) macro to send signals to Qt.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>emit_signal</span>(<span class='ident'>obj</span>: <span class='kw-2'>&amp;</span><span class='ident'>QObjectMacro</span>, <span class='ident'>signalname</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>args</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>) {
     <span class='kw'>let</span> <span class='ident'>vec</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>DosQVariant</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>args</span>.<span class='ident'>iter</span>()
-        .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>qvar</span><span class='op'>|</span> <span class='ident'>get_private_variant</span>(<span class='kw-2'>&amp;</span><span class='ident'>qvar</span>))
+        .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>qvar</span><span class='op'>|</span> <span class='ident'>get_private_variant</span>(<span class='ident'>qvar</span>))
         .<span class='ident'>collect</span>();
     <span class='ident'>forget</span>(<span class='ident'>args</span>);
     <span class='kw'>unsafe</span> {
@@ -381,7 +379,7 @@
 <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
 <span class='comment'>// Provides `qml-rust` with the neccessary information and an ability to callback slots.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>QObjectMacro</span> {
-    <span class='kw'>fn</span> <span class='ident'>qslot_call</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>args</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>);
+    <span class='kw'>fn</span> <span class='ident'>qslot_call</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>args</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>;
     <span class='kw'>fn</span> <span class='ident'>qmeta</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>QMetaDef</span>;
     <span class='kw'>fn</span> <span class='ident'>get_qobj</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>QObject</span>;
 }
