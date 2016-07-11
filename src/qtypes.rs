@@ -3,7 +3,7 @@
 //! Provides definition of [`QMetaType`](enum.QMetaType.html) enum, that contains mapping of named types
 //! and a trait [`QMetaTypable`](trait.QMetaTypable.html), that controls which types are able to be used in signals, slots or properties.
 
-/// Provides a variant of enum for a type.
+/// Provides an associated variant of enum for a type.
 ///
 /// Only types that implement this, may be used as types in signals, slots or properties.
 pub trait QMetaTypable {
