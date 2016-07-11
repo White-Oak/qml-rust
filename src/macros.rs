@@ -97,11 +97,10 @@ macro_rules! Q_OBJECT{
         $($propname:ident : $proptype:ident; read: $read_slot:ident, write: $write_slot:ident,
              notify: $notify_sig:ident;)*
     }) =>{
-
         pub struct $wrapper{
             origin: Box<$obj>,
             ptr: QObject,
-            $($propname: $proptype,)*
+            properties: ::std::collections::HashMap<&'static str, (QVariant, QMetaType)>,
         }
 
         impl ::std::ops::Deref for $wrapper {
@@ -128,8 +127,9 @@ macro_rules! Q_OBJECT{
                     let mut local = $wrapper{
                         origin: Box::new(origin),
                         ptr: ::std::mem::uninitialized(),
-                        $($propname: $propname,)*
+                        properties: ::std::collections::HashMap::new(),
                     };
+                    $(local.properties.insert(stringify!($propname), ($propname.into(), $proptype::metatype()));)*
                     let mut local = Box::new(local);
                     let qobj = QObject::new(&mut *local);
                     ::std::ptr::write(&mut local.ptr, qobj);
@@ -138,11 +138,11 @@ macro_rules! Q_OBJECT{
             }
 
             $(pub fn $read_slot(&self) -> $proptype {
-                self.$propname.clone()
+                (&self.properties.get(stringify!($propname)).unwrap().0).into()
             }
 
             pub fn $write_slot(&mut self, input: $proptype) {
-                self.$propname = input
+                self.properties.insert(stringify!($propname), (input.into(), $proptype::metatype()));
             })*
 
             fn threaded<F: FnOnce(&mut $wrapper) + Send + 'static>(&mut self, f: F){
@@ -188,7 +188,6 @@ macro_rules! Q_OBJECT{
                                 Vec<(&'static str, i32, i32, Vec<i32>)>,
                                 Vec<(&'static str, i32, &'static str, &'static str, &'static str)>,
                                 &'static str){
-                use qml::qtypes::*;
                 let mut signals = Vec::new();
                 $(
                     let mut argc = 0;

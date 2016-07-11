@@ -13,7 +13,7 @@ mod types;
 mod qurl;
 mod qobject;
 mod qmeta;
-pub mod qtypes;
+mod qtypes;
 #[macro_use]
 mod macros;
 mod qmlregister;
@@ -23,3 +23,4 @@ pub use qvariant::QVariant;
 pub use qabstactlistmodel::QListModel;
 pub use qobject::QObject;
 pub use qmeta::{QObjectMacro, emit_signal};
+pub use qtypes::*;
