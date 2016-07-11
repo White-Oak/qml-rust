@@ -6,8 +6,9 @@ use qml::*;
 pub struct Test;
 
 impl Test {
-    pub fn launchGoose(&self, i: i32, i2: String) {
+    pub fn launchGoose(&self, i: i32, i2: String) -> Option<&QVariant> {
         println!("GOOSE HI from {} and {}", i2, i);
+        None
     }
 }
 

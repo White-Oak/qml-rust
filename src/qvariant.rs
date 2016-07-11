@@ -40,9 +40,16 @@ extern "C" {
 /// This holds a value to be providen for a QML context.
 ///
 /// A value can be different: int, string, float, double, bool or even a custom object.
+#[derive(Debug)]
 pub struct QVariant {
     ptr: AtomicPtr<WQVariant>,
     owned: bool,
+}
+
+impl PartialEq for QVariant {
+    fn eq(&self, other: &QVariant) -> bool {
+        self.ptr.load(Ordering::Relaxed) == other.ptr.load(Ordering::Relaxed)
+    }
 }
 
 impl Clone for QVariant {

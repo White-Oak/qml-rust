@@ -8,11 +8,12 @@ use qml::*;
 pub struct Logic;
 
 impl QLogic {
-    pub fn downloadPage(&mut self, url: String) {
+    pub fn downloadPage(&mut self, url: String) -> Option<&QVariant>{
         self.threaded(|s| {
             thread::sleep(Duration::from_secs(2));;
             s.pageDownloaded(url);
         })
+        None
     }
 }
 

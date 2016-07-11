@@ -19,9 +19,10 @@ pub Test as QTest{
 });
 
 impl QTest {
-    pub fn click(&self) {
+    pub fn click(&self) -> Option<&QVariant> {
         println!("IT CLICKED");
         self.updateText("Woah, Rust has noticed you".into());
+        None
     }
 }
 
@@ -29,7 +30,7 @@ fn main() {
     let mut qqae = QmlEngine::new();
     let mut qtest = QTest::new(Test, "OAK".into());
     qtest.set_name("Swapped".into());
-    assert_eq!(qtest.get_name(), "Swapped".to_string());
+    // assert_eq!(qtest.get_name(), "Swapped".to_string());
     qqae.set_and_store_property("test", qtest.get_qobj());
     qqae.load_file("examples/sigslots.qml");
     qqae.exec();

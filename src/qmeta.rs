@@ -140,7 +140,7 @@ impl QMetaDefinition {
 #[doc(hidden)]
 // Provides `qml-rust` with the neccessary information and an ability to callback slots.
 pub trait QObjectMacro {
-    fn qslot_call(&mut self, name: &str, args: Vec<QVariant>);
+    fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) -> Option<&QVariant>;
     fn qmeta(&self) -> QMetaDef;
     fn get_qobj(&self) -> &QObject;
 }

@@ -1,6 +1,6 @@
 use libc;
 use std::mem::forget;
-use std::slice::from_raw_parts;
+use std::slice::from_raw_parts_mut;
 
 use qvariant::*;
 use types::*;
@@ -65,7 +65,7 @@ pub enum QtConnectionType {
 /// @param slotName The slotName as `DosQVariant`. It should not be deleted
 /// @param argc The number of arguments
 /// @param argv An array of `DosQVariant` pointers. They should not be deleted
-type DObjectCallback = extern "C" fn(*mut libc::c_void, DosQVariant, i32, *const DosQVariant);
+type DObjectCallback = extern "C" fn(*mut libc::c_void, DosQVariant, i32, *mut DosQVariant);
 
 impl QObject {
     pub fn new(obj: &mut QObjectMacro) -> QObject {
@@ -93,17 +93,19 @@ pub fn get_qobj_ptr(o: &QObject) -> DosQObject {
 extern "C" fn callback(obj: *mut libc::c_void,
                        slotName: DosQVariant,
                        argc: i32,
-                       argv: *const DosQVariant) {
+                       argv: *mut DosQVariant) {
     unsafe {
         let mut obj: Box<&mut QObjectMacro> = Box::from_raw(obj as *mut &mut QObjectMacro);
         // println!("Calling adress of wrapper  {:p}", *obj.as_mut());
-        let vec = from_raw_parts(argv, argc as usize);
-        let vec: Vec<QVariant> = vec.into_iter().skip(1).map(|&dq| dq.into()).collect();
+        let mut slice = from_raw_parts_mut(argv, argc as usize);
+        let vec: Vec<QVariant> = slice.iter().skip(1).map(|&dq| dq.into()).collect();
         let slotName: String = new_qvariant(slotName).into();
         // println!("Right before going in... name: {}, argc: {}",
         //  slotName,
         //  argc);
-        obj.qslot_call(&slotName, vec);
+        if let Some(qvar) = obj.qslot_call(&slotName, vec) {
+            slice[0] = get_private_variant(qvar);
+        }
         forget(obj);
     }
 }

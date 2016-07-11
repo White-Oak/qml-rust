@@ -137,8 +137,8 @@ macro_rules! Q_OBJECT{
                 }
             }
 
-            $(pub fn $read_slot(&self) -> $proptype {
-                (&self.properties.get(stringify!($propname)).unwrap().0).into()
+            $(pub fn $read_slot(&self) -> &QVariant {
+                &self.properties.get(stringify!($propname)).unwrap().0
             }
 
             pub fn $write_slot(&mut self, input: $proptype) {
@@ -154,7 +154,7 @@ macro_rules! Q_OBJECT{
         }
 
         impl QObjectMacro for $wrapper{
-            fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) {
+            fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) -> Option<&QVariant>{
                 fn next_or_panic(qt: Option<QVariant>) -> QVariant{
                     if let Some(o) = qt {
                         o
@@ -169,16 +169,17 @@ macro_rules! Q_OBJECT{
                             let next = next_or_panic (iter.next());
                             let $slotvar: $slotqtype = next.into();
                         )*
-                        self.$slotname ($($slotvar),*);
+                        self.$slotname ($($slotvar),*)
                     },)*
                     $(stringify!($read_slot) => {
-                        let sending = self.$read_slot ();
+                        Some(self.$read_slot ())
                     },
                     stringify!($write_slot) => {
                         let mut iter = args.into_iter();
                         let next = next_or_panic (iter.next());
                         let property: $proptype = next.into();
                         self.$write_slot (property);
+                        None
                     },)*
                     _ => panic!("Unrecognized slot call: {}", name)
                 }
