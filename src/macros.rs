@@ -85,157 +85,160 @@ macro_rules! __gen_signals{
 /// ```
 #[macro_export]
 macro_rules! Q_OBJECT{
-(
-    pub $obj:ty as $wrapper:ident{
-        signals:
-        $(fn $signalname:ident ( $( $signalvar:ident : $signalqtype:ident ),* );)*
+    (
+        pub $obj:ident as $wrapper:ident{
+            signals:
+            $(fn $signalname:ident ( $( $signalvar:ident : $signalqtype:ident ),* );)*
 
-        slots:
-        $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ident ),* );)*
+            slots:
+            $(fn $slotname:ident ( $( $slotvar:ident : $slotqtype:ident ),* );)*
 
-        properties:
-        $($propname:ident : $proptype:ident; read: $read_slot:ident, write: $write_slot:ident,
-             notify: $notify_sig:ident;)*
-    }) =>{
-        pub struct $wrapper{
-            origin: Box<$obj>,
-            ptr: QObject,
-            properties: ::std::collections::HashMap<&'static str, (QVariant, QMetaType)>,
-        }
-
-        impl ::std::ops::Deref for $wrapper {
-            type Target = $obj;
-
-            fn deref(&self) -> &$obj {
-                let ref b: Box<$obj> = self.origin;
-                b.as_ref()
-            }
-        }
-
-        impl ::std::ops::DerefMut for $wrapper {
-            fn deref_mut<'a>(&'a mut self) -> &'a mut $obj {
-                self.origin.as_mut()
-            }
-        }
-
-        impl $wrapper{
-            __gen_signals!($(fn $signalname ( $( $signalvar : $signalqtype ),* );)*
-            $(fn $notify_sig ();)*);
-
-            pub fn new(origin: $obj, $($propname: $proptype),*) -> Box<Self>{
-                unsafe{
-                    let mut local = $wrapper{
-                        origin: Box::new(origin),
-                        ptr: ::std::mem::uninitialized(),
-                        properties: ::std::collections::HashMap::new(),
-                    };
-                    $(local.properties.insert(stringify!($propname), ($propname.into(), $proptype::metatype()));)*
-                    let mut local = Box::new(local);
-                    let qobj = QObject::new(&mut *local);
-                    ::std::ptr::write(&mut local.ptr, qobj);
-                    local
+            properties:
+            $($propname:ident : $proptype:ident; read: $read_slot:ident, write: $write_slot:ident,
+                notify: $notify_sig:ident;)*
+            }) =>{
+                pub struct $wrapper{
+                    origin: Box<$obj>,
+                    ptr: QObject,
+                    properties: ::std::collections::HashMap<&'static str, (QVariant, QMetaType)>,
                 }
-            }
 
-            $(pub fn $read_slot(&self) -> &QVariant {
-                println!("Trying to read");
-                &self.properties.get(stringify!($propname)).unwrap().0
-            }
+                impl ::std::ops::Deref for $wrapper {
+                    type Target = $obj;
 
-            pub fn $write_slot(&mut self, input: $proptype) {
-                self.properties.insert(stringify!($propname), (input.into(), $proptype::metatype()));
-            })*
-
-            fn threaded<F: FnOnce(&mut $wrapper) + Send + 'static>(&mut self, f: F){
-                let ptr = ::std::sync::atomic::AtomicPtr::new(self);
-                thread::spawn(move || {
-                    f(unsafe { &mut *ptr.load(::std::sync::atomic::Ordering::Relaxed) });
-                });
-            }
-        }
-
-        impl QObjectMacro for $wrapper{
-            fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) -> Option<&QVariant>{
-                fn next_or_panic(qt: Option<QVariant>) -> QVariant{
-                    if let Some(o) = qt {
-                        o
-                    }else {
-                        panic!("Not enough parameters to call a slot")
+                    fn deref(&self) -> &$obj {
+                        let ref b: Box<$obj> = self.origin;
+                        b.as_ref()
                     }
                 }
-                match name {
-                    $(stringify!($slotname) => {
-                        let mut iter = args.into_iter();
-                        $(
-                            let next = next_or_panic (iter.next());
-                            let $slotvar: $slotqtype = next.into();
-                        )*
-                        self.$slotname ($($slotvar),*)
-                    },)*
-                    $(stringify!($read_slot) => {
-                        Some(self.$read_slot ())
-                    },
-                    stringify!($write_slot) => {
-                        let mut iter = args.into_iter();
-                        let next = next_or_panic (iter.next());
-                        let property: $proptype = next.into();
-                        self.$write_slot (property);
-                        None
-                    },)*
-                    _ => panic!("Unrecognized slot call: {}", name)
+
+                impl ::std::ops::DerefMut for $wrapper {
+                    fn deref_mut<'a>(&'a mut self) -> &'a mut $obj {
+                        self.origin.as_mut()
+                    }
                 }
-            }
 
-            fn qmeta(&self) -> (Vec<(&'static str, i32, Vec<i32>)>,
-                                Vec<(&'static str, i32, i32, Vec<i32>)>,
-                                Vec<(&'static str, i32, &'static str, &'static str, &'static str)>,
-                                &'static str){
-                let mut signals = Vec::new();
-                $(
-                    let mut argc = 0;
-                    let mut mttypes = Vec::new();
-                    $(
-                        argc += 1;
-                        mttypes.push($signalqtype::metatype() as i32);
-                    )*
-                    signals.push((stringify!($signalname), argc, mttypes));
-                )*
-                let mut slots = Vec::new();
-                $(
-                    let mut argc = 0;
-                    let mut mttypes = Vec::new();
-                    $(
-                        argc += 1;
-                        mttypes.push($slotqtype::metatype() as i32);
-                    )*
-                    slots.push((stringify!($slotname), 43, argc, mttypes));
-                )*
-                $(
-                    slots.push((stringify!($read_slot), $proptype::metatype() as i32, 0, Vec::new()));
-                    slots.push((stringify!($write_slot), QMetaType::Void as i32, 1, vec![$proptype::metatype() as i32]));
-                )*
-                let mut props: Vec<(&'static str, i32, &'static str, &'static str, &'static str)> = Vec::new();
-                $(
-                    props.push((stringify!($propname), $proptype::metatype() as i32, stringify!($read_slot),
-                               stringify!($write_slot), stringify!($notify_sig)));
-                )*
-                (signals, slots, props, stringify!($obj))
-            }
+                impl $wrapper{
+                    __gen_signals!($(fn $signalname ( $( $signalvar : $signalqtype ),* );)*
+                    $(fn $notify_sig ();)*);
 
-            fn get_qobj(&self) -> &QObject{
-                &self.ptr
-            }
+                    pub fn with_no_props(origin: $obj)-> Box<Self> {
+                        unsafe{
+                            let mut local = $wrapper{
+                                origin: Box::new(origin),
+                                ptr: ::std::mem::uninitialized(),
+                                properties: ::std::collections::HashMap::new(),
+                            };
+                            $(local.properties.insert(stringify!($propname), ($proptype::default().into(), $proptype::metatype()));)*
+                            let mut local = Box::new(local);
+                            let qobj = QObject::new(&mut *local);
+                            ::std::ptr::write(&mut local.ptr, qobj);
+                            local
+                        }
+                    }
+
+                    pub fn new(origin: $obj, $($propname: $proptype),*) -> Box<Self>{
+                        let mut local = Self::with_no_props(origin);
+                        $(local.properties.insert(stringify!($propname), ($propname.into(), $proptype::metatype()));)*
+                        local
+                    }
+
+                    $(pub fn $read_slot(&self) -> &QVariant {
+                        println!("Trying to read");
+                        &self.properties.get(stringify!($propname)).unwrap().0
+                    }
+
+                    pub fn $write_slot(&mut self, input: $proptype) {
+                        self.properties.insert(stringify!($propname), (input.into(), $proptype::metatype()));
+                    })*
+
+                    fn threaded<F: FnOnce(&mut $wrapper) + Send + 'static>(&mut self, f: F){
+                        let ptr = ::std::sync::atomic::AtomicPtr::new(self);
+                        ::std::thread::spawn(move || {
+                            f(unsafe { &mut *ptr.load(::std::sync::atomic::Ordering::Relaxed) });
+                        });
+                    }
+                }
+
+                impl QObjectMacro for $wrapper{
+                    fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) -> Option<&QVariant>{
+                        fn next_or_panic(qt: Option<QVariant>) -> QVariant{
+                            if let Some(o) = qt {
+                                o
+                            }else {
+                                panic!("Not enough parameters to call a slot")
+                            }
+                        }
+                        match name {
+                            $(stringify!($slotname) => {
+                                let mut iter = args.into_iter();
+                                $(
+                                    let next = next_or_panic (iter.next());
+                                    let $slotvar: $slotqtype = next.into();
+                                )*
+                                self.$slotname ($($slotvar),*)
+                            },)*
+                            $(stringify!($read_slot) => {
+                                Some(self.$read_slot ())
+                            },
+                            stringify!($write_slot) => {
+                                let mut iter = args.into_iter();
+                                let next = next_or_panic (iter.next());
+                                let property: $proptype = next.into();
+                                self.$write_slot (property);
+                                None
+                            },)*
+                            _ => panic!("Unrecognized slot call: {}", name)
+                        }
+                    }
+
+                    fn qmeta(&self) -> (Vec<(&'static str, i32, Vec<i32>)>,
+                    Vec<(&'static str, i32, i32, Vec<i32>)>,
+                    Vec<(&'static str, i32, &'static str, &'static str, &'static str)>,
+                    &'static str){
+                        let mut signals = Vec::new();
+                        $(
+                            let mut argc = 0;
+                            let mut mttypes = Vec::new();
+                            $(
+                                argc += 1;
+                                mttypes.push($signalqtype::metatype() as i32);
+                            )*
+                            signals.push((stringify!($signalname), argc, mttypes));
+                        )*
+                        let mut slots = Vec::new();
+                        $(
+                            let mut argc = 0;
+                            let mut mttypes = Vec::new();
+                            $(
+                                argc += 1;
+                                mttypes.push($slotqtype::metatype() as i32);
+                            )*
+                            slots.push((stringify!($slotname), 43, argc, mttypes));
+                        )*
+                        $(
+                            slots.push((stringify!($read_slot), $proptype::metatype() as i32, 0, Vec::new()));
+                            slots.push((stringify!($write_slot), QMetaType::Void as i32, 1, vec![$proptype::metatype() as i32]));
+                        )*
+                        let mut props: Vec<(&'static str, i32, &'static str, &'static str, &'static str)> = Vec::new();
+                        $(
+                            props.push((stringify!($propname), $proptype::metatype() as i32, stringify!($read_slot),
+                            stringify!($write_slot), stringify!($notify_sig)));
+                        )*
+                        (signals, slots, props, stringify!($obj))
+                    }
+
+                    fn get_qobj(&self) -> &QObject{
+                        &self.ptr
+                    }
+
+                    fn get_qobj_mut(&mut self) -> &mut QObject{
+                        &mut self.ptr
+                    }
+                }
+            };
         }
-    };
-}
 
-
-// #[macro_export]
-// macro_rules! __listmodel_helper{
-//     (()$roletype:ident),*) => {
-//         ($(v.next().unwrap().into()),*)
-//     }
-// }
 
 /// Generates a wrapper for [`QListModel`](struct.QListModel.html) for static typing and easier management.
 ///
@@ -267,66 +270,66 @@ macro_rules! Q_OBJECT{
 /// ```
 #[macro_export]
 macro_rules! Q_LISTMODEL{
-    (pub $wrapper:ident{
-        $($rolename:ident : $roletype:ty,)*
-    }) => {
-        pub struct $wrapper {
-            qalm: Box<QListModel<'static>>,
+            (pub $wrapper:ident{
+                $($rolename:ident : $roletype:ty,)*
+            }) => {
+                pub struct $wrapper {
+                    qalm: Box<QListModel<'static>>,
+                }
+
+                impl $wrapper {
+                    pub fn new() -> Self{
+                        $wrapper{ qalm: QListModel::new(&[$(stringify!($rolename)),*])}
+                    }
+
+                    /// Inserts a row into this model
+                    pub fn insert_row(&mut self, $($rolename : $roletype),*) {
+                        let mut vec = Vec::new();
+                        $(
+                            vec.push($rolename.into());
+                        )*
+                        self.qalm.insert_row(vec.into_iter());
+                    }
+
+                    /// Gets an accoiated qvariant
+                    pub fn get_qvar(&self) -> QVariant{
+                        self.qalm.get_qvar()
+                    }
+
+                    /// Sets a specified data for this model
+                    pub fn set_data(&mut self, vec: Vec<($($roletype),*)>) {
+                        self.qalm.set_data(vec.into_iter()
+                        .map(|($($rolename),*)| {
+                            let mut vec = Vec::new();
+                            $(
+                                vec.push($rolename.into());
+                            )*
+                            vec
+                        }).collect::<Vec<Vec<QVariant>>>())
+                    }
+
+                    /// View contents of this model as a slice of rows of QVariants
+                    pub fn view_raw_data(&self) -> &[Vec<QVariant>]{
+                        self.qalm.view_data()
+                    }
+
+                    /// View contents of this model as a row
+                    pub fn view_data(&self) -> Vec<($($roletype),*)>{
+                        let view = self.qalm.view_data();
+                        view.into_iter().map(|v| {
+                            let mut v = v.iter();
+                            $(
+                                let $rolename = v.next().unwrap().into();
+                            )*
+                            ($($rolename),*)
+                        }).collect()
+                    }
+                }
+
+                impl<'a, 'b> From<&'a $wrapper> for QVariant {
+                    fn from(i: &$wrapper) -> QVariant {
+                        i.get_qvar()
+                    }
+                }
+            }
         }
-
-        impl $wrapper {
-            pub fn new() -> Self{
-                $wrapper{ qalm: QListModel::new(&[$(stringify!($rolename)),*])}
-            }
-
-            /// Inserts a row into this model
-            pub fn insert_row(&mut self, $($rolename : $roletype),*) {
-                let mut vec = Vec::new();
-                $(
-                    vec.push($rolename.into());
-                )*
-                self.qalm.insert_row(vec.into_iter());
-            }
-
-            /// Gets an accoiated qvariant
-            pub fn get_qvar(&self) -> QVariant{
-                self.qalm.get_qvar()
-            }
-
-            /// Sets a specified data for this model
-            pub fn set_data(&mut self, vec: Vec<($($roletype),*)>) {
-                self.qalm.set_data(vec.into_iter()
-                .map(|($($rolename),*)| {
-                    let mut vec = Vec::new();
-                    $(
-                        vec.push($rolename.into());
-                    )*
-                    vec
-                }).collect::<Vec<Vec<QVariant>>>())
-            }
-
-            /// View contents of this model as a slice of rows of QVariants
-            pub fn view_raw_data(&self) -> &[Vec<QVariant>]{
-                self.qalm.view_data()
-            }
-
-            /// View contents of this model as a row
-            pub fn view_data(&self) -> Vec<($($roletype),*)>{
-                let view = self.qalm.view_data();
-                view.into_iter().map(|v| {
-                    let mut v = v.iter();
-                    $(
-                        let $rolename = v.next().unwrap().into();
-                    )*
-                    ($($rolename),*)
-                }).collect()
-            }
-        }
-
-        impl<'a, 'b> From<&'a $wrapper> for QVariant {
-            fn from(i: &$wrapper) -> QVariant {
-                i.get_qvar()
-            }
-        }
-    }
-}

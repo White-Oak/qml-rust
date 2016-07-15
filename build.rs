@@ -2,6 +2,7 @@ extern crate pkg_config;
 use std::env;
 use std::process::Command;
 use std::path::*;
+use pkg_config::*;
 
 fn main() {
     Command::new("sh")
@@ -16,5 +17,5 @@ fn main() {
     println!("cargo:rustc-link-lib=static=DOtherSideStatic");
     println!("cargo:rustc-link-lib=dylib=stdc++");
 
-    pkg_config::probe_library("Qt5Core Qt5Gui Qt5Qml Qt5Quick Qt5Widgets").unwrap();
+    Config::new().probe("Qt5Core Qt5Gui Qt5Qml Qt5Quick Qt5Widgets").unwrap();
 }

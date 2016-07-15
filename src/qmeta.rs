@@ -143,6 +143,7 @@ pub trait QObjectMacro {
     fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) -> Option<&QVariant>;
     fn qmeta(&self) -> QMetaDef;
     fn get_qobj(&self) -> &QObject;
+    fn get_qobj_mut(&mut self) -> &mut QObject;
 }
 
 #[derive(Debug)]

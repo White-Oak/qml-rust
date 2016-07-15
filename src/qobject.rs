@@ -12,6 +12,7 @@ use qmeta::*;
 pub struct QObject {
     ptr: DosQObject,
     qmeta: DosQMetaObject,
+    binded_ptr: *mut libc::c_void,
 }
 
 extern "C" {
@@ -75,12 +76,12 @@ impl QObject {
 
             // println!("Adress of wrapper {:p}", obj);
             let obj = Box::new(obj);
+            let binded_ptr = Box::into_raw(obj) as *mut libc::c_void;
 
             QObject {
-                ptr: dos_qobject_create(Box::into_raw(obj) as *mut libc::c_void,
-                                        get_dos_qmeta(&meta),
-                                        callback),
+                ptr: dos_qobject_create(binded_ptr, get_dos_qmeta(&meta), callback),
                 qmeta: get_dos_qmeta(&meta),
+                binded_ptr: binded_ptr,
             }
         }
     }
@@ -88,6 +89,14 @@ impl QObject {
 
 pub fn get_qobj_ptr(o: &QObject) -> DosQObject {
     o.ptr
+}
+
+pub fn get_binded_ptr(o: &QObject) -> *mut libc::c_void {
+    o.binded_ptr
+}
+
+pub fn set_qobj_ptr(o: &mut QObject, ptr: DosQObject) {
+    o.ptr = ptr;
 }
 
 extern "C" fn callback(obj: *mut libc::c_void,

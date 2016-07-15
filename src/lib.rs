@@ -24,3 +24,6 @@ pub use qabstactlistmodel::QListModel;
 pub use qobject::QObject;
 pub use qmeta::{QObjectMacro, emit_signal};
 pub use qtypes::*;
+pub use qmlregister::QMLRegisterable;
+pub use libc::c_void;
+pub use qmlregister::register_qml_type;

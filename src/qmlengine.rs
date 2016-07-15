@@ -1,7 +1,11 @@
+use std::collections::HashMap;
+use std::ops::Deref;
 
 use qvariant::*;
 use types::*;
 use qurl::*;
+use qmeta::*;
+use qmlregister::*;
 
 extern "C" {
     fn dos_qapplication_create();
@@ -27,6 +31,7 @@ extern "C" {
 pub struct QmlEngine {
     ptr: DosQmlApplicationEngine,
     stored: Vec<QVariant>,
+    registered: HashMap<i32, CreateDObject>,
 }
 
 impl QmlEngine {
@@ -37,10 +42,12 @@ impl QmlEngine {
             QmlEngine {
                 ptr: dos_qqmlapplicationengine_create(),
                 stored: Vec::new(),
+                registered: HashMap::new(),
             }
         }
     }
 
+    pub fn registered_type<T: Deref<Target = QObjectMacro>>(&mut self, id: i32, registered: T) {}
     /// Loads a file as a qml file
     pub fn load_file(&self, path: &str) {
         let path_raw = ::std::env::current_dir().unwrap().join(path);
