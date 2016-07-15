@@ -18,7 +18,7 @@ pub struct QmlRegisterType {
     delete_dobject: DeleteDObject,
 }
 
-pub type CreateDObject = extern "C" fn(i32, DosQObject, *mut DosQObject, *mut *const libc::c_void);
+pub type CreateDObject = extern "C" fn(i32, DosQObject, *mut *const libc::c_void, *mut DosQObject);
 pub type DeleteDObject = extern "C" fn(i32, *const libc::c_void);
 
 
@@ -82,8 +82,8 @@ use std::collections::HashMap;
 
 extern "C" fn create_dobject(id: i32,
                              wrapper: DosQObject,
-                             dosQObject: *mut DosQObject,
-                             binded_ptr: *mut *const libc::c_void) {
+                             binded_ptr: *mut *const libc::c_void,
+                             dosQObject: *mut DosQObject) {
     let sing = singleton();
     let map = sing.inner.lock().unwrap();
     println!("Map is here: {} elements", map.len());
