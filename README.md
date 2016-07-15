@@ -30,5 +30,5 @@ Done:
 * QObjects: slots, signals (limited properties support). Emitting signals and receiving slots works.
 
 To be done:
-* QML singletons
+* Registering QML types from Rust code
 * etc
