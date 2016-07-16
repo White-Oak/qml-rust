@@ -1,6 +1,6 @@
 # QML-rust - bindings for [Qt Quick](http://doc.qt.io/qt-5/qtquick-index.html)
-Library is still in a rough shape.  
 Bindings are based on [DOtherSide](https://github.com/filcuc/DOtherSide) C bindings for QML
+Library is mostly feature-compliant with other bindings based on the library, but lacks some minor features and has quite a few bugs.
 
 ## [Early documentation](https://white-oak.github.io/qml-rust/qml/)
 # Examples
@@ -29,8 +29,7 @@ Done:
 * Providing properties to QML files.
 * QAbstractListModels - provides changable models for QML items (early draft, still lacks proper mutability).
 * QObjects: slots, signals (limited properties support). Emitting signals and receiving slots works.
-* Registering your own QML types from Rust code.
+* Registering your own QML types (singletons or not) from Rust code.
 
 To be done:
-* Registering QML singleton types from Rust code
-* etc
+* the library is mostly done, but some stuff is lacking polish, like possible memory leaks or better macro designs.
