@@ -12,5 +12,6 @@ Item {
     rsRegistered.name = "This is working"
     console.log(rsRegistered.name)
     rsRegistered.assure_everything_okay()
+    console.log(TestRsSingleton.temp)
   }
 }

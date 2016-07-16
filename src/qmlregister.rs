@@ -65,6 +65,14 @@ macro_rules! Q_REGISTER_QML(
             register_qml_type($wrapper::get_shallow());
         }
 );
+
+#[macro_export]
+macro_rules! Q_REGISTER_SINGLETON_QML(
+        ($wrapper:ident) => {
+            register_qml_singleton_type($wrapper::get_shallow());
+        }
+);
+
 pub type RegisterQualifier = (i32, i32, &'static str, &'static str);
 #[doc(hidden)]
 pub trait QMLRegisterable: QObjectMacro {
@@ -132,7 +140,8 @@ fn singleton() -> SingletonReader {
     }
 }
 
-pub fn register_qml_type<T: QMLRegisterable + 'static>(t: T) {
+type Registerer = unsafe extern "C" fn(*const QmlRegisterType) -> i32;
+fn register_with<T: QMLRegisterable + 'static>(t: T, r: Registerer) {
     let (major, minor, uri, qml) = t.qualify_to_register();
     let qmeta = QMetaDefinition::new(t.qmeta());
     let meta = QMeta::new_for_qobject(qmeta);
@@ -149,7 +158,15 @@ pub fn register_qml_type<T: QMLRegisterable + 'static>(t: T) {
         delete_dobject: delete_dobject,
     };
     forget(meta);
-    let id = unsafe { dos_qdeclarative_qmlregistertype(&qrt as *const QmlRegisterType) };
+    let id = unsafe { r(&qrt as *const QmlRegisterType) };
     map.insert(id, Box::new(t));
     forget(qrt);
+}
+
+pub fn register_qml_type<T: QMLRegisterable + 'static>(t: T) {
+    register_with(t, dos_qdeclarative_qmlregistertype)
+}
+
+pub fn register_qml_singleton_type<T: QMLRegisterable + 'static>(t: T) {
+    register_with(t, dos_qdeclarative_qmlregistersingletontype)
 }
