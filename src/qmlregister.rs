@@ -23,6 +23,29 @@ pub type DeleteDObject = extern "C" fn(i32, *const libc::c_void);
 
 
 extern "C" fn delete_dobject(id: i32, ptr: *const libc::c_void) {}
+
+/// Provides definitions for a type that can be used from QML.
+///
+/// The same macro is used to prepare a type for being used as a normal type or a singleton.
+/// The only requirement is that the type in question should provide `Default` implementation.
+/// # Examples
+/// ```
+///
+/// #[derive(Default)]
+/// pub struct Test;
+///
+/// Q_OBJECT!(
+/// pub Test as QTest{
+///     signals:
+///     slots:
+///     properties:
+///         name: String; read: get_name, write: set_name, notify: name_changed;
+/// });
+///
+/// Q_REGISTERABLE_QML!(QTest: Test as TestRsObject 1=>0, from TestModule);
+/// ```
+/// Later on a type that was made registerable can be used in [`Q_REGISTER_QML`](macro.Q_REGISTER_QML!.html)
+/// or in [`Q_REGISTER_SINGLETON_QML`](macro.Q_REGISTER_SINGLETON_QML!.html) macros to be used as a type in QML.
 #[macro_export]
 macro_rules! Q_REGISTERABLE_QML(
     ($wrapper:ident : $origin:ident as $qml:ident $major:expr=>$minor:expr, from $uri:ident) => {
@@ -59,6 +82,40 @@ macro_rules! Q_REGISTERABLE_QML(
     }
 );
 
+/// Registers a type as a QML type.
+///
+/// To use this macro [`Q_REGISTERABLE_QML`](macro.Q_REGISTERABLE_QML!.html) should be used first.
+/// # Examples
+/// ```
+///
+/// #[derive(Default)]
+/// pub struct Test;
+///
+/// Q_OBJECT!(
+/// pub Test as QTest{
+///     signals:
+///     slots:
+///     properties:
+///         name: String; read: get_name, write: set_name, notify: name_changed;
+/// });
+///
+/// Q_REGISTERABLE_QML!(QTest: Test as TestRsObject 1=>0, from TestModule);
+///
+/// // ...
+///
+/// # fn main() {
+/// Q_REGISTER_QML!(QTest);
+/// # }
+/// ```
+/// Then in qml:
+///
+/// ```qml
+/// import TestModule 1.0
+///
+/// TestRsObject{
+///     name: "Oak"
+/// }
+/// ```
 #[macro_export]
 macro_rules! Q_REGISTER_QML(
         ($wrapper:ident) => {
@@ -66,6 +123,42 @@ macro_rules! Q_REGISTER_QML(
         }
 );
 
+/// Registers a type as a singleton type in QML.
+///
+/// To use this macro [`Q_REGISTERABLE_QML`](macro.Q_REGISTERABLE_QML!.html) should be used first.
+/// # Examples
+/// ```
+///
+/// #[derive(Default)]
+/// pub struct Test;
+///
+/// Q_OBJECT!(
+/// pub Test as QTest{
+///     signals:
+///     slots:
+///     properties:
+///         name: String; read: get_name, write: set_name, notify: name_changed;
+/// });
+///
+/// Q_REGISTERABLE_QML!(QTest: Test as TestRsSingleton 1=>0, from TestModule);
+///
+/// // ...
+///
+/// # fn main() {
+/// Q_REGISTER_SINGLETON_QML!(QTest);
+/// # }
+/// ```
+/// Then in qml:
+///
+/// ```qml
+/// import TestModule 1.0
+///
+/// Item {
+///     Component.onCompleted: {
+///         console.log(TestRsSingleton.name)
+///     }
+/// }
+/// ```
 #[macro_export]
 macro_rules! Q_REGISTER_SINGLETON_QML(
         ($wrapper:ident) => {

@@ -25,5 +25,9 @@ pub use qobject::QObject;
 pub use qmeta::{QObjectMacro, emit_signal};
 pub use qtypes::*;
 pub use qmlregister::QMLRegisterable;
+
+#[doc(hidden)]
 pub use libc::c_void;
+
+#[doc(hidden)]
 pub use qmlregister::{register_qml_type, register_qml_singleton_type};
