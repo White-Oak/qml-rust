@@ -86,24 +86,21 @@ extern "C" fn create_dobject(id: i32,
                              dosQObject: *mut DosQObject) {
     let sing = singleton();
     let map = sing.inner.lock().unwrap();
-    println!("Map is here: {} elements", map.len());
     // Getting shallow object from the map
     let shallow = map.get(&id).unwrap();
     // Getting pointer to a created object
     let binded = shallow.get_new();
 
     // Returning pointers to a wrapper and to an DosQObject, then swapping DosQObject with a fresh one
+    // Comments are copied 'as is' from the DOtherSide docs to ensure correctness
     unsafe {
         let mut qobj = &mut *shallow.get_qobj_from_ptr(binded);
         // # Retrieve the DosQObject created dos_qobject_create() inside the nimQObject
         *dosQObject = get_qobj_ptr(qobj);
-        println!("Old pointer to DosQObject is stored: {:p}", get_qobj_ptr(qobj));
         // # Store the pointer to the nimQObject
         *binded_ptr = get_binded_ptr(qobj);
-        println!("Pointer to binded object is stored: {:p}", get_binded_ptr(qobj));
         // # Swap the vptr inside the nimQObject with the wrapper
         set_qobj_ptr(qobj, wrapper);
-        println!("Pointer to new DosQObject is swapped {:p}", wrapper);
     }
     forget(binded);
 }

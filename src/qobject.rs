@@ -77,7 +77,6 @@ impl QObject {
             // println!("Adress of wrapper {:p}", obj);
             let obj = Box::new(obj);
             let binded_ptr = Box::into_raw(obj) as *mut libc::c_void;
-            println!("Binded pointer is: {:p}", binded_ptr);
             QObject {
                 ptr: dos_qobject_create(binded_ptr, get_dos_qmeta(&meta), callback),
                 qmeta: get_dos_qmeta(&meta),

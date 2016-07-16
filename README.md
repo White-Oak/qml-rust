@@ -12,6 +12,7 @@ All examples are located in a folder [`examples/`](examples), under `example_nam
 * `cargo run --example sigslots` for an example of how to create your own `QObject` with signals and slots, and to communicate between QML and Rust. Also shows how to use `Q_OBJECT!` macro.
 * `cargo run --example qvarlists` for an example of how to use `qvarlist!` macro to easily form `QVariant` (used to pass data to QML) of a complex array.
 * `cargo run --example threaded` for an example of multithreading.
+* `cargo run --example qmlregister` for an example of how to register and use your own types from Rust in QML.
 
 Requires CMake, Make, Qt (Core, Gui, Widgets, Quick) and, of course, Rust.
 
@@ -28,7 +29,8 @@ Done:
 * Providing properties to QML files.
 * QAbstractListModels - provides changable models for QML items (early draft, still lacks proper mutability).
 * QObjects: slots, signals (limited properties support). Emitting signals and receiving slots works.
+* Registering your own QML types from Rust code.
 
 To be done:
-* Registering QML types from Rust code
+* Registering QML singleton types from Rust code
 * etc
