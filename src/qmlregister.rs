@@ -1,6 +1,13 @@
 use libc;
 
+use std::mem::forget;
+use std::sync::RwLock;
+use std::collections::HashMap;
+
 use types::*;
+use qobject::*;
+use qmeta::*;
+use utils::*;
 
 extern "C" {
     fn dos_qdeclarative_qmlregistertype(qmlRegisterType: *const QmlRegisterType) -> i32;
@@ -20,7 +27,6 @@ pub struct QmlRegisterType {
 
 pub type CreateDObject = extern "C" fn(i32, DosQObject, *mut *const libc::c_void, *mut DosQObject);
 pub type DeleteDObject = extern "C" fn(i32, *const libc::c_void);
-
 
 extern "C" fn delete_dobject(id: i32, ptr: *const libc::c_void) {}
 
@@ -174,19 +180,11 @@ pub trait QMLRegisterable: QObjectMacro {
     fn get_qobj_from_ptr(&self, ptr: *mut libc::c_void) -> *mut QObject;
 }
 
-use qobject::*;
-use qmeta::*;
-use utils::*;
-use std::mem::{forget, transmute};
-use std::sync::{Arc, Mutex, Once, ONCE_INIT};
-use std::collections::HashMap;
-
 extern "C" fn create_dobject(id: i32,
                              wrapper: DosQObject,
                              binded_ptr: *mut *const libc::c_void,
                              dosQObject: *mut DosQObject) {
-    let sing = singleton();
-    let map = sing.inner.lock().unwrap();
+    let map = REGISTERED_TYPES.read().unwrap();
     // Getting shallow object from the map
     let shallow = map.get(&id).unwrap();
     // Getting pointer to a created object
@@ -206,40 +204,17 @@ extern "C" fn create_dobject(id: i32,
     forget(binded);
 }
 
-
-#[derive(Clone)]
-struct SingletonReader {
-    // Since we will be used in many threads, we need to protect
-    // concurrent access
-    inner: Arc<Mutex<HashMap<i32, Box<QMLRegisterable>>>>,
-}
-
-fn singleton() -> SingletonReader {
-    // Initialize it to a null value
-    static mut SINGLETON: *const SingletonReader = 0 as *const SingletonReader;
-    static ONCE: Once = ONCE_INIT;
-
-    unsafe {
-        ONCE.call_once(|| {
-            // Make it
-            let singleton = SingletonReader { inner: Arc::new(Mutex::new(HashMap::new())) };
-
-            // Put it in the heap so it can outlive this call
-            SINGLETON = transmute(Box::new(singleton));
-        });
-
-        // Now we give out a copy of the data that is safe to use concurrently.
-        (*SINGLETON).clone()
-    }
+lazy_static!{
+    static ref REGISTERED_TYPES: RwLock<HashMap<i32, Box<QMLRegisterable + Sync + Send>>> =
+    RwLock::new(HashMap::new());
 }
 
 type Registerer = unsafe extern "C" fn(*const QmlRegisterType) -> i32;
-fn register_with<T: QMLRegisterable + 'static>(t: T, r: Registerer) {
+fn register_with<T: QMLRegisterable + Sync + Send + 'static>(t: T, r: Registerer) {
     let (major, minor, uri, qml) = t.qualify_to_register();
     let qmeta = QMetaDefinition::new(t.qmeta());
     let meta = QMeta::new_for_qobject(qmeta);
-    let sing = singleton();
-    let mut map = sing.inner.lock().unwrap();
+    let mut map = REGISTERED_TYPES.write().unwrap();
 
     let qrt = QmlRegisterType {
         major: major,
@@ -256,10 +231,10 @@ fn register_with<T: QMLRegisterable + 'static>(t: T, r: Registerer) {
     forget(qrt);
 }
 
-pub fn register_qml_type<T: QMLRegisterable + 'static>(t: T) {
+pub fn register_qml_type<T: QMLRegisterable + Sync + Send + 'static>(t: T) {
     register_with(t, dos_qdeclarative_qmlregistertype)
 }
 
-pub fn register_qml_singleton_type<T: QMLRegisterable + 'static>(t: T) {
+pub fn register_qml_singleton_type<T: QMLRegisterable + Sync + Send + 'static>(t: T) {
     register_with(t, dos_qdeclarative_qmlregistersingletontype)
 }
