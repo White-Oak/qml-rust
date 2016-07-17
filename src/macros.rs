@@ -239,7 +239,6 @@ macro_rules! Q_OBJECT{
             };
         }
 
-
 /// Generates a wrapper for [`QListModel`](struct.QListModel.html) for static typing and easier management.
 ///
 /// # Examples
@@ -333,3 +332,145 @@ macro_rules! Q_LISTMODEL{
                 }
             }
         }
+
+/// Provides definitions for a type that can be used from QML.
+///
+/// The same macro is used to prepare a type for being used as a normal type or a singleton.
+/// The only requirement is that the type in question should provide `Default` implementation.
+/// # Examples
+/// ```
+///
+/// #[derive(Default)]
+/// pub struct Test;
+///
+/// Q_OBJECT!(
+/// pub Test as QTest{
+///     signals:
+///     slots:
+///     properties:
+///         name: String; read: get_name, write: set_name, notify: name_changed;
+/// });
+///
+/// Q_REGISTERABLE_QML!(QTest: Test as TestRsObject 1=>0, from TestModule);
+/// ```
+/// Later on a type that was made registerable can be used in [`Q_REGISTER_QML`](macro.Q_REGISTER_QML!.html)
+/// or in [`Q_REGISTER_SINGLETON_QML`](macro.Q_REGISTER_SINGLETON_QML!.html) macros to be used as a type in QML.
+#[macro_export]
+macro_rules! Q_REGISTERABLE_QML(
+            ($wrapper:ident : $origin:ident as $qml:ident $major:expr=>$minor:expr, from $uri:ident) => {
+                impl QMLRegisterable for $wrapper{
+                    fn qualify_to_register(&self) ->  (i32, i32, &'static str, &'static str) {
+                        ($major, $minor, stringify!($uri), stringify!($qml))
+                    }
+
+                    fn get_new(&self) -> *mut c_void {
+                        unsafe {
+                            let obj = $wrapper::with_no_props($origin::default());
+                            let res = Box::into_raw(obj) as *mut c_void;
+                            res
+                        }
+                    }
+
+                    fn get_qobj_from_ptr(&self, ptr: *mut c_void) -> *mut QObject {
+                        unsafe {
+                            let mut obj: Box<$wrapper> = Box::from_raw(ptr as *mut $wrapper);
+                            let res = obj.get_qobj_mut() as *mut QObject;
+                            ::std::mem::forget(obj);
+                            res
+                        }
+                    }
+                }
+
+                impl $wrapper {
+                    pub fn get_shallow() -> Self {
+                        unsafe {
+                            ::std::mem::uninitialized()
+                        }
+                    }
+                }
+            }
+        );
+
+/// Registers a type as a QML type.
+///
+/// To use this macro [`Q_REGISTERABLE_QML`](macro.Q_REGISTERABLE_QML!.html) should be used first.
+/// # Examples
+/// ```
+///
+/// #[derive(Default)]
+/// pub struct Test;
+///
+/// Q_OBJECT!(
+/// pub Test as QTest{
+///     signals:
+///     slots:
+///     properties:
+///         name: String; read: get_name, write: set_name, notify: name_changed;
+/// });
+///
+/// Q_REGISTERABLE_QML!(QTest: Test as TestRsObject 1=>0, from TestModule);
+///
+/// // ...
+///
+/// # fn main() {
+/// Q_REGISTER_QML!(QTest);
+/// # }
+/// ```
+/// Then in qml:
+///
+/// ```qml
+/// import TestModule 1.0
+///
+/// TestRsObject{
+///     name: "Oak"
+/// }
+/// ```
+#[macro_export]
+macro_rules! Q_REGISTER_QML(
+                ($wrapper:ident) => {
+                    register_qml_type($wrapper::get_shallow());
+                }
+        );
+
+/// Registers a type as a singleton type in QML.
+///
+/// To use this macro [`Q_REGISTERABLE_QML`](macro.Q_REGISTERABLE_QML!.html) should be used first.
+/// # Examples
+/// ```
+///
+/// #[derive(Default)]
+/// pub struct Test;
+///
+/// Q_OBJECT!(
+/// pub Test as QTest{
+///     signals:
+///     slots:
+///     properties:
+///         name: String; read: get_name, write: set_name, notify: name_changed;
+/// });
+///
+/// Q_REGISTERABLE_QML!(QTest: Test as TestRsSingleton 1=>0, from TestModule);
+///
+/// // ...
+///
+/// # fn main() {
+/// Q_REGISTER_SINGLETON_QML!(QTest);
+/// # }
+/// ```
+/// Then in qml:
+///
+/// ```qml
+/// import TestModule 1.0
+///
+/// Item {
+///     Component.onCompleted: {
+///         console.log(TestRsSingleton.name)
+///     }
+/// }
+/// ```
+#[macro_export]
+macro_rules! Q_REGISTER_SINGLETON_QML(
+                ($wrapper:ident) => {
+                    register_qml_singleton_type($wrapper::get_shallow());
+                }
+        );

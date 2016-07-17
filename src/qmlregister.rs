@@ -1,8 +1,8 @@
 use libc;
 
 use std::mem::forget;
-use std::sync::RwLock;
 use std::collections::HashMap;
+use std::cell::UnsafeCell;
 
 use types::*;
 use qobject::*;
@@ -30,148 +30,6 @@ pub type DeleteDObject = extern "C" fn(i32, *const libc::c_void);
 
 extern "C" fn delete_dobject(id: i32, ptr: *const libc::c_void) {}
 
-/// Provides definitions for a type that can be used from QML.
-///
-/// The same macro is used to prepare a type for being used as a normal type or a singleton.
-/// The only requirement is that the type in question should provide `Default` implementation.
-/// # Examples
-/// ```
-///
-/// #[derive(Default)]
-/// pub struct Test;
-///
-/// Q_OBJECT!(
-/// pub Test as QTest{
-///     signals:
-///     slots:
-///     properties:
-///         name: String; read: get_name, write: set_name, notify: name_changed;
-/// });
-///
-/// Q_REGISTERABLE_QML!(QTest: Test as TestRsObject 1=>0, from TestModule);
-/// ```
-/// Later on a type that was made registerable can be used in [`Q_REGISTER_QML`](macro.Q_REGISTER_QML!.html)
-/// or in [`Q_REGISTER_SINGLETON_QML`](macro.Q_REGISTER_SINGLETON_QML!.html) macros to be used as a type in QML.
-#[macro_export]
-macro_rules! Q_REGISTERABLE_QML(
-    ($wrapper:ident : $origin:ident as $qml:ident $major:expr=>$minor:expr, from $uri:ident) => {
-        impl QMLRegisterable for $wrapper{
-            fn qualify_to_register(&self) ->  (i32, i32, &'static str, &'static str) {
-                ($major, $minor, stringify!($uri), stringify!($qml))
-            }
-
-            fn get_new(&self) -> *mut c_void {
-                unsafe {
-                    let obj = $wrapper::with_no_props($origin::default());
-                    let res = Box::into_raw(obj) as *mut c_void;
-                    res
-                }
-            }
-
-            fn get_qobj_from_ptr(&self, ptr: *mut c_void) -> *mut QObject {
-                unsafe {
-                    let mut obj: Box<$wrapper> = Box::from_raw(ptr as *mut $wrapper);
-                    let res = obj.get_qobj_mut() as *mut QObject;
-                    ::std::mem::forget(obj);
-                    res
-                }
-            }
-        }
-
-        impl $wrapper {
-            pub fn get_shallow() -> Self {
-                unsafe {
-                    ::std::mem::uninitialized()
-                }
-            }
-        }
-    }
-);
-
-/// Registers a type as a QML type.
-///
-/// To use this macro [`Q_REGISTERABLE_QML`](macro.Q_REGISTERABLE_QML!.html) should be used first.
-/// # Examples
-/// ```
-///
-/// #[derive(Default)]
-/// pub struct Test;
-///
-/// Q_OBJECT!(
-/// pub Test as QTest{
-///     signals:
-///     slots:
-///     properties:
-///         name: String; read: get_name, write: set_name, notify: name_changed;
-/// });
-///
-/// Q_REGISTERABLE_QML!(QTest: Test as TestRsObject 1=>0, from TestModule);
-///
-/// // ...
-///
-/// # fn main() {
-/// Q_REGISTER_QML!(QTest);
-/// # }
-/// ```
-/// Then in qml:
-///
-/// ```qml
-/// import TestModule 1.0
-///
-/// TestRsObject{
-///     name: "Oak"
-/// }
-/// ```
-#[macro_export]
-macro_rules! Q_REGISTER_QML(
-        ($wrapper:ident) => {
-            register_qml_type($wrapper::get_shallow());
-        }
-);
-
-/// Registers a type as a singleton type in QML.
-///
-/// To use this macro [`Q_REGISTERABLE_QML`](macro.Q_REGISTERABLE_QML!.html) should be used first.
-/// # Examples
-/// ```
-///
-/// #[derive(Default)]
-/// pub struct Test;
-///
-/// Q_OBJECT!(
-/// pub Test as QTest{
-///     signals:
-///     slots:
-///     properties:
-///         name: String; read: get_name, write: set_name, notify: name_changed;
-/// });
-///
-/// Q_REGISTERABLE_QML!(QTest: Test as TestRsSingleton 1=>0, from TestModule);
-///
-/// // ...
-///
-/// # fn main() {
-/// Q_REGISTER_SINGLETON_QML!(QTest);
-/// # }
-/// ```
-/// Then in qml:
-///
-/// ```qml
-/// import TestModule 1.0
-///
-/// Item {
-///     Component.onCompleted: {
-///         console.log(TestRsSingleton.name)
-///     }
-/// }
-/// ```
-#[macro_export]
-macro_rules! Q_REGISTER_SINGLETON_QML(
-        ($wrapper:ident) => {
-            register_qml_singleton_type($wrapper::get_shallow());
-        }
-);
-
 pub type RegisterQualifier = (i32, i32, &'static str, &'static str);
 #[doc(hidden)]
 pub trait QMLRegisterable: QObjectMacro {
@@ -184,7 +42,7 @@ extern "C" fn create_dobject(id: i32,
                              wrapper: DosQObject,
                              binded_ptr: *mut *const libc::c_void,
                              dosQObject: *mut DosQObject) {
-    let map = REGISTERED_TYPES.read().unwrap();
+    let map = unsafe { &*(REGISTERED_TYPES.0.get()) };
     // Getting shallow object from the map
     let shallow = map.get(&id).unwrap();
     // Getting pointer to a created object
@@ -204,17 +62,20 @@ extern "C" fn create_dobject(id: i32,
     forget(binded);
 }
 
+struct UnsafeWrapper(UnsafeCell<HashMap<i32, Box<QMLRegisterable>>>);
+unsafe impl Sync for UnsafeWrapper {}
+unsafe impl Send for UnsafeWrapper {}
+
 lazy_static!{
-    static ref REGISTERED_TYPES: RwLock<HashMap<i32, Box<QMLRegisterable + Sync + Send>>> =
-    RwLock::new(HashMap::new());
+    static ref REGISTERED_TYPES: UnsafeWrapper = UnsafeWrapper(UnsafeCell::new(HashMap::new()));
 }
 
 type Registerer = unsafe extern "C" fn(*const QmlRegisterType) -> i32;
-fn register_with<T: QMLRegisterable + Sync + Send + 'static>(t: T, r: Registerer) {
+fn register_with<T: QMLRegisterable + 'static>(t: T, r: Registerer) {
     let (major, minor, uri, qml) = t.qualify_to_register();
     let qmeta = QMetaDefinition::new(t.qmeta());
     let meta = QMeta::new_for_qobject(qmeta);
-    let mut map = REGISTERED_TYPES.write().unwrap();
+    let mut map = unsafe { &mut *(REGISTERED_TYPES.0.get()) };
 
     let qrt = QmlRegisterType {
         major: major,
@@ -231,10 +92,10 @@ fn register_with<T: QMLRegisterable + Sync + Send + 'static>(t: T, r: Registerer
     forget(qrt);
 }
 
-pub fn register_qml_type<T: QMLRegisterable + Sync + Send + 'static>(t: T) {
+pub fn register_qml_type<T: QMLRegisterable + 'static>(t: T) {
     register_with(t, dos_qdeclarative_qmlregistertype)
 }
 
-pub fn register_qml_singleton_type<T: QMLRegisterable + Sync + Send + 'static>(t: T) {
+pub fn register_qml_singleton_type<T: QMLRegisterable + 'static>(t: T) {
     register_with(t, dos_qdeclarative_qmlregistersingletontype)
 }
