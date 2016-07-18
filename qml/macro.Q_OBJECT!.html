@@ -47,21 +47,21 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-770' class='srclink' href='../src/qml/src/macros.rs.html#87-230' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-857' class='srclink' href='../src/qml/src/macros.rs.html#87-240' title='goto source code'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>Q_OBJECT</span> {
     (
-    <span class='kw'>pub</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>obj</span>:<span class='ident'>ty</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>:<span class='ident'>ident</span>{
-        <span class='ident'>signals</span>:
-        $(<span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalname</span>:<span class='ident'>ident</span> ( $( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalvar</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalqtype</span>:<span class='ident'>ident</span> ),<span class='op'>*</span> );)<span class='op'>*</span>
+        <span class='kw'>pub</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>obj</span>:<span class='ident'>ident</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>:<span class='ident'>ident</span>{
+            <span class='ident'>signals</span>:
+            $(<span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalname</span>:<span class='ident'>ident</span> ( $( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalvar</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalqtype</span>:<span class='ident'>ident</span> ),<span class='op'>*</span> );)<span class='op'>*</span>
 
-        <span class='ident'>slots</span>:
-        $(<span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotname</span>:<span class='ident'>ident</span> ( $( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotvar</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotqtype</span>:<span class='ident'>ident</span> ),<span class='op'>*</span> );)<span class='op'>*</span>
+            <span class='ident'>slots</span>:
+            $(<span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotname</span>:<span class='ident'>ident</span> ( $( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotvar</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>slotqtype</span>:<span class='ident'>ident</span> ),<span class='op'>*</span> );)<span class='op'>*</span>
 
-        <span class='ident'>properties</span>:
-        $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>:<span class='ident'>ident</span>; <span class='ident'>read</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span>:<span class='ident'>ident</span>, <span class='ident'>write</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>write_slot</span>:<span class='ident'>ident</span>,
-             <span class='ident'>notify</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>notify_sig</span>:<span class='ident'>ident</span>;)<span class='op'>*</span>
-    }) <span class='op'>=&gt;</span> { ... };
+            <span class='ident'>properties</span>:
+            $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>:<span class='ident'>ident</span>; <span class='ident'>read</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span>:<span class='ident'>ident</span>, <span class='ident'>write</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>write_slot</span>:<span class='ident'>ident</span>,
+                <span class='ident'>notify</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>notify_sig</span>:<span class='ident'>ident</span>;)<span class='op'>*</span>
+            }) <span class='op'>=&gt;</span> { ... };
 }</pre>
 <div class='docblock'><p>Marks the structure to be able to be used in Qt meta-object system.</p>
 
