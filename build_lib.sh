@@ -5,4 +5,9 @@ mkdir build
 cd build
 
 cmake ..
-make DOtherSideStatic
+
+if [ "$IS_DYLIB" != "" ]; then
+    make DOtherSide
+else
+    make DOtherSideStatic
+fi
