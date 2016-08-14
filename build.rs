@@ -28,7 +28,7 @@ fn main() {
     if is_dylib() {
         println!("cargo:rustc-link-lib=dylib=DOtherSide");
     } else {
-        println!("cargo:rustc-link-lib=static=DOtherSide");
+        println!("cargo:rustc-link-lib=static=DOtherSideStatic");
     }
     println!("cargo:rustc-link-lib=dylib=stdc++");
 
