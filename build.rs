@@ -20,13 +20,12 @@ fn main() {
 
     let osx_framework = if target.contains("darwin") { "=framework" }
                         else  { "" };
-    // On Linux, libraries are name "Qt5Core", not "QtCore" as on OSX
+    // On Linux, libraries are named "Qt5Core", not "QtCore" as on OSX
     let linux_qt_lib_ver = if target.contains("linux") { "5" }
                            else  { "" };
 
-    println!("cargo:rustc-link-lib{}=Qt{}Core", osx_framework, linux_qt_lib_ver);
-    println!("cargo:rustc-link-lib{}=Qt{}Gui", osx_framework, linux_qt_lib_ver);
-    println!("cargo:rustc-link-lib{}=Qt{}Qml", osx_framework, linux_qt_lib_ver);
-    println!("cargo:rustc-link-lib{}=Qt{}Quick", osx_framework, linux_qt_lib_ver);
-    println!("cargo:rustc-link-lib{}=Qt{}Widgets", osx_framework, linux_qt_lib_ver);
+    const QT_PLUGINS: [&'static str; 5] = ["Core", "Gui", "Qml", "Quick", "Widgets"];
+    for plugin in &QT_PLUGINS {
+        println!("cargo:rustc-link-lib{}=Qt{}{}", osx_framework, linux_qt_lib_ver, plugin);
+    }
 }
