@@ -1,9 +1,7 @@
-use std::ops::Deref;
 
 use qvariant::*;
 use types::*;
 use qurl::*;
-use qmeta::*;
 
 extern "C" {
     fn dos_qapplication_create();
@@ -43,7 +41,6 @@ impl QmlEngine {
         }
     }
 
-    pub fn registered_type<T: Deref<Target = QObjectMacro>>(&mut self, id: i32, registered: T) {}
     /// Loads a file as a qml file
     pub fn load_file(&self, path: &str) {
         let path_raw = ::std::env::current_dir().unwrap().join(path);
