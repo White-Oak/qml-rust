@@ -19,6 +19,7 @@ mod qtypes;
 #[macro_use]
 mod macros;
 mod qmlregister;
+mod tests;
 
 pub use qmlengine::QmlEngine;
 pub use qvariant::QVariant;
