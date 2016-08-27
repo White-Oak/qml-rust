@@ -55,6 +55,11 @@ impl QmlEngine {
         unsafe { dos_qqmlapplicationengine_load_url(self.ptr, construct_qurl(&path)) }
     }
 
+    /// Loads qml from a specified url (`file://`, `qrc://`, `http://`)
+    pub fn load_url(&self, uri: &str) {
+        unsafe { dos_qqmlapplicationengine_load_url(self.ptr, construct_qurl(uri)) }
+    }
+
     /// Loads a string as a qml file
     pub fn load_data(&self, data: &str) {
         unsafe { dos_qqmlapplicationengine_load_data(self.ptr, stoptr(data)) }
