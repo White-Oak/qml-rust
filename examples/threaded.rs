@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 #[macro_use]
 extern crate qml;
 
@@ -12,7 +13,7 @@ impl QLogic {
         self.threaded(|s| {
             thread::sleep(Duration::from_secs(2));;
             s.pageDownloaded(url);
-        })
+        });
         None
     }
 }

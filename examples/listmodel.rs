@@ -1,10 +1,11 @@
+#![allow(non_snake_case)]
 #[macro_use]
 extern crate qml;
 
 use qml::*;
 
 fn main() {
-    let qqae = QmlEngine::new();
+    let mut qqae = QmlEngine::new();
     let mut qalm = QListModel::new(&["name", "number"]);
     qalm.insert_row(qvarlist!["John", 42].into_iter());
     qalm.insert_row(qvarlist!["Oak", 505].into_iter());

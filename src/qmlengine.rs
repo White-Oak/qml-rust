@@ -42,7 +42,7 @@ impl QmlEngine {
     }
 
     /// Loads a file as a qml file
-    pub fn load_file(&self, path: &str) {
+    pub fn load_file(&mut self, path: &str) {
         let path_raw = ::std::env::current_dir().unwrap().join(path);
         let path = if cfg!(windows) {
             format!("file:///{}", path_raw.display())
@@ -53,23 +53,23 @@ impl QmlEngine {
     }
 
     /// Loads qml from a specified url (`file://`, `qrc://`, `http://`)
-    pub fn load_url(&self, uri: &str) {
+    pub fn load_url(&mut self, uri: &str) {
         unsafe { dos_qqmlapplicationengine_load_url(self.ptr, construct_qurl(uri)) }
     }
 
     /// Loads a string as a qml file
-    pub fn load_data(&self, data: &str) {
+    pub fn load_data(&mut self, data: &str) {
         unsafe { dos_qqmlapplicationengine_load_data(self.ptr, stoptr(data)) }
     }
 
     /// Launches the application
-    pub fn exec(&self) {
+    pub fn exec(&mut self) {
         unsafe {
             dos_qapplication_exec();
         }
     }
     /// Closes the application
-    pub fn quit(&self) {
+    pub fn quit(&mut self) {
         unsafe {
             dos_qapplication_quit();
         }
@@ -88,7 +88,7 @@ impl QmlEngine {
     }
 
     /// Sets a property for this QML context
-    pub fn set_property(&self, name: &str, value: &QVariant) {
+    pub fn set_property(&mut self, name: &str, value: &QVariant) {
         unsafe {
             let context = dos_qqmlapplicationengine_context(self.ptr);
             dos_qqmlcontext_setcontextproperty(context, stoptr(name), get_private_variant(value));

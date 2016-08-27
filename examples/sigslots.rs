@@ -1,8 +1,6 @@
+#![allow(non_snake_case)]
 #[macro_use]
 extern crate qml;
-use std::thread;
-use std::sync::*;
-use std::time::Duration;
 
 use qml::*;
 

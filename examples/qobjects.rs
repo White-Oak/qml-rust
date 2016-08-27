@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 #[macro_use]
 extern crate qml;
 
@@ -22,7 +23,6 @@ pub Test as QTest{
 });
 
 fn main() {
-    let mut qqae = QmlEngine::new();
     let mut qtest = QTest::new(Test);
     qtest.testname(54, 55);
     qtest.qslot_call("launchGoose",

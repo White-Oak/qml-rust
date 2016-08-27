@@ -36,6 +36,7 @@ macro_rules! qvarlist{
 #[macro_export]
 macro_rules! __gen_signals{
     (fn $signalname:ident ( $( $signalvar:ident : $signalqtype:ident ),* ); $($rest:tt)*) =>{
+        #[allow(unused_mut)]
         pub fn $signalname(&self, $( $signalvar: $signalqtype ),*){
             let mut vec: Vec<QVariant> = Vec::new();
             $(
@@ -97,6 +98,7 @@ macro_rules! Q_OBJECT{
             $($propname:ident : $proptype:ident; read: $read_slot:ident, write: $write_slot:ident,
                 notify: $notify_sig:ident;)*
             }) =>{
+                #[allow(dead_code)]
                 pub struct $wrapper{
                     origin: Box<$obj>,
                     ptr: QObject,
@@ -122,6 +124,7 @@ macro_rules! Q_OBJECT{
                     __gen_signals!($(fn $signalname ( $( $signalvar : $signalqtype ),* );)*
                     $(fn $notify_sig ();)*);
 
+                    #[allow(unused_mut)]
                     pub fn with_no_props(origin: $obj)-> Box<Self> {
                         unsafe{
                             let mut local = $wrapper{
@@ -137,6 +140,7 @@ macro_rules! Q_OBJECT{
                         }
                     }
 
+                    #[allow(unused_mut)]
                     pub fn new(origin: $obj, $($propname: $proptype),*) -> Box<Self>{
                         let mut local = Self::with_no_props(origin);
                         $(local.properties.insert(stringify!($propname), ($propname.into(), $proptype::metatype()));)*
@@ -152,6 +156,7 @@ macro_rules! Q_OBJECT{
                         self.properties.insert(stringify!($propname), (input.into(), $proptype::metatype()));
                     })*
 
+                    #[allow(dead_code)]
                     fn threaded<F: FnOnce(&mut $wrapper) + Send + 'static>(&mut self, f: F){
                         let ptr = ::std::sync::atomic::AtomicPtr::new(self);
                         ::std::thread::spawn(move || {
@@ -161,6 +166,8 @@ macro_rules! Q_OBJECT{
                 }
 
                 impl QObjectMacro for $wrapper{
+                    #[allow(unused_variables)]
+                    #[allow(unused_mut)]
                     fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) -> Option<&QVariant>{
                         fn next_or_panic(qt: Option<QVariant>) -> QVariant{
                             if let Some(o) = qt {
@@ -192,6 +199,7 @@ macro_rules! Q_OBJECT{
                         }
                     }
 
+                    #[allow(unused_mut)]
                     fn qmeta(&self) -> (Vec<(&'static str, i32, Vec<i32>)>,
                     Vec<(&'static str, i32, i32, Vec<i32>)>,
                     Vec<(&'static str, i32, &'static str, &'static str, &'static str)>,
@@ -282,6 +290,7 @@ macro_rules! Q_LISTMODEL{
                     }
 
                     /// Inserts a row into this model
+                    #[allow(unused_mut)]
                     pub fn insert_row(&mut self, $($rolename : $roletype),*) {
                         let mut vec = Vec::new();
                         $(
@@ -296,6 +305,7 @@ macro_rules! Q_LISTMODEL{
                     }
 
                     /// Sets a specified data for this model
+                    #[allow(unused_mut)]
                     pub fn set_data(&mut self, vec: Vec<($($roletype),*)>) {
                         self.qalm.set_data(vec.into_iter()
                         .map(|($($rolename),*)| {
@@ -364,11 +374,9 @@ macro_rules! Q_REGISTERABLE_QML(
                     }
 
                     fn get_new(&self) -> *mut c_void {
-                        unsafe {
-                            let obj = $wrapper::with_no_props($origin::default());
-                            let res = Box::into_raw(obj) as *mut c_void;
-                            res
-                        }
+                        let obj = $wrapper::with_no_props($origin::default());
+                        let res = Box::into_raw(obj) as *mut c_void;
+                        res
                     }
 
                     fn get_qobj_from_ptr(&self, ptr: *mut c_void) -> *mut QObject {
