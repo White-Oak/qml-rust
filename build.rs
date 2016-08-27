@@ -1,8 +1,7 @@
-extern crate pkg_config;
 use std::env;
 use std::process::Command;
 use std::path::*;
-use pkg_config::*;
+
 
 fn main() {
     Command::new("sh")
@@ -17,5 +16,17 @@ fn main() {
     println!("cargo:rustc-link-lib=static=DOtherSideStatic");
     println!("cargo:rustc-link-lib=dylib=stdc++");
 
-    Config::new().probe("Qt5Core Qt5Gui Qt5Qml Qt5Quick Qt5Widgets").unwrap();
+    let target = env::var("TARGET").expect("Environment variable TARGET not set");
+
+    let osx_framework = if target.contains("darwin") { "=framework" }
+                        else  { "" };
+    // On Linux, libraries are name "Qt5Core", not "QtCore" as on OSX
+    let linux_qt_lib_ver = if target.contains("linux") { "5" }
+                           else  { "" };
+
+    println!("cargo:rustc-link-lib{}=Qt{}Core", osx_framework, linux_qt_lib_ver);
+    println!("cargo:rustc-link-lib{}=Qt{}Gui", osx_framework, linux_qt_lib_ver);
+    println!("cargo:rustc-link-lib{}=Qt{}Qml", osx_framework, linux_qt_lib_ver);
+    println!("cargo:rustc-link-lib{}=Qt{}Quick", osx_framework, linux_qt_lib_ver);
+    println!("cargo:rustc-link-lib{}=Qt{}Widgets", osx_framework, linux_qt_lib_ver);
 }
