@@ -518,6 +518,24 @@
 <span id="474">474</span>
 <span id="475">475</span>
 <span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
 </pre><pre class='rust '>
 <span class='doccomment'>/// Eases forming of `QVariantLists` ([`QVariant`](struct.QVariant.html) of array).</span>
 <span class='doccomment'>///</span>
@@ -526,6 +544,7 @@
 <span class='doccomment'>/// ```</span>
 <span class='doccomment'>/// # #[macro_use] extern crate qml;</span>
 <span class='doccomment'>/// # use qml::*;</span>
+<span class='doccomment'>/// # #[allow(unused_variables)]</span>
 <span class='doccomment'>/// # fn main() {</span>
 <span class='doccomment'>/// let shortcut: QVariant = qvarlist![[&quot;John&quot;, [2, 2]], [&quot;Ivan&quot;, [10, 0]], [&quot;Mary&quot;, [0, 1]]].into();</span>
 <span class='doccomment'>/// # }</span>
@@ -557,6 +576,7 @@
 <span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>__gen_signals</span>{
     (<span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalname</span>:<span class='ident'>ident</span> ( $( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalvar</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalqtype</span>:<span class='ident'>ident</span> ),<span class='op'>*</span> ); $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rest</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span>{
+        <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_mut</span>)]</span>
         <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalname</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, $( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalvar</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalqtype</span> ),<span class='op'>*</span>){
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vec</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
             $(
@@ -581,8 +601,9 @@
 <span class='doccomment'>/// pub struct Example;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// impl Example {</span>
-<span class='doccomment'>///     pub fn simple_receiver(&amp;mut self) {</span>
+<span class='doccomment'>///     pub fn simple_receiver(&amp;mut self) -&gt; Option&lt;&amp;QVariant&gt; {</span>
 <span class='doccomment'>///         // This is a function that also will be a slot</span>
+<span class='doccomment'>///         None</span>
 <span class='doccomment'>///     }</span>
 <span class='doccomment'>/// }</span>
 <span class='doccomment'>///</span>
@@ -596,11 +617,10 @@
 <span class='doccomment'>///         name: String; read: get_name, write: set_name, notify: name_changed;</span>
 <span class='doccomment'>/// });</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// ...</span>
+<span class='doccomment'>/// // ...</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # fn main() {</span>
-<span class='doccomment'>/// let mut qqae = QmlEngine::new();</span>
-<span class='doccomment'>/// let mut qobject = QExample::new(Example);</span>
+<span class='doccomment'>/// let qobject = QExample::new(Example, &quot;My name&quot;.into());</span>
 <span class='doccomment'>/// qobject.simple_signal(&quot;Hi from Rust!&quot;.into());</span>
 <span class='doccomment'>/// # }</span>
 <span class='doccomment'>/// ```</span>
@@ -618,6 +638,7 @@
             $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>:<span class='ident'>ident</span>; <span class='ident'>read</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>read_slot</span>:<span class='ident'>ident</span>, <span class='ident'>write</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>write_slot</span>:<span class='ident'>ident</span>,
                 <span class='ident'>notify</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>notify_sig</span>:<span class='ident'>ident</span>;)<span class='op'>*</span>
             }) <span class='op'>=&gt;</span>{
+                <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
                 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>{
                     <span class='ident'>origin</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>obj</span><span class='op'>&gt;</span>,
                     <span class='ident'>ptr</span>: <span class='ident'>QObject</span>,
@@ -643,6 +664,7 @@
                     <span class='macro'>__gen_signals</span><span class='macro'>!</span>($(<span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalname</span> ( $( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalvar</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>signalqtype</span> ),<span class='op'>*</span> );)<span class='op'>*</span>
                     $(<span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>notify_sig</span> ();)<span class='op'>*</span>);
 
+                    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_mut</span>)]</span>
                     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_no_props</span>(<span class='ident'>origin</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>obj</span>)<span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span> {
                         <span class='kw'>unsafe</span>{
                             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>local</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>{
@@ -658,6 +680,7 @@
                         }
                     }
 
+                    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_mut</span>)]</span>
                     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>origin</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>obj</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>),<span class='op'>*</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>{
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>local</span> <span class='op'>=</span> <span class='self'>Self</span>::<span class='ident'>with_no_props</span>(<span class='ident'>origin</span>);
                         $(<span class='ident'>local</span>.<span class='ident'>properties</span>.<span class='ident'>insert</span>(<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>), (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>.<span class='ident'>into</span>(), <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>::<span class='ident'>metatype</span>()));)<span class='op'>*</span>
@@ -673,6 +696,7 @@
                         <span class='self'>self</span>.<span class='ident'>properties</span>.<span class='ident'>insert</span>(<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>propname</span>), (<span class='ident'>input</span>.<span class='ident'>into</span>(), <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>proptype</span>::<span class='ident'>metatype</span>()));
                     })<span class='op'>*</span>
 
+                    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
                     <span class='kw'>fn</span> <span class='ident'>threaded</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnOnce</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>) <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>f</span>: <span class='ident'>F</span>){
                         <span class='kw'>let</span> <span class='ident'>ptr</span> <span class='op'>=</span> ::<span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>AtomicPtr</span>::<span class='ident'>new</span>(<span class='self'>self</span>);
                         ::<span class='ident'>std</span>::<span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
@@ -682,6 +706,8 @@
                 }
 
                 <span class='kw'>impl</span> <span class='ident'>QObjectMacro</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>{
+                    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_variables</span>)]</span>
+                    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_mut</span>)]</span>
                     <span class='kw'>fn</span> <span class='ident'>qslot_call</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>args</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>{
                         <span class='kw'>fn</span> <span class='ident'>next_or_panic</span>(<span class='ident'>qt</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>QVariant</span>{
                             <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>o</span>) <span class='op'>=</span> <span class='ident'>qt</span> {
@@ -713,6 +739,7 @@
                         }
                     }
 
+                    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_mut</span>)]</span>
                     <span class='kw'>fn</span> <span class='ident'>qmeta</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> (<span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='ident'>i32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span>)<span class='op'>&gt;</span>,
                     <span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='ident'>i32</span>, <span class='ident'>i32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span>)<span class='op'>&gt;</span>,
                     <span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='ident'>i32</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>)<span class='op'>&gt;</span>,
@@ -763,28 +790,28 @@
 <span class='doccomment'>/// Generates a wrapper for [`QListModel`](struct.QListModel.html) for static typing and easier management.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # Examples</span>
-<span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// ```no_run</span>
 <span class='doccomment'>/// # #[macro_use] extern crate qml;</span>
 <span class='doccomment'>/// # use qml::*;</span>
 <span class='doccomment'>/// Q_LISTMODEL!{</span>
 <span class='doccomment'>///     pub QTestModel {</span>
-<span class='doccomment'>///         name: &amp;str,</span>
+<span class='doccomment'>///         name: String,</span>
 <span class='doccomment'>///         number: i32,</span>
 <span class='doccomment'>///     }</span>
 <span class='doccomment'>/// }</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// ...</span>
+<span class='doccomment'>/// // ...</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # fn main() {</span>
 <span class='doccomment'>/// let mut qqae = QmlEngine::new();</span>
 <span class='doccomment'>/// let mut qalm = QTestModel::new();</span>
-<span class='doccomment'>/// qalm.insert_row(&quot;John&quot;, 42);</span>
-<span class='doccomment'>/// qalm.insert_row(&quot;Oak&quot;, 505);</span>
+<span class='doccomment'>/// qalm.insert_row(&quot;John&quot;.into(), 42);</span>
+<span class='doccomment'>/// qalm.insert_row(&quot;Oak&quot;.into(), 505);</span>
 <span class='doccomment'>/// // `&amp;QTestModel` implements `Into&lt;QVariant&gt;`</span>
 <span class='doccomment'>/// qqae.set_and_store_property(&quot;listModel&quot;, &amp;qalm);</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// qqae.load_file(&quot;examples/listmodel.qml&quot;);</span>
-<span class='doccomment'>/// qalm.set_data(vec![(&quot;OMG&quot;, 13317), (&quot;HACKED&quot;, 228)]);</span>
+<span class='doccomment'>/// qalm.set_data(vec![(&quot;OMG&quot;.into(), 13317), (&quot;HACKED&quot;.into(), 228)]);</span>
 <span class='doccomment'>/// qqae.exec();</span>
 <span class='doccomment'>/// # }</span>
 <span class='doccomment'>/// ```</span>
@@ -803,6 +830,7 @@
                     }
 
                     <span class='doccomment'>/// Inserts a row into this model</span>
+                    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_mut</span>)]</span>
                     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>insert_row</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rolename</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>roletype</span>),<span class='op'>*</span>) {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vec</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
                         $(
@@ -817,6 +845,7 @@
                     }
 
                     <span class='doccomment'>/// Sets a specified data for this model</span>
+                    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_mut</span>)]</span>
                     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>vec</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>roletype</span>),<span class='op'>*</span>)<span class='op'>&gt;</span>) {
                         <span class='self'>self</span>.<span class='ident'>qalm</span>.<span class='ident'>set_data</span>(<span class='ident'>vec</span>.<span class='ident'>into_iter</span>()
                         .<span class='ident'>map</span>(<span class='op'>|</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rolename</span>),<span class='op'>*</span>)<span class='op'>|</span> {
@@ -860,6 +889,8 @@
 <span class='doccomment'>/// The only requirement is that the type in question should provide `Default` implementation.</span>
 <span class='doccomment'>/// # Examples</span>
 <span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// # #[macro_use] extern crate qml;</span>
+<span class='doccomment'>/// # use qml::*;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// #[derive(Default)]</span>
 <span class='doccomment'>/// pub struct Test;</span>
@@ -873,6 +904,9 @@
 <span class='doccomment'>/// });</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Q_REGISTERABLE_QML!(QTest: Test as TestRsObject 1=&gt;0, from TestModule);</span>
+<span class='doccomment'>/// # fn main() {</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// # }</span>
 <span class='doccomment'>/// ```</span>
 <span class='doccomment'>/// Later on a type that was made registerable can be used in [`Q_REGISTER_QML`](macro.Q_REGISTER_QML!.html)</span>
 <span class='doccomment'>/// or in [`Q_REGISTER_SINGLETON_QML`](macro.Q_REGISTER_SINGLETON_QML!.html) macros to be used as a type in QML.</span>
@@ -885,11 +919,9 @@
                     }
 
                     <span class='kw'>fn</span> <span class='ident'>get_new</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span> {
-                        <span class='kw'>unsafe</span> {
-                            <span class='kw'>let</span> <span class='ident'>obj</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>::<span class='ident'>with_no_props</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>origin</span>::<span class='ident'>default</span>());
-                            <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>into_raw</span>(<span class='ident'>obj</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>;
-                            <span class='ident'>res</span>
-                        }
+                        <span class='kw'>let</span> <span class='ident'>obj</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>::<span class='ident'>with_no_props</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>origin</span>::<span class='ident'>default</span>());
+                        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>into_raw</span>(<span class='ident'>obj</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>;
+                        <span class='ident'>res</span>
                     }
 
                     <span class='kw'>fn</span> <span class='ident'>get_qobj_from_ptr</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>ptr</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_void</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>QObject</span> {
@@ -917,6 +949,8 @@
 <span class='doccomment'>/// To use this macro [`Q_REGISTERABLE_QML`](macro.Q_REGISTERABLE_QML!.html) should be used first.</span>
 <span class='doccomment'>/// # Examples</span>
 <span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// # #[macro_use] extern crate qml;</span>
+<span class='doccomment'>/// # use qml::*;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// #[derive(Default)]</span>
 <span class='doccomment'>/// pub struct Test;</span>
@@ -958,6 +992,8 @@
 <span class='doccomment'>/// To use this macro [`Q_REGISTERABLE_QML`](macro.Q_REGISTERABLE_QML!.html) should be used first.</span>
 <span class='doccomment'>/// # Examples</span>
 <span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// # #[macro_use] extern crate qml;</span>
+<span class='doccomment'>/// # use qml::*;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// #[derive(Default)]</span>
 <span class='doccomment'>/// pub struct Test;</span>
