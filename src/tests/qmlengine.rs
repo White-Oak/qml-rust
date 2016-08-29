@@ -31,3 +31,17 @@ fn load_url_file() {
     };
     qqae.load_url(&path);
 }
+
+#[test]
+fn load_url_qrc() {
+    use std::process::Command;
+    let path_raw = ::std::env::current_dir()
+        .unwrap()
+        .join("examples")
+        .join("resources");
+    Command::new("cargo")
+        .arg("run")
+        .current_dir(path_raw)
+        .output()
+        .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
+}
