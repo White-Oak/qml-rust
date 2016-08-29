@@ -1,0 +1,12 @@
+[package]
+name = "resources_example"
+version = "0.0.1"
+authors = ["White-Oak <lpzhelud@gmail.com>"]
+build = "build.rs"
+
+description = "An example describing how to use resources using qrc"
+license = "MIT"
+
+
+[dependencies]
+qml = {path = "../../"}

@@ -13,6 +13,7 @@ All examples are located in a folder [`examples/`](examples), under `example_nam
 * `cargo run --example qvarlists` for an example of how to use `qvarlist!` macro to easily form `QVariant` (used to pass data to QML) of a complex array.
 * `cargo run --example threaded` for an example of multithreading.
 * `cargo run --example qmlregister` for an example of how to register and use your own types from Rust in QML.
+* An example in `examples/resources` (should be run manually by `cargo run`) shows how to use qrc resources.
 
 Requires CMake, Make, Qt (Core, Gui, Widgets, Quick) and, of course, Rust.
 

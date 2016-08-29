@@ -1,0 +1,4 @@
+Makefile
+.qmake.stash
+qrc_myapp.*
+lib.a
