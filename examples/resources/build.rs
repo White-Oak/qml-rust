@@ -14,6 +14,7 @@ fn main() {
 
     fs::copy(path.join("lib.a"), path.join("libqrc.a")).unwrap();
 
+    println!("cargo:rerun-if-changed={}", path.display());
     println!("cargo:rustc-link-search=native={}", path.display());
     println!("cargo:rustc-link-lib=static=qrc");
 }
