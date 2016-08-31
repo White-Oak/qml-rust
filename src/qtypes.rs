@@ -23,6 +23,17 @@ impl QMetaTypable for String {
     }
 }
 
+impl QMetaTypable for f64 {
+    fn metatype() -> QMetaType {
+        QMetaType::Double
+    }
+}
+
+impl QMetaTypable for f32 {
+    fn metatype() -> QMetaType {
+        QMetaType::Float
+    }
+}
 /// Analogue of [`Qt::QMetaType::Type`](http://doc.qt.io/qt-5/qmetatype.html#Type-enum)
 ///
 /// `QMetaType` in Qt manages named types in the meta-object system.
@@ -33,4 +44,5 @@ pub enum QMetaType {
     Double = 6,
     Long = 32,
     QString = 10,
+    Float = 38
 }

@@ -16,7 +16,7 @@ impl Test {
 Q_OBJECT!(
 pub Test as QTest{
     signals:
- fn testname (a: i32, b: i32);
+ fn testname (a: i32, b: i32, f: f32, d: f64);
     slots:
  fn launchGoose(i: i32, launchText: String);
     properties:
@@ -24,7 +24,7 @@ pub Test as QTest{
 
 fn main() {
     let mut qtest = QTest::new(Test);
-    qtest.testname(54, 55);
+    qtest.testname(54, 55, 5_f32, 6_f64);
     qtest.qslot_call("launchGoose",
                      vec![42.into(), "QML Rust".to_string().into()]);
     println!("{:?}", qtest.qmeta());
