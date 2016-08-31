@@ -17,6 +17,7 @@ All examples are located in a folder [`examples/`](examples), under `example_nam
 
 Requires CMake, Make, Qt (Core, Gui, Widgets, Quick) and, of course, Rust.
 
+To run tests: `RUST_TEST_THREADS=1 cargo test`
 ## In-app examples
 
 * [Architect](https://github.com/White-Oak/architect) - an app showing some git stats,
