@@ -78,6 +78,18 @@
 <span id="34">34</span>
 <span id="35">35</span>
 <span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Contains definitions required to communicate with Qt with the use of `named types`.</span>
 <span class='doccomment'>//!</span>
@@ -104,6 +116,17 @@
     }
 }
 
+<span class='kw'>impl</span> <span class='ident'>QMetaTypable</span> <span class='kw'>for</span> <span class='ident'>f64</span> {
+    <span class='kw'>fn</span> <span class='ident'>metatype</span>() <span class='op'>-&gt;</span> <span class='ident'>QMetaType</span> {
+        <span class='ident'>QMetaType</span>::<span class='ident'>Double</span>
+    }
+}
+
+<span class='kw'>impl</span> <span class='ident'>QMetaTypable</span> <span class='kw'>for</span> <span class='ident'>f32</span> {
+    <span class='kw'>fn</span> <span class='ident'>metatype</span>() <span class='op'>-&gt;</span> <span class='ident'>QMetaType</span> {
+        <span class='ident'>QMetaType</span>::<span class='ident'>Float</span>
+    }
+}
 <span class='doccomment'>/// Analogue of [`Qt::QMetaType::Type`](http://doc.qt.io/qt-5/qmetatype.html#Type-enum)</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// `QMetaType` in Qt manages named types in the meta-object system.</span>
@@ -114,6 +137,7 @@
     <span class='ident'>Double</span> <span class='op'>=</span> <span class='number'>6</span>,
     <span class='ident'>Long</span> <span class='op'>=</span> <span class='number'>32</span>,
     <span class='ident'>QString</span> <span class='op'>=</span> <span class='number'>10</span>,
+    <span class='ident'>Float</span> <span class='op'>=</span> <span class='number'>38</span>
 }
 </pre>
 </section>
