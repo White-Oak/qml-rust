@@ -38,6 +38,7 @@ macro_rules! qvarlist{
 macro_rules! __gen_signals{
     (fn $signalname:ident ( $( $signalvar:ident : $signalqtype:ident ),* ); $($rest:tt)*) =>{
         #[allow(unused_mut)]
+        #[allow(dead_code)]
         pub fn $signalname(&self, $( $signalvar: $signalqtype ),*){
             let mut vec: Vec<QVariant> = Vec::new();
             $(
@@ -126,6 +127,7 @@ macro_rules! Q_OBJECT{
                     $(fn $notify_sig ();)*);
 
                     #[allow(unused_mut)]
+                    #[allow(dead_code)]
                     pub fn with_no_props(origin: $obj)-> Box<Self> {
                         unsafe{
                             let mut local = $wrapper{
@@ -142,17 +144,21 @@ macro_rules! Q_OBJECT{
                     }
 
                     #[allow(unused_mut)]
+                    #[allow(dead_code)]
                     pub fn new(origin: $obj, $($propname: $proptype),*) -> Box<Self>{
                         let mut local = Self::with_no_props(origin);
                         $(local.properties.insert(stringify!($propname), ($propname.into(), $proptype::metatype()));)*
                         local
                     }
 
-                    $(pub fn $read_slot(&self) -> &QVariant {
+                    $(
+                    #[allow(dead_code)]
+                    pub fn $read_slot(&self) -> &QVariant {
                         println!("Trying to read");
                         &self.properties.get(stringify!($propname)).unwrap().0
                     }
 
+                    #[allow(dead_code)]
                     pub fn $write_slot(&mut self, input: $proptype) {
                         self.properties.insert(stringify!($propname), (input.into(), $proptype::metatype()));
                     })*
@@ -169,6 +175,7 @@ macro_rules! Q_OBJECT{
                 impl QObjectMacro for $wrapper{
                     #[allow(unused_variables)]
                     #[allow(unused_mut)]
+                    #[allow(dead_code)]
                     fn qslot_call(&mut self, name: &str, args: Vec<QVariant>) -> Option<&QVariant>{
                         fn next_or_panic(qt: Option<QVariant>) -> QVariant{
                             if let Some(o) = qt {
