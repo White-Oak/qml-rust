@@ -233,6 +233,18 @@ impl From<QVariant> for i32 {
     }
 }
 
+impl From<QVariant> for f32 {
+    fn from(i: QVariant) -> Self {
+        unsafe { dos_qvariant_toFloat(i.ptr.load(Ordering::Relaxed)) }
+    }
+}
+
+impl From<QVariant> for f64 {
+    fn from(i: QVariant) -> Self {
+        unsafe { dos_qvariant_toDouble(i.ptr.load(Ordering::Relaxed)) }
+    }
+}
+
 impl<'a> From<&'a QVariant> for i32 {
     fn from(i: &'a QVariant) -> Self {
         i.to_int()

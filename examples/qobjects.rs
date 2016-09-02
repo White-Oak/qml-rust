@@ -20,10 +20,14 @@ pub Test as QTest{
     slots:
  fn launchGoose(i: i32, launchText: String);
     properties:
+        name: String; read: get_name, write: set_name, notify: name_changed;
+        i: i32; read: get_i, write: set_i, notify: i_changed;
+        f: f32; read: get_f, write: set_f, notify: f_changed;
+        d: f64; read: get_d, write: set_d, notify: d_changed;
 });
 
 fn main() {
-    let mut qtest = QTest::new(Test);
+    let mut qtest = QTest::new(Test, "name".into(), 5, 5_f32, 5_f64);
     qtest.testname(54, 55, 5_f32, 6_f64);
     qtest.qslot_call("launchGoose",
                      vec![42.into(), "QML Rust".to_string().into()]);
