@@ -4,5 +4,19 @@ rm -rf build
 mkdir build
 cd build
 
-cmake ..
-make DOtherSideStatic
+if [ "$MSYSTEM" != "" ]; then
+    cmake -G"MSYS Makefiles" ..
+    if [ "$IS_DYLIB" != "" ]; then
+        make DOtherSide_autogen
+    else
+        make DOtherSideStatic_autogen
+    fi
+else
+    cmake ..
+fi
+
+if [ "$IS_DYLIB" != "" ]; then
+    make DOtherSide
+else
+    make DOtherSideStatic
+fi
