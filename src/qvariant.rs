@@ -245,6 +245,12 @@ impl From<QVariant> for f64 {
     }
 }
 
+impl From<QVariant> for bool {
+    fn from(i: QVariant) -> Self {
+        i.into_bool()
+    }
+}
+
 impl<'a> From<&'a QVariant> for i32 {
     fn from(i: &'a QVariant) -> Self {
         i.to_int()
