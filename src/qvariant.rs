@@ -257,6 +257,25 @@ impl<'a> From<&'a QVariant> for i32 {
     }
 }
 
+impl<'a> From<&'a QVariant> for bool {
+    fn from(i: &'a QVariant) -> Self {
+        unsafe { dos_qvariant_toBool(i.ptr.load(Ordering::Relaxed)) }
+    }
+}
+
+
+impl<'a> From<&'a QVariant> for f32 {
+    fn from(i: &'a QVariant) -> Self {
+        unsafe { dos_qvariant_toFloat(i.ptr.load(Ordering::Relaxed)) }
+    }
+}
+
+impl<'a> From<&'a QVariant> for f64 {
+    fn from(i: &'a QVariant) -> Self {
+        unsafe { dos_qvariant_toDouble(i.ptr.load(Ordering::Relaxed)) }
+    }
+}
+
 impl From<QVariant> for String {
     fn from(i: QVariant) -> Self {
         unsafe {
