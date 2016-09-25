@@ -178,6 +178,15 @@ impl<'a> QListModel<'a> {
         }
     }
 
+    /// Changes a line in underlying data
+    pub fn change_line(&mut self, index: usize, qvars: Vec<QVariant>) {
+        unsafe {
+            dos_qabstractlistmodel_beginResetModel(self.wrapped.load(Ordering::Relaxed));
+            self.model[index] = qvars;
+            dos_qabstractlistmodel_endResetModel(self.wrapped.load(Ordering::Relaxed));
+        }
+    }
+
     /// Gets an immutable view of the data
     pub fn view_data(&self) -> &[Vec<QVariant>] {
         &self.model

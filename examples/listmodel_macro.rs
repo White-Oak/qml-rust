@@ -21,6 +21,7 @@ fn main() {
 
     qqae.load_file("examples/listmodel.qml");
     qalm.set_data(vec![("OMG".into(), 13317), ("HACKED".into(), 228)]);
+    qalm.change_line(0, "Everything's alright".into(), 123);
     qqae.exec();
     qqae.quit();
 }

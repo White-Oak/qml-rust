@@ -280,6 +280,7 @@ macro_rules! Q_OBJECT{
 ///
 /// qqae.load_file("examples/listmodel.qml");
 /// qalm.set_data(vec![("OMG".into(), 13317), ("HACKED".into(), 228)]);
+/// qalm.change_line(0, "Everything's alright".into(), 123);
 /// qqae.exec();
 /// # }
 /// ```
@@ -340,6 +341,15 @@ macro_rules! Q_LISTMODEL{
                             )*
                             ($($rolename),*)
                         }).collect()
+                    }
+
+                    /// Sets the line of the data
+                    pub fn change_line(&mut self, index: usize, $($rolename : $roletype),*) {
+                        let mut vec = Vec::new();
+                        $(
+                            vec.push($rolename.into());
+                        )*
+                        self.qalm.change_line(index, vec);
                     }
                 }
 
