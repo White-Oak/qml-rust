@@ -23,9 +23,19 @@ ApplicationWindow {
             }
             Item { Layout.fillWidth: true }
         }
+
+        // Two ways of using signals' attributes on connection
         Connections {
             target: logic;
-            onPageDownloaded: console.log("Page Downloaded");
+            onPageDownloaded: console.log("Page downloaded " + arguments[0]);
+        }
+
+        Component.onCompleted: {
+          logic.pageDownloaded.connect(jsPageDownloaded);
+        }
+
+        function jsPageDownloaded(response) {
+          console.log("Page downloaded " + response);
         }
     }
 }
