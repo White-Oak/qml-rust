@@ -24,10 +24,15 @@ ApplicationWindow {
             Item { Layout.fillWidth: true }
         }
 
-        // Two ways of using signals' attributes on connection
+        // Three ways of using signals' attributes on connection
         Connections {
             target: logic;
             onPageDownloaded: console.log("Page downloaded " + arguments[0]);
+        }
+
+        Connections {
+            target: logic;
+            onPageDownloaded: console.log("Page downloaded " + arg0);
         }
 
         Component.onCompleted: {
