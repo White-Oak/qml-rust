@@ -1,13 +1,14 @@
-/// Eases forming of `QVariantLists` ([`QVariant`](struct.QVariant.html) of array).
+/// Eases forming of [`QVariantList`](struct.QVariantList.html) ([`QVariant`](struct.QVariant.html) of array).
 ///
-/// To be more precise, macro generates Vec<QVariant> which implements Into<QVariant>.
+/// To be more precise, macro generates `Vec<QVariant>` which implements `Into<QVariant>` and `Into<QVariantList>`.
 /// # Examples
 /// ```
 /// # #[macro_use] extern crate qml;
 /// # use qml::*;
 /// # #[allow(unused_variables)]
 /// # fn main() {
-/// let shortcut: QVariant = qvarlist![["John", [2, 2]], ["Ivan", [10, 0]], ["Mary", [0, 1]]].into();
+/// let shortcut: Vec<QVariant> = qvarlist![["John", [2, 2]], ["Ivan", [10, 0]], ["Mary", [0, 1]]];
+/// let qvariant: QVariant = shortcut.into();
 /// # }
 /// ```
 #[macro_export]
