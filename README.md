@@ -10,6 +10,7 @@ All examples are located in a folder [`examples/`](examples), under `example_nam
 * `cargo run --example listmodel` for an example of providing QML with list model from Rust.
 * `cargo run --example listmodel_macro` for the same example, but using `Q_LISTMODEL!` macro.
 * `cargo run --example sigslots` for an example of how to create your own `QObject` with signals and slots, and to communicate between QML and Rust. Also shows how to use `Q_OBJECT!` macro.
+* `cargo run --example qobjects` for an example of how to use `Q_OBJECT!` macro with different types.
 * `cargo run --example qvarlists` for an example of how to use `qvarlist!` macro to easily form `QVariant` (used to pass data to QML) of a complex array.
 * `cargo run --example threaded` for an example of multithreading.
 * `cargo run --example qmlregister` for an example of how to register and use your own types from Rust in QML.
