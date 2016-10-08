@@ -107,6 +107,12 @@
 <span id="63">63</span>
 <span id="64">64</span>
 <span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Contains definitions required to communicate with Qt with the use of `named types`.</span>
 <span class='doccomment'>//!</span>
@@ -159,6 +165,12 @@
 <span class='comment'>//         QMetaType::Long</span>
 <span class='comment'>//     }</span>
 <span class='comment'>// }</span>
+
+<span class='kw'>impl</span> <span class='ident'>QMetaTypable</span> <span class='kw'>for</span> <span class='ident'>bool</span> {
+    <span class='kw'>fn</span> <span class='ident'>metatype</span>() <span class='op'>-&gt;</span> <span class='ident'>QMetaType</span> {
+        <span class='ident'>QMetaType</span>::<span class='ident'>Bool</span>
+    }
+}
 
 <span class='doccomment'>/// Analogue of [`Qt::QMetaType::Type`](http://doc.qt.io/qt-5/qmetatype.html#Type-enum)</span>
 <span class='doccomment'>///</span>
