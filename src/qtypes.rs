@@ -50,6 +50,12 @@ impl QMetaTypable for QVariantList {
 //     }
 // }
 
+impl QMetaTypable for bool {
+    fn metatype() -> QMetaType {
+        QMetaType::Bool
+    }
+}
+
 /// Analogue of [`Qt::QMetaType::Type`](http://doc.qt.io/qt-5/qmetatype.html#Type-enum)
 ///
 /// `QMetaType` in Qt manages named types in the meta-object system.
