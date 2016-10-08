@@ -20,6 +20,7 @@ mod qtypes;
 mod macros;
 mod qmlregister;
 mod tests;
+mod qvariantlist;
 
 pub use qmlengine::QmlEngine;
 pub use qvariant::QVariant;
@@ -28,6 +29,7 @@ pub use qobject::QObject;
 pub use qmeta::{QObjectMacro, emit_signal};
 pub use qtypes::*;
 pub use qmlregister::QMLRegisterable;
+pub use qvariantlist::*;
 
 #[doc(hidden)]
 pub use libc::c_void;

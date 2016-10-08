@@ -154,7 +154,7 @@ macro_rules! Q_OBJECT{
                     $(
                     #[allow(dead_code)]
                     pub fn $read_slot(&self) -> &QVariant {
-                        println!("Trying to read");
+                        // println!("Trying to read");
                         &self.properties.get(stringify!($propname)).unwrap().0
                     }
 

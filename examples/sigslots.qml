@@ -26,6 +26,8 @@ ApplicationWindow {
         console.log(test.name)
         test.name = "OAK"
         console.log(test.name)
+        console.log("Below is list")
+        console.log(test.list)
       }
       function updateText(s) {
         text.text = s

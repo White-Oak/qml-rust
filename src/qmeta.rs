@@ -28,7 +28,7 @@ pub fn emit_signal(obj: &QObjectMacro, signalname: &str, args: Vec<QVariant>) {
         .collect();
     forget(args);
     unsafe {
-        println!("about to send signal");
+        // println!("about to send signal");
         dos_qobject_signal_emit(get_qobj_ptr(obj.get_qobj()),
                                 stoptr(signalname),
                                 vec.len() as i32,
@@ -46,7 +46,7 @@ pub fn get_dos_qmeta(meta: &QMeta) -> DosQMetaObject {
 
 impl QMeta {
     pub fn new_for_qobject(def: QMetaDefinition) -> QMeta {
-        println!("QMD: {:?}", def);
+        // println!("QMD: {:?}", def);
         unsafe {
             let meta_obj = dos_qobject_qmetaobject();
             let dos_meta = dos_qmetaobject_create(meta_obj,
@@ -80,7 +80,7 @@ impl QMetaDefinition {
         let (signals, slots, props, name) = input;
         let signals: Vec<SignalDefinition> = signals.into_iter()
             .map(|(s, argc, types)| {
-                println!("signal '{}' with {} arguments", s, argc);
+                // println!("signal '{}' with {} arguments", s, argc);
                 let def = SignalDefinition {
                     name: stoptr(s),
                     parametersCount: argc,

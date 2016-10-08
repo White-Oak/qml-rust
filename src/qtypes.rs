@@ -3,6 +3,8 @@
 //! Provides definition of [`QMetaType`](enum.QMetaType.html) enum, that contains mapping of named types
 //! and a trait [`QMetaTypable`](trait.QMetaTypable.html), that controls which types are able to be used in signals, slots or properties.
 
+use qvariantlist::QVariantList;
+
 /// Provides an associated variant of enum for a type.
 ///
 /// Only types that implement this, may be used as types in signals, slots or properties.
@@ -34,6 +36,20 @@ impl QMetaTypable for f32 {
         QMetaType::Float
     }
 }
+
+
+impl QMetaTypable for QVariantList {
+    fn metatype() -> QMetaType {
+        QMetaType::QVariantList
+    }
+}
+
+// impl QMetaTypable for i64 {
+//     fn metatype() -> QMetaType {
+//         QMetaType::Long
+//     }
+// }
+
 /// Analogue of [`Qt::QMetaType::Type`](http://doc.qt.io/qt-5/qmetatype.html#Type-enum)
 ///
 /// `QMetaType` in Qt manages named types in the meta-object system.
@@ -44,5 +60,6 @@ pub enum QMetaType {
     Double = 6,
     Long = 32,
     QString = 10,
-    Float = 38
+    Float = 38,
+    QVariantList = 9,
 }

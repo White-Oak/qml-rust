@@ -10,6 +10,7 @@ pub type MutDosQHashIntQByteArray = *mut WQHashIntQByteArray;
 pub type DosQMetaObject = *const WQMetaObject;
 pub type DosQAbstractListModel = *mut WQAbstractListModel;
 pub type DosQUrl = *mut WQUrl;
+pub type DosQVariantArray = *const QVariantArray;
 
 pub type DosCStr = *const libc::c_char;
 
@@ -22,3 +23,11 @@ pub enum WQHashIntQByteArray {}
 pub enum WQMetaObject {}
 pub enum WQAbstractListModel {}
 pub enum WQUrl {}
+
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct QVariantArray {
+    pub size: i32,
+    pub data: *const DosQVariant,
+}

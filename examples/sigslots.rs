@@ -14,6 +14,7 @@ pub Test as QTest{
         fn click();
     properties:
         name: String; read: get_name, write: set_name, notify: name_changed;
+        list: QVariantList; read: get_list, write: set_list, notify: list_changed;
 });
 
 impl QTest {
@@ -26,7 +27,7 @@ impl QTest {
 
 fn main() {
     let mut qqae = QmlEngine::new();
-    let mut qtest = QTest::new(Test, "OAK".into());
+    let mut qtest = QTest::new(Test, "OAK".into(), qvarlist![2, 4, 5].into());
     qtest.set_name("Swapped".into());
     // assert_eq!(qtest.get_name(), "Swapped".to_string());
     qqae.set_and_store_property("test", qtest.get_qobj());

@@ -1,6 +1,7 @@
 use libc;
 use std::ffi::CStr;
 use std::sync::atomic::{AtomicPtr, Ordering};
+use std::mem::forget;
 
 use utils::*;
 use types::*;
@@ -22,19 +23,13 @@ extern "C" {
     fn dos_qvariant_toString(val: DosQVariant) -> *mut libc::c_char;
     fn dos_qvariant_toFloat(val: DosQVariant) -> f32;
     fn dos_qvariant_toDouble(val: DosQVariant) -> f64;
+    fn dos_qvariant_toArray(val: DosQVariant) -> DosQVariantArray;
     // DOS_API DosQObject *DOS_CALL dos_qvariant_toQObject(const DosQVariant *vptr);
 
     fn dos_qvariant_isnull(val: DosQVariant) -> bool;
     fn dos_qvariant_assign(val: MutDosQVariant, other: DosQVariant);
     fn dos_qvariant_delete(val: DosQVariant);
     fn dos_chararray_delete(ptr: DosCStr);
-// DOS_API void   DOS_CALL dos_qvariant_setInt    (DosQVariant *vptr, int value);
-// DOS_API void   DOS_CALL dos_qvariant_setBool   (DosQVariant *vptr, bool value);
-// DOS_API void   DOS_CALL dos_qvariant_setFloat  (DosQVariant *vptr, float value);
-// DOS_API void   DOS_CALL dos_qvariant_setDouble (DosQVariant *vptr, double value);
-// DOS_API void   DOS_CALL dos_qvariant_setString (DosQVariant *vptr, const char *value);
-// DOS_API void   DOS_CALL dos_qvariant_setQObject(DosQVariant *vptr, DosQObject *value);
-
 }
 
 /// This holds a value to be providen for a QML context.
@@ -160,8 +155,6 @@ impl<'a> From<&'a [QVariant]> for QVariant {
         }
     }
 }
-
-use std::mem::forget;
 
 impl From<Vec<QVariant>> for QVariant {
     fn from(i: Vec<QVariant>) -> Self {
@@ -298,6 +291,21 @@ impl<'a> From<&'a QVariant> for String {
                 .into_owned();
             dos_chararray_delete(ch_ar);
             res
+        }
+    }
+}
+
+
+impl From<QVariant> for Vec<QVariant> {
+    fn from(i: QVariant) -> Self {
+        unsafe {
+            let ref qvara = *dos_qvariant_toArray(load_self(&i));
+            let len = qvara.size;
+            let slice = ::std::slice::from_raw_parts(qvara.data, len as usize);
+            let vec: Vec<QVariant> = slice.to_vec().into_iter()
+                .map(|qvar| qvar.into())
+                .collect();
+            vec
         }
     }
 }

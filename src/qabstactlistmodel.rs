@@ -31,7 +31,7 @@ extern "C" fn RustObjectCallback(Qself: *const libc::c_void,
                                  slotname: DosQVariant,
                                  argc: i32,
                                  argv: *const DosQVariant) {
-    println!("SLOT WAS EXECUTED. hi");
+    // println!("SLOT WAS EXECUTED. hi");
 }
 pub type DObjectCallback = extern "C" fn(*const libc::c_void, DosQVariant, i32, *const DosQVariant);
 
@@ -65,7 +65,7 @@ extern "C" fn RustSetDataCallback(Qself: *const libc::c_void,
                                   value: DosQVariant,
                                   role: i32,
                                   result: *mut bool) {
-    println!("SET DATA HELLO");
+    // println!("SET DATA HELLO");
 }
 pub type SetDataCallback = extern "C" fn(*const libc::c_void,
                                          DosQModelIndex,
@@ -78,7 +78,7 @@ pub type RoleNamesCallback = extern "C" fn(*const libc::c_void, MutDosQHashIntQB
 extern "C" fn RustFlagsCallback(Qself: *const libc::c_void,
                                 index: DosQModelIndex,
                                 result: *mut i32) {
-    println!("IVE GOT FLAGS CALLBACK");
+    // println!("IVE GOT FLAGS CALLBACK");
 }
 pub type FlagsCallback = extern "C" fn(*const libc::c_void, DosQModelIndex, *mut i32);
 
@@ -87,7 +87,7 @@ extern "C" fn RustHeaderDataCallback(Qself: *const libc::c_void,
                                      orientation: i32,
                                      role: i32,
                                      result: MutDosQVariant) {
-    println!("FINAL CALLBACK");
+    // println!("FINAL CALLBACK");
 }
 pub type HeaderDataCallback = extern "C" fn(*const libc::c_void, i32, i32, i32, MutDosQVariant);
 
