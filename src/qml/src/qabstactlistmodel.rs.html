@@ -266,6 +266,15 @@
 <span id="222">222</span>
 <span id="223">223</span>
 <span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>libc</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>;
@@ -300,7 +309,7 @@
                                  <span class='ident'>slotname</span>: <span class='ident'>DosQVariant</span>,
                                  <span class='ident'>argc</span>: <span class='ident'>i32</span>,
                                  <span class='ident'>argv</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>DosQVariant</span>) {
-    <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;SLOT WAS EXECUTED. hi&quot;</span>);
+    <span class='comment'>// println!(&quot;SLOT WAS EXECUTED. hi&quot;);</span>
 }
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DObjectCallback</span> <span class='op'>=</span> <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>, <span class='ident'>DosQVariant</span>, <span class='ident'>i32</span>, <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>DosQVariant</span>);
 
@@ -334,7 +343,7 @@
                                   <span class='ident'>value</span>: <span class='ident'>DosQVariant</span>,
                                   <span class='ident'>role</span>: <span class='ident'>i32</span>,
                                   <span class='ident'>result</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>bool</span>) {
-    <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;SET DATA HELLO&quot;</span>);
+    <span class='comment'>// println!(&quot;SET DATA HELLO&quot;);</span>
 }
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>SetDataCallback</span> <span class='op'>=</span> <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>,
                                          <span class='ident'>DosQModelIndex</span>,
@@ -347,7 +356,7 @@
 <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span> <span class='ident'>RustFlagsCallback</span>(<span class='ident'>Qself</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>,
                                 <span class='ident'>index</span>: <span class='ident'>DosQModelIndex</span>,
                                 <span class='ident'>result</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>i32</span>) {
-    <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;IVE GOT FLAGS CALLBACK&quot;</span>);
+    <span class='comment'>// println!(&quot;IVE GOT FLAGS CALLBACK&quot;);</span>
 }
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>FlagsCallback</span> <span class='op'>=</span> <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>, <span class='ident'>DosQModelIndex</span>, <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>i32</span>);
 
@@ -356,7 +365,7 @@
                                      <span class='ident'>orientation</span>: <span class='ident'>i32</span>,
                                      <span class='ident'>role</span>: <span class='ident'>i32</span>,
                                      <span class='ident'>result</span>: <span class='ident'>MutDosQVariant</span>) {
-    <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;FINAL CALLBACK&quot;</span>);
+    <span class='comment'>// println!(&quot;FINAL CALLBACK&quot;);</span>
 }
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>HeaderDataCallback</span> <span class='op'>=</span> <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>, <span class='ident'>i32</span>, <span class='ident'>i32</span>, <span class='ident'>i32</span>, <span class='ident'>MutDosQVariant</span>);
 
@@ -443,6 +452,15 @@
         <span class='kw'>unsafe</span> {
             <span class='ident'>dos_qabstractlistmodel_beginResetModel</span>(<span class='self'>self</span>.<span class='ident'>wrapped</span>.<span class='ident'>load</span>(<span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>));
             <span class='self'>self</span>.<span class='ident'>model</span> <span class='op'>=</span> <span class='ident'>qvars</span>;
+            <span class='ident'>dos_qabstractlistmodel_endResetModel</span>(<span class='self'>self</span>.<span class='ident'>wrapped</span>.<span class='ident'>load</span>(<span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>));
+        }
+    }
+
+    <span class='doccomment'>/// Changes a line in underlying data</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>change_line</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>, <span class='ident'>qvars</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QVariant</span><span class='op'>&gt;</span>) {
+        <span class='kw'>unsafe</span> {
+            <span class='ident'>dos_qabstractlistmodel_beginResetModel</span>(<span class='self'>self</span>.<span class='ident'>wrapped</span>.<span class='ident'>load</span>(<span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>));
+            <span class='self'>self</span>.<span class='ident'>model</span>[<span class='ident'>index</span>] <span class='op'>=</span> <span class='ident'>qvars</span>;
             <span class='ident'>dos_qabstractlistmodel_endResetModel</span>(<span class='self'>self</span>.<span class='ident'>wrapped</span>.<span class='ident'>load</span>(<span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>));
         }
     }

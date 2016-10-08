@@ -237,6 +237,8 @@
 <span id="193">193</span>
 <span id="194">194</span>
 <span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>forget</span>;
 <span class='kw'>use</span> <span class='ident'>libc</span>;
@@ -268,7 +270,7 @@
         .<span class='ident'>collect</span>();
     <span class='ident'>forget</span>(<span class='ident'>args</span>);
     <span class='kw'>unsafe</span> {
-        <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;about to send signal&quot;</span>);
+        <span class='comment'>// println!(&quot;about to send signal&quot;);</span>
         <span class='ident'>dos_qobject_signal_emit</span>(<span class='ident'>get_qobj_ptr</span>(<span class='ident'>obj</span>.<span class='ident'>get_qobj</span>()),
                                 <span class='ident'>stoptr</span>(<span class='ident'>signalname</span>),
                                 <span class='ident'>vec</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>i32</span>,
@@ -286,6 +288,7 @@
 
 <span class='kw'>impl</span> <span class='ident'>QMeta</span> {
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_for_qobject</span>(<span class='ident'>def</span>: <span class='ident'>QMetaDefinition</span>) <span class='op'>-&gt;</span> <span class='ident'>QMeta</span> {
+        <span class='comment'>// println!(&quot;QMD: {:?}&quot;, def);</span>
         <span class='kw'>unsafe</span> {
             <span class='kw'>let</span> <span class='ident'>meta_obj</span> <span class='op'>=</span> <span class='ident'>dos_qobject_qmetaobject</span>();
             <span class='kw'>let</span> <span class='ident'>dos_meta</span> <span class='op'>=</span> <span class='ident'>dos_qmetaobject_create</span>(<span class='ident'>meta_obj</span>,
@@ -319,6 +322,7 @@
         <span class='kw'>let</span> (<span class='ident'>signals</span>, <span class='ident'>slots</span>, <span class='ident'>props</span>, <span class='ident'>name</span>) <span class='op'>=</span> <span class='ident'>input</span>;
         <span class='kw'>let</span> <span class='ident'>signals</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>SignalDefinition</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>signals</span>.<span class='ident'>into_iter</span>()
             .<span class='ident'>map</span>(<span class='op'>|</span>(<span class='ident'>s</span>, <span class='ident'>argc</span>, <span class='ident'>types</span>)<span class='op'>|</span> {
+                <span class='comment'>// println!(&quot;signal &#39;{}&#39; with {} arguments&quot;, s, argc);</span>
                 <span class='kw'>let</span> <span class='ident'>def</span> <span class='op'>=</span> <span class='ident'>SignalDefinition</span> {
                     <span class='ident'>name</span>: <span class='ident'>stoptr</span>(<span class='ident'>s</span>),
                     <span class='ident'>parametersCount</span>: <span class='ident'>argc</span>,

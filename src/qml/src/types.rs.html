@@ -66,6 +66,15 @@
 <span id="22">22</span>
 <span id="23">23</span>
 <span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>libc</span>;
 
@@ -79,6 +88,7 @@
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DosQMetaObject</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>WQMetaObject</span>;
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DosQAbstractListModel</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>WQAbstractListModel</span>;
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DosQUrl</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>WQUrl</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DosQVariantArray</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>QVariantArray</span>;
 
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DosCStr</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_char</span>;
 
@@ -91,6 +101,14 @@
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>WQMetaObject</span> {}
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>WQAbstractListModel</span> {}
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>WQUrl</span> {}
+
+
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>repr</span>(<span class='ident'>C</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>QVariantArray</span> {
+    <span class='kw'>pub</span> <span class='ident'>size</span>: <span class='ident'>i32</span>,
+    <span class='kw'>pub</span> <span class='ident'>data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>DosQVariant</span>,
+}
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

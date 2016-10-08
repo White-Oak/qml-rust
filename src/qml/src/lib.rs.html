@@ -78,6 +78,8 @@
 <span id="34">34</span>
 <span id="35">35</span>
 <span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>non_snake_case</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
@@ -101,6 +103,7 @@
 <span class='kw'>mod</span> <span class='ident'>macros</span>;
 <span class='kw'>mod</span> <span class='ident'>qmlregister</span>;
 <span class='kw'>mod</span> <span class='ident'>tests</span>;
+<span class='kw'>mod</span> <span class='ident'>qvariantlist</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>qmlengine</span>::<span class='ident'>QmlEngine</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>qvariant</span>::<span class='ident'>QVariant</span>;
@@ -109,6 +112,7 @@
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>qmeta</span>::{<span class='ident'>QObjectMacro</span>, <span class='ident'>emit_signal</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>qtypes</span>::<span class='op'>*</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>qmlregister</span>::<span class='ident'>QMLRegisterable</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>qvariantlist</span>::<span class='op'>*</span>;
 
 <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>;

@@ -48,9 +48,7 @@
                        [<span class='inner'>&#x2212;</span>]
                    </a>
                </span><a id='src-33' class='srclink' href='../src/qml/src/qmlengine.rs.html#27-30' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct QmlEngine {
-    // some fields omitted
-}</pre><div class='docblock'><p>Provides an entry point for building QML applications from Rust</p>
+<pre class='rust struct'>pub struct QmlEngine { /* fields omitted */ }</pre><div class='docblock'><p>Provides an entry point for building QML applications from Rust</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../qml/struct.QmlEngine.html' title='qml::QmlEngine'>QmlEngine</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-36' class='srclink' href='../src/qml/src/qmlengine.rs.html#32-97' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; Self</code></span></h4>
 <div class='docblock'><p>Creates a QML context of a non-headless application</p>
@@ -70,10 +68,10 @@
 <p>This variant stores qvariant, so it is removed, only when this QmlEngine is removed.</p>
 </div><h4 id='method.set_property' class='method'><span id='set_property.v' class='invisible'><code>fn <a href='#method.set_property' class='fnname'>set_property</a>(&amp;mut self, name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, value: &amp;<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>)</code></span></h4>
 <div class='docblock'><p>Sets a property for this QML context</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../qml/struct.QmlEngine.html' title='qml::QmlEngine'>QmlEngine</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-70' class='srclink' href='../src/qml/src/qmlengine.rs.html#101-105' title='goto source code'>[src]</a></span></h3>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../qml/struct.QmlEngine.html' title='qml::QmlEngine'>QmlEngine</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-66' class='srclink' href='../src/qml/src/qmlengine.rs.html#101-105' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.default' class='method'><span id='default.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; Self</code></span></h4>
 <div class='docblock'><p>Returns the &quot;default value&quot; for a type. <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Read more</a></p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../qml/struct.QmlEngine.html' title='qml::QmlEngine'>QmlEngine</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-72' class='srclink' href='../src/qml/src/qmlengine.rs.html#107-115' title='goto source code'>[src]</a></span></h3>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../qml/struct.QmlEngine.html' title='qml::QmlEngine'>QmlEngine</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-68' class='srclink' href='../src/qml/src/qmlengine.rs.html#107-115' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.drop' class='method'><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span></h4>
 <div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
 </div></div></section>

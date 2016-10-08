@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `QVariantList` struct in crate `qml`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, QVariantList">
+
+    <title>qml::QVariantList - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>qml</a></p><script>window.sidebarCurrent = {name: 'QVariantList', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>qml</a>::<wbr><a class='struct' href=''>QVariantList</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-763' class='srclink' href='../src/qml/src/qvariantlist.rs.html#34-36' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct QVariantList { /* fields omitted */ }</pre><div class='docblock'><p>A wrapper around <code>Vec&lt;QVariant&gt;</code>, that is supposed to be used in <a href="macro.Q_OBJECT.html"><code>Q_OBJECT!</code></a> properties.
+It is only needed because of macro restrictions in current stable Rust.</p>
+
+<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>let</span> <span class='ident'>shortcut</span>: <span class='ident'>QVariantList</span> <span class='op'>=</span> <span class='macro'>qvarlist</span><span class='macro'>!</span>[[<span class='string'>&quot;John&quot;</span>, [<span class='number'>2</span>, <span class='number'>2</span>]], [<span class='string'>&quot;Ivan&quot;</span>, [<span class='number'>10</span>, <span class='number'>0</span>]], [<span class='string'>&quot;Mary&quot;</span>, [<span class='number'>0</span>, <span class='number'>1</span>]]].<span class='ident'>into</span>();<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Example</span>;
+
+<span class='macro'>Q_OBJECT</span><span class='macro'>!</span>(
+<span class='kw'>pub</span> <span class='ident'>Example</span> <span class='kw'>as</span> <span class='ident'>QExample</span>{
+    <span class='ident'>signals</span>:
+    <span class='ident'>slots</span>:
+    <span class='ident'>properties</span>:
+        <span class='ident'>list</span>: <span class='ident'>QVariantList</span>; <span class='ident'>read</span>: <span class='ident'>get_list</span>, <span class='ident'>write</span>: <span class='ident'>set_list</span>, <span class='ident'>notify</span>: <span class='ident'>list_changed</span>;
+});
+
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>qobj</span> <span class='op'>=</span> <span class='ident'>QExample</span>::<span class='ident'>new</span>(<span class='ident'>Example</span>, <span class='macro'>qvarlist</span><span class='macro'>!</span>[[<span class='string'>&quot;John&quot;</span>, [<span class='number'>2</span>, <span class='number'>2</span>]]].<span class='ident'>into</span>());<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+
+<h1 id='see' class='section-header'><a href='#see'>See</a></h1>
+<p><a href="macro.qvarlist.html"><code>qvarlist!</code></a>, <a href="macro.Q_OBJECT.html"><code>Q_OBJECT!</code></a></p>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='../qml/trait.QMetaTypable.html' title='qml::QMetaTypable'>QMetaTypable</a> for <a class='struct' href='../qml/struct.QVariantList.html' title='qml::QVariantList'>QVariantList</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-664' class='srclink' href='../src/qml/src/qtypes.rs.html#41-45' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.metatype' class='method'><span id='metatype.v' class='invisible'><code>fn <a href='../qml/trait.QMetaTypable.html#tymethod.metatype' class='fnname'>metatype</a>() -&gt; <a class='enum' href='../qml/enum.QMetaType.html' title='qml::QMetaType'>QMetaType</a></code></span></h4>
+<div class='docblock'><p>Returns an associate variant of QMetaType</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../qml/struct.QVariantList.html' title='qml::QVariantList'>QVariantList</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-765' class='srclink' href='../src/qml/src/qvariantlist.rs.html#38-42' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.default' class='method'><span id='default.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; Self</code></span></h4>
+<div class='docblock'><p>Returns the &quot;default value&quot; for a type. <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>&gt;&gt; for <a class='struct' href='../qml/struct.QVariantList.html' title='qml::QVariantList'>QVariantList</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-770' class='srclink' href='../src/qml/src/qvariantlist.rs.html#50-54' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from' class='method'><span id='from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>&gt;) -&gt; Self</code></span></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>&gt; for <a class='struct' href='../qml/struct.QVariantList.html' title='qml::QVariantList'>QVariantList</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-776' class='srclink' href='../src/qml/src/qvariantlist.rs.html#62-66' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-1' class='method'><span id='from.v-1' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(i: <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>) -&gt; Self</code></span></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "qml";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>
