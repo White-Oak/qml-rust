@@ -12,6 +12,15 @@ struct NotThreadSafe<T> {
     value: UnsafeCell<T>,
 }
 
+// The unsafe code is needed to make QmlEngine multithreadedd, since I am not sure, whether should this be in a library.
+// The simple example would be:
+//fn main() {
+//    let mut qqae = QmlEngine::new();
+//    qqae.load_url("qrc:///qml/resources.qml");
+//    qqae.exec();
+//}
+
+
 unsafe impl<T> Sync for NotThreadSafe<T> {}
 unsafe impl<T> Send for NotThreadSafe<T> {}
 fn main() {

@@ -10,3 +10,6 @@ license = "MIT"
 
 [dependencies]
 qml = {path = "../../"}
+
+[build-dependencies]
+fs-utils = "*"
