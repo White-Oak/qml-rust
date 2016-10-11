@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+rm -rf DOtherSide
 git clone https://github.com/filcuc/DOtherSide.git --single-branch --depth 1
 cd DOtherSide
 rm -rf build
