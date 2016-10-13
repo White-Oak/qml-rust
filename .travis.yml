@@ -1,0 +1,18 @@
+dist: trusty
+language: rust
+sudo: required
+
+before_install:
+  - sudo add-apt-repository --yes ppa:beineri/opt-qt57-trusty
+  - sudo apt-get update -qq
+
+install:
+  - sudo apt-get -y install qt57[QTPACKAGE]
+rust:
+  - stable
+  - beta
+  - nightly
+script:
+  - source /opt/qt57/bin/qt57-env.sh
+  - cargo build --verbose
+  - RUST_TEST_THREADS=1 cargo test --verbose
