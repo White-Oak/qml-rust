@@ -309,6 +309,12 @@ macro_rules! Q_LISTMODEL{
                         self.qalm.insert_row(vec.into_iter());
                     }
 
+                    /// Remove a row from this model
+                    #[allow(unused_mut)]
+                    pub fn remove_row(&mut self, index: usize) {
+                        self.qalm.remove_row(index);
+                    }
+
                     /// Gets an accoiated qvariant
                     pub fn get_qvar(&self) -> QVariant{
                         self.qalm.get_qvar()
@@ -352,6 +358,14 @@ macro_rules! Q_LISTMODEL{
                         )*
                         self.qalm.change_line(index, vec);
                     }
+
+                    /// Remove all rows from this model
+                    #[allow(unused_mut)]
+                    pub fn clear(&mut self) {
+                        self.qalm.clear();
+                    }
+
+
                 }
 
                 impl<'a, 'b> From<&'a $wrapper> for QVariant {
