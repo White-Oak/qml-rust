@@ -104,10 +104,16 @@ extern "C" {
                                               parent: DosQModelIndex,
                                               first: i32,
                                               last: i32);
+   fn dos_qabstractlistmodel_beginRemoveRows(vptr: DosQAbstractListModel,
+                                             parent: DosQModelIndex,
+                                             first: i32,
+                                             last: i32);
+
     fn dos_qabstractlistmodel_endInsertRows(vptr: DosQAbstractListModel);
 
     fn dos_qabstractlistmodel_beginResetModel(vptr: DosQAbstractListModel);
     fn dos_qabstractlistmodel_endResetModel(vptr: DosQAbstractListModel);
+    fn dos_qabstractlistmodel_endRemoveRows(vptr: DosQAbstractListModel);
 }
 
 impl<'a> QListModel<'a> {
@@ -163,9 +169,23 @@ impl<'a> QListModel<'a> {
             dos_qabstractlistmodel_beginInsertRows(self.wrapped.load(Ordering::Relaxed),
                                                    get_model_ptr(&index),
                                                    self.model.len() as i32,
-                                                   (self.model.len() + 1) as i32);
+                                                   (self.model.len() ) as i32);
             self.model.push(qvars.collect());
             dos_qabstractlistmodel_endInsertRows(self.wrapped.load(Ordering::Relaxed));
+        }
+    }
+
+    /// Remove a line from the model.
+    pub fn remove_row(&mut self, index: usize)
+    {
+        unsafe {
+            let modelindex = QModelIndex::new();
+            dos_qabstractlistmodel_beginRemoveRows(self.wrapped.load(Ordering::Relaxed),
+                                                   get_model_ptr(&modelindex),
+                                                   index as i32,
+                                                   index as i32);
+            self.model.remove(index as usize);
+            dos_qabstractlistmodel_endRemoveRows(self.wrapped.load(Ordering::Relaxed));
         }
     }
 
@@ -187,10 +207,21 @@ impl<'a> QListModel<'a> {
         }
     }
 
+    /// Clear all the data from the model
+    pub fn clear(&mut self) {
+        unsafe {
+            dos_qabstractlistmodel_beginResetModel(self.wrapped.load(Ordering::Relaxed));
+            self.model.clear();
+            dos_qabstractlistmodel_endResetModel(self.wrapped.load(Ordering::Relaxed));
+        }
+    }
+
     /// Gets an immutable view of the data
     pub fn view_data(&self) -> &[Vec<QVariant>] {
         &self.model
     }
+
+
 }
 
 impl<'a, 'b> From<&'a QListModel<'b>> for QVariant {
