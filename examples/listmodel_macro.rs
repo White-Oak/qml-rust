@@ -7,7 +7,13 @@ use qml::*;
 Q_LISTMODEL!{
     pub QTestModel {
         name: String,
-        number: i32,
+        number: i32
+    }
+}
+
+Q_LISTMODEL!{
+    pub QOneMemberModel {
+        name: String
     }
 }
 

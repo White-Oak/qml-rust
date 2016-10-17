@@ -288,7 +288,7 @@ macro_rules! Q_OBJECT{
 #[macro_export]
 macro_rules! Q_LISTMODEL{
             (pub $wrapper:ident{
-                $($rolename:ident : $roletype:ty,)*
+                $($rolename:ident : $roletype:ident),*
             }) => {
                 pub struct $wrapper {
                     qalm: Box<QListModel<'static>>,
@@ -322,9 +322,9 @@ macro_rules! Q_LISTMODEL{
 
                     /// Sets a specified data for this model
                     #[allow(unused_mut)]
-                    pub fn set_data(&mut self, vec: Vec<($($roletype),*)>) {
+                    pub fn set_data(&mut self, vec: Vec<($($roletype,)*)>) {
                         self.qalm.set_data(vec.into_iter()
-                        .map(|($($rolename),*)| {
+                        .map(|($($rolename,)*)| {
                             let mut vec = Vec::new();
                             $(
                                 vec.push($rolename.into());
