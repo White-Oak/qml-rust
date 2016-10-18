@@ -47,21 +47,23 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-928' class='srclink' href='../src/qml/src/macros.rs.html#289-363' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-942' class='srclink' href='../src/qml/src/macros.rs.html#358-446' title='goto source code'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>Q_LISTMODEL</span> {
     (<span class='kw'>pub</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>wrapper</span>:<span class='ident'>ident</span>{
-                $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rolename</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>roletype</span>:<span class='ident'>ty</span>,)<span class='op'>*</span>
+                $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rolename</span>:<span class='ident'>ident</span> : <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>roletype</span>:<span class='ident'>ty</span>),<span class='op'>*</span>
             }) <span class='op'>=&gt;</span> { ... };
 }</pre>
 <div class='docblock'><p>Generates a wrapper for <a href="struct.QListModel.html"><code>QListModel</code></a> for static typing and easier management.</p>
+
+<p>Unlike <a href="macro.Q_LISTMODEL_ITEM.html"><code>Q_LISTMODEL_ITEM</code></a> macro, uses <code>tuple</code> as a data source.</p>
 
 <h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1>
 <pre class='rust rust-example-rendered'>
 <span class='macro'>Q_LISTMODEL</span><span class='macro'>!</span>{
     <span class='kw'>pub</span> <span class='ident'>QTestModel</span> {
         <span class='ident'>name</span>: <span class='ident'>String</span>,
-        <span class='ident'>number</span>: <span class='ident'>i32</span>,
+        <span class='ident'>number</span>: <span class='ident'>i32</span>
     }
 }
 
@@ -138,7 +140,7 @@
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    
+    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>
