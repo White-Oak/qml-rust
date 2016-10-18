@@ -256,6 +256,72 @@ macro_rules! Q_OBJECT{
             };
         }
 
+
+/// Generates a wrapper for [`QListModel`](struct.QListModel.html) for static typing and easier management.
+///
+/// # Examples
+/// ```no_run
+/// # #[macro_use] extern crate qml;
+/// # use qml::*;
+/// Q_LISTMODEL_ITEM!{
+///     pub TestModel<TestModelItem> {
+///         name: String,
+///         number: i32,
+///     }
+/// }
+///
+/// // ...
+///
+/// # fn main() {
+/// let mut qqae = QmlEngine::new();
+/// let mut qalm = QTestModel::new();
+/// let item1 = TestModelItem {
+///     name: "foo".into(),
+///     number: 42
+/// };
+/// let item2 = TestModelItem {
+///     name: "bar".into(),
+///     number: 23
+/// };
+/// qalm.insert_item(item1);
+/// qalm.insert_item(item2);
+/// // `&QTestModel` implements `Into<QVariant>`
+/// qqae.set_and_store_property("listModel", &qalm);
+/// qqae.exec();
+/// # }
+/// ```
+#[macro_export]
+macro_rules! Q_LISTMODEL_ITEM{
+    (pub $wrapper:ident <$wrapper_item:ident> {
+        $($rolename:ident : $roletype:ty,)*
+    }) => {
+
+        pub struct $wrapper_item {
+            $( $rolename : $roletype, )*
+        }
+
+        Q_LISTMODEL!{
+            pub $wrapper {
+                $($rolename : $roletype,)*
+            }
+        }
+
+        impl $wrapper {
+            /// Inserts a row into this model
+            #[allow(unused_mut)]
+            pub fn insert_item<T>(&mut self, obj :T ) where T: Into<$wrapper_item> {
+                let item: $wrapper_item = obj.into();
+                let mut vec = Vec::new();
+                $(
+                    vec.push(item.$rolename.into());
+                )*
+                self.qalm.insert_row(vec.into_iter());
+            }
+        }
+
+    }
+}
+
 /// Generates a wrapper for [`QListModel`](struct.QListModel.html) for static typing and easier management.
 ///
 /// # Examples
