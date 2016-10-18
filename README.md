@@ -2,13 +2,13 @@
 Bindings are based on [DOtherSide](https://github.com/filcuc/DOtherSide) C bindings for QML
 Library is mostly feature-compliant with other bindings based on the library, but lacks some minor features and has quite a few bugs.
 
-## [Early documentation](https://white-oak.github.io/qml-rust/qml/)
+## [documentation](https://white-oak.github.io/qml-rust/qml/)
 # Examples
 All examples are located in a folder [`examples/`](examples), under `example_name.rs` and `example_name.qml` names.
 
 * `cargo run --example properties` for setting properties from Rust to QML.
 * `cargo run --example listmodel` for an example of providing QML with list model from Rust.
-* `cargo run --example listmodel_macro` for the same example, but using `Q_LISTMODEL!` macro.
+* `cargo run --example listmodel_macro` for the same example, but using `Q_LISTMODEL!` and `Q_LISTMODEL_ITEM!` macro.
 * `cargo run --example sigslots` for an example of how to create your own `QObject` with signals and slots, and to communicate between QML and Rust. Also shows how to use `Q_OBJECT!` macro.
 * `cargo run --example qobjects` for an example of how to use `Q_OBJECT!` macro with different types.
 * `cargo run --example qvarlists` for an example of how to use `qvarlist!` macro to easily form `QVariant` (used to pass data to QML) of a complex array.
