@@ -256,15 +256,16 @@ macro_rules! Q_OBJECT{
             };
         }
 
-
 /// Generates a wrapper for [`QListModel`](struct.QListModel.html) for static typing and easier management.
+///
+/// Unlike [`Q_LISTMODEL`](macro.Q_LISTMODEL.html) macro, uses `struct` as a data source.
 ///
 /// # Examples
 /// ```no_run
 /// # #[macro_use] extern crate qml;
 /// # use qml::*;
 /// Q_LISTMODEL_ITEM!{
-///     pub TestModel<TestModelItem> {
+///     pub QTestModel<TestModelItem> {
 ///         name: String,
 ///         number: i32,
 ///     }
@@ -302,7 +303,7 @@ macro_rules! Q_LISTMODEL_ITEM{
 
         Q_LISTMODEL!{
             pub $wrapper {
-                $($rolename : $roletype,)*
+                $($rolename : $roletype),*
             }
         }
 
@@ -324,6 +325,8 @@ macro_rules! Q_LISTMODEL_ITEM{
 
 /// Generates a wrapper for [`QListModel`](struct.QListModel.html) for static typing and easier management.
 ///
+/// Unlike [`Q_LISTMODEL_ITEM`](macro.Q_LISTMODEL_ITEM.html) macro, uses `tuple` as a data source.
+///
 /// # Examples
 /// ```no_run
 /// # #[macro_use] extern crate qml;
@@ -331,7 +334,7 @@ macro_rules! Q_LISTMODEL_ITEM{
 /// Q_LISTMODEL!{
 ///     pub QTestModel {
 ///         name: String,
-///         number: i32,
+///         number: i32
 ///     }
 /// }
 ///
@@ -354,7 +357,7 @@ macro_rules! Q_LISTMODEL_ITEM{
 #[macro_export]
 macro_rules! Q_LISTMODEL{
             (pub $wrapper:ident{
-                $($rolename:ident : $roletype:ident),*
+                $($rolename:ident : $roletype:ty),*
             }) => {
                 pub struct $wrapper {
                     qalm: Box<QListModel<'static>>,
