@@ -1,4 +1,7 @@
 # QML-rust - bindings for [Qt Quick](http://doc.qt.io/qt-5/qtquick-index.html)
+[![Build
+Status](https://travis-ci.org/White-Oak/qml-rust.svg?branch=master)](https://travis-ci.org/White-Oak/qml-rust)
+
 Bindings are based on [DOtherSide](https://github.com/filcuc/DOtherSide) C bindings for QML
 Library is mostly feature-compliant with other bindings based on the library, but lacks some minor features and has quite a few bugs.
 
