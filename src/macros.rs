@@ -284,8 +284,8 @@ macro_rules! Q_OBJECT{
 ///     name: "bar".into(),
 ///     number: 23
 /// };
-/// qalm.insert_item(item1);
-/// qalm.insert_item(item2);
+/// qalm.append_item(item1);
+/// qalm.append_item(item2);
 /// // `&QTestModel` implements `Into<QVariant>`
 /// qqae.set_and_store_property("listModel", &qalm);
 /// qqae.exec();
@@ -308,15 +308,26 @@ macro_rules! Q_LISTMODEL_ITEM{
         }
 
         impl $wrapper {
-            /// Inserts a row into this model
+            /// Appends a row to this model
             #[allow(unused_mut)]
-            pub fn insert_item<T>(&mut self, obj :T ) where T: Into<$wrapper_item> {
+            pub fn append_item<T>(&mut self, obj :T ) where T: Into<$wrapper_item> {
                 let item: $wrapper_item = obj.into();
                 let mut vec = Vec::new();
                 $(
                     vec.push(item.$rolename.into());
                 )*
-                self.qalm.insert_row(vec.into_iter());
+                self.qalm.append_row(vec.into_iter());
+            }
+
+            /// Inserts a row into this model
+            #[allow(unused_mut)]
+            pub fn insert_item<T>(&mut self, index: usize, obj :T ) where T: Into<$wrapper_item> {
+                let item: $wrapper_item = obj.into();
+                let mut vec = Vec::new();
+                $(
+                    vec.push(item.$rolename.into());
+                )*
+                self.qalm.insert_row(index, vec.into_iter());
             }
         }
 
@@ -343,8 +354,8 @@ macro_rules! Q_LISTMODEL_ITEM{
 /// # fn main() {
 /// let mut qqae = QmlEngine::new();
 /// let mut qalm = QTestModel::new();
-/// qalm.insert_row("John".into(), 42);
-/// qalm.insert_row("Oak".into(), 505);
+/// qalm.append_row("John".into(), 42);
+/// qalm.append_row("Oak".into(), 505);
 /// // `&QTestModel` implements `Into<QVariant>`
 /// qqae.set_and_store_property("listModel", &qalm);
 ///
@@ -368,14 +379,24 @@ macro_rules! Q_LISTMODEL{
                         $wrapper{ qalm: QListModel::new(&[$(stringify!($rolename)),*])}
                     }
 
-                    /// Inserts a row into this model
+                    /// Appends a row to this model
                     #[allow(unused_mut)]
-                    pub fn insert_row(&mut self, $($rolename : $roletype),*) {
+                    pub fn append_row(&mut self, $($rolename : $roletype),*) {
                         let mut vec = Vec::new();
                         $(
                             vec.push($rolename.into());
                         )*
-                        self.qalm.insert_row(vec.into_iter());
+                        self.qalm.append_row(vec.into_iter());
+                    }
+
+                    /// Inserts a row into this model
+                    #[allow(unused_mut)]
+                    pub fn insert_row(&mut self, index: usize, $($rolename : $roletype),*) {
+                        let mut vec = Vec::new();
+                        $(
+                            vec.push($rolename.into());
+                        )*
+                        self.qalm.insert_row(index, vec.into_iter());
                     }
 
                     /// Remove a row from this model

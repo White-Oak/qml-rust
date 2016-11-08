@@ -158,10 +158,10 @@ impl<'a> QListModel<'a> {
         self.wrapped.load(Ordering::Relaxed).into()
     }
 
-    /// Inserts a row into model
+    /// Appends a row to the model
     ///
     /// Note that it clones all incoming qvariants as modifying them is not allowed.
-    pub fn insert_row<T>(&mut self, qvars: T)
+    pub fn append_row<T>(&mut self, qvars: T)
         where T: Iterator<Item = QVariant>
     {
         unsafe {
@@ -171,6 +171,23 @@ impl<'a> QListModel<'a> {
                                                    self.model.len() as i32,
                                                    (self.model.len() ) as i32);
             self.model.push(qvars.collect());
+            dos_qabstractlistmodel_endInsertRows(self.wrapped.load(Ordering::Relaxed));
+        }
+    }
+
+    /// Inserts a row into model
+    ///
+    /// Note that it clones all incoming qvariants as modifying them is not allowed.
+    pub fn insert_row<T>(&mut self, index: usize ,qvars: T)
+        where T: Iterator<Item = QVariant>
+    {
+        unsafe {
+            let parent = QModelIndex::new();
+            dos_qabstractlistmodel_beginInsertRows(self.wrapped.load(Ordering::Relaxed),
+                                                   get_model_ptr(&parent),
+                                                   index as i32,
+                                                   index as i32);
+            self.model.insert(index,qvars.collect());
             dos_qabstractlistmodel_endInsertRows(self.wrapped.load(Ordering::Relaxed));
         }
     }
