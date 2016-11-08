@@ -34,8 +34,8 @@ fn main() {
     let mut qqae = QmlEngine::new();
     // Usage of Q_LISTMODEL macro generated wrappers
     let mut qalm = QTestModel::new();
-    qalm.insert_row("John".into(), 42);
-    qalm.insert_row("Oak".into(), 505);
+    qalm.append_row("John".into(), 42);
+    qalm.append_row("Oak".into(), 505);
 
     // Usage of Q_LISTMODEL_ITEM macro generated wrappers
     let mut qalm_item = QTestModelItem::new();
@@ -47,8 +47,8 @@ fn main() {
         name: "bar".into(),
         number: 23
     };
-    qalm_item.insert_item(item1);
-    qalm_item.insert_item(item2);
+    qalm_item.append_item(item1);
+    qalm_item.append_item(item2);
 
     // `&QTestModel` implements `Into<QVariant>`
     qqae.set_and_store_property("listModel", qalm.get_qvar());
