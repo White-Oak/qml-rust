@@ -8,6 +8,8 @@ extern "C" {
     fn dos_qapplication_exec();
     fn dos_qapplication_quit();
     fn dos_qapplication_delete();
+    fn dos_qapplication_send_posted_events();
+    fn dos_qapplication_process_events();
 
     fn dos_qqmlapplicationengine_create() -> DosQmlApplicationEngine;
     fn dos_qqmlapplicationengine_load(vptr: DosQmlApplicationEngine, filename: DosCStr);
@@ -38,6 +40,20 @@ impl QmlEngine {
                 ptr: dos_qqmlapplicationengine_create(),
                 stored: Vec::new(),
             }
+        }
+    }
+
+    /// Immediately dispatches all queued events for all QObjects in the main thread
+    pub fn send_posted_events(&mut self) {
+        unsafe {
+            dos_qapplication_send_posted_events();
+        }
+    }
+
+    /// Processes all pending events for the main thread
+    pub fn process_events(&mut self) {
+        unsafe {
+            dos_qapplication_process_events();
         }
     }
 
