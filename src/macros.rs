@@ -223,6 +223,9 @@ macro_rules! Q_OBJECT{
                             )*
                             signals.push((stringify!($signalname), argc, mttypes));
                         )*
+                        $(
+                            signals.push((stringify!($notify_sig), 0, Vec::new()));
+                        )*
                         let mut slots = Vec::new();
                         $(
                             let mut argc = 0;
