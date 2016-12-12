@@ -47,16 +47,20 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-340' class='srclink' href='../src/qml/src/qabstactlistmodel.rs.html#96-100' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/qml/qabstactlistmodel.rs.html#96-100' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct QListModel&lt;'a&gt; { /* fields omitted */ }</pre><div class='docblock'><p>Allows providing a custom model to QML</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../qml/struct.QListModel.html' title='qml::QListModel'>QListModel</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-364' class='srclink' href='../src/qml/src/qabstactlistmodel.rs.html#119-225' title='goto source code'>[src]</a></span></h3>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../qml/struct.QListModel.html' title='qml::QListModel'>QListModel</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/qml/qabstactlistmodel.rs.html#119-242' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>&lt;'b&gt;(rolenames: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'b [</a>&amp;'a <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;Self&gt;</code></span></h4>
 <div class='docblock'><p>Rolenames are roles of provided data, that are mapped to corresponding roles in QML.</p>
 </div><h4 id='method.row_count' class='method'><span id='row_count.v' class='invisible'><code>fn <a href='#method.row_count' class='fnname'>row_count</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h4>
 <div class='docblock'><p>Returns an amount of rows in this model</p>
 </div><h4 id='method.get_qvar' class='method'><span id='get_qvar.v' class='invisible'><code>fn <a href='#method.get_qvar' class='fnname'>get_qvar</a>(&amp;self) -&gt; <a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a></code></span></h4>
 <div class='docblock'><p>Gets a <code>QVariant</code> associate</p>
-</div><h4 id='method.insert_row' class='method'><span id='insert_row.v' class='invisible'><code>fn <a href='#method.insert_row' class='fnname'>insert_row</a>&lt;T&gt;(&amp;mut self, qvars: T) <span class='where'>where T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a>&lt;Item=<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>&gt;</span></code></span></h4>
+</div><h4 id='method.append_row' class='method'><span id='append_row.v' class='invisible'><code>fn <a href='#method.append_row' class='fnname'>append_row</a>&lt;T&gt;(&amp;mut self, qvars: T) <span class='where'>where T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a>&lt;Item=<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>&gt;</span></code></span></h4>
+<div class='docblock'><p>Appends a row to the model</p>
+
+<p>Note that it clones all incoming qvariants as modifying them is not allowed.</p>
+</div><h4 id='method.insert_row' class='method'><span id='insert_row.v' class='invisible'><code>fn <a href='#method.insert_row' class='fnname'>insert_row</a>&lt;T&gt;(&amp;mut self, index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, qvars: T) <span class='where'>where T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a>&lt;Item=<a class='struct' href='../qml/struct.QVariant.html' title='qml::QVariant'>QVariant</a>&gt;</span></code></span></h4>
 <div class='docblock'><p>Inserts a row into model</p>
 
 <p>Note that it clones all incoming qvariants as modifying them is not allowed.</p>
@@ -126,11 +130,9 @@
     <script>
         window.rootPath = "../";
         window.currentCrate = "qml";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>
