@@ -1,0 +1,3 @@
+[submodule "DOtherSide"]
+	path = DOtherSide
+	url = https://github.com/filcuc/DOtherSide.git
