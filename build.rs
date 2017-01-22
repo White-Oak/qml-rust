@@ -128,6 +128,10 @@ fn main() {
         panic!("DOtherSide submodule not checked out. Please run 'git submodule init' followed by 'git submodule update'.");
     }
 
+    if let Ok(gen) = env::var("CMAKE_GENERATOR") {
+        cmake_cfg.generator(gen);
+    }
+
     find_qt5(&mut cmake_cfg);
     build_dos(&mut cmake_cfg);
 }
