@@ -100,7 +100,7 @@ fn find_qt5(_: &mut cmake::Config) {
     } else {
         use pkg_config;
 
-        if cfg!(target_os = "macos") {
+        if cfg!(any(target_os = "macos", target_os = "freebsd", target_os = "bitrig")) {
             println!("cargo:rustc-link-lib=dylib=c++");
         } else {
             println!("cargo:rustc-link-lib=dylib=stdc++");
