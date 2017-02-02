@@ -13,7 +13,7 @@ extern "C" {
     fn dos_qqmlapplicationengine_load(vptr: DosQmlApplicationEngine, filename: DosCStr);
     fn dos_qqmlapplicationengine_load_url(vptr: DosQmlApplicationEngine, url: DosQUrl);
     fn dos_qqmlapplicationengine_load_data(vptr: DosQmlApplicationEngine, data: DosCStr);
-    // fn dos_qqmlapplicationengine_add_import_path(vptr: *mut DosQQmlApplicationEngine, const char *path);
+    fn dos_qqmlapplicationengine_add_import_path(vptr: DosQmlApplicationEngine, path: DosCStr);
     fn dos_qqmlapplicationengine_context(vptr: DosQmlApplicationEngine) -> DosQQmlContext;
     fn dos_qqmlapplicationengine_delete(vptr: DosQmlApplicationEngine);
 
@@ -55,6 +55,12 @@ impl QmlEngine {
     /// Loads qml from a specified url (`file://`, `qrc://`, `http://`)
     pub fn load_url(&mut self, uri: &str) {
         unsafe { dos_qqmlapplicationengine_load_url(self.ptr, construct_qurl(uri)) }
+    }
+
+    /// Adds a path to the QML import path
+    /// On an "import ModuleName" call QML will additionally search this path for the matching module.
+    pub fn add_import_path(&mut self, path: &str) {
+        unsafe { dos_qqmlapplicationengine_add_import_path(self.ptr, stoptr(path)) }
     }
 
     /// Loads a string as a qml file
