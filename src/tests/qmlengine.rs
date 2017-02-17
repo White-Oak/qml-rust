@@ -45,3 +45,16 @@ fn load_url_qrc() {
         .output()
         .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
 }
+
+#[test]
+fn event_loop() {
+    let mut engine = QmlEngine::new();
+    engine.load_file("examples/listmodel.qml");
+
+    for _ in 0..100 {
+        engine.send_posted_events();
+        engine.process_events();
+        print!(".");
+    }
+    println!("");
+}
