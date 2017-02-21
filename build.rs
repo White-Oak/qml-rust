@@ -111,6 +111,7 @@ fn find_qt5(_: &mut cmake::Config) {
                 for p in lib.link_paths { println!("cargo:rustc-link-search=native={}",p.display()); }
                 for p in lib.libs { println!("cargo:rustc-link-lib=dylib={}",p); }
                 if cfg!(target_os = "macos") {
+                    for p in lib.framework_paths { println!("cargo:rustc-link-search=framework={}",p.display()); }
                     for p in lib.frameworks { println!("cargo:rustc-link-lib=framework={}",p); }
                 }
                 for p in lib.include_paths { println!("cargo:include={}",p.display()); }
