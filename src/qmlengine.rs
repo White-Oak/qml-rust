@@ -4,10 +4,10 @@ use types::*;
 use qurl::*;
 
 extern "C" {
-    fn dos_qapplication_create();
-    fn dos_qapplication_exec();
-    fn dos_qapplication_quit();
-    fn dos_qapplication_delete();
+    fn dos_qguiapplication_create();
+    fn dos_qguiapplication_exec();
+    fn dos_qguiapplication_quit();
+    fn dos_qguiapplication_delete();
 
     fn dos_qqmlapplicationengine_create() -> DosQmlApplicationEngine;
     fn dos_qqmlapplicationengine_load(vptr: DosQmlApplicationEngine, filename: DosCStr);
@@ -33,7 +33,7 @@ impl QmlEngine {
     /// Creates a QML context of a non-headless application
     pub fn new() -> Self {
         unsafe {
-            dos_qapplication_create();
+            dos_qguiapplication_create();
             QmlEngine {
                 ptr: dos_qqmlapplicationengine_create(),
                 stored: Vec::new(),
@@ -71,13 +71,13 @@ impl QmlEngine {
     /// Launches the application
     pub fn exec(&mut self) {
         unsafe {
-            dos_qapplication_exec();
+            dos_qguiapplication_exec();
         }
     }
     /// Closes the application
     pub fn quit(&mut self) {
         unsafe {
-            dos_qapplication_quit();
+            dos_qguiapplication_quit();
         }
     }
 
@@ -113,9 +113,9 @@ impl Default for QmlEngine {
 impl Drop for QmlEngine {
     fn drop(&mut self) {
         unsafe {
-            dos_qapplication_quit();
+            dos_qguiapplication_quit();
             dos_qqmlapplicationengine_delete(self.ptr);
-            dos_qapplication_delete();
+            dos_qguiapplication_delete();
         }
     }
 }
