@@ -161,7 +161,25 @@ macro_rules! Q_OBJECT{
 
                     #[allow(dead_code)]
                     pub fn $write_slot(&mut self, input: $proptype) {
-                        self.properties.insert(stringify!($propname), (input.into(), $proptype::metatype()));
+                        use ::std::collections::hash_map::Entry;
+                        let key = stringify!($propname);
+                        let mut signal = false;
+                        match self.properties.entry(key) {
+                            Entry::Occupied(mut o) => {
+                                let qvar: QVariant = input.into();
+                                if o.get().0 != qvar {
+				    o.get_mut().0 = qvar;
+				    signal = true;
+                                }
+                            },
+                            Entry::Vacant(v) => {
+                                v.insert((input.into(), $proptype::metatype()));
+                                signal = true;
+                            },
+                        };
+                        if signal {
+                            self.$notify_sig();
+                        }
                     })*
 
                     #[allow(dead_code)]
